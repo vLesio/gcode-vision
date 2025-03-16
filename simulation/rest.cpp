@@ -1,18 +1,37 @@
+#include "rest.h"
 #include "crow.h"
 #include <iostream>
-#include <fstream>
+#include <atomic>
 
-int main() {
+extern std::atomic<bool> simulation_running;
+
+void run_rest_api(int port) {
     crow::SimpleApp app;
 
-    // Endpoint to print received data
-    CROW_ROUTE(app, "/log").methods(crow::HTTPMethod::POST)(
+    // Start Simulation
+    CROW_ROUTE(app, "/start").methods(crow::HTTPMethod::POST)(
         [](const crow::request& req) {
-            std::cout << "Received: " << req.body << std::endl;
-            return crow::response("Logged: " + req.body);
+            if (!simulation_running) {
+                simulation_running = true;
+                std::cout << "Simulation started." << std::endl;
+                return crow::response(200, "Simulation started");
+            }
+            return crow::response(400, "Simulation already running");
         });
 
-    // Endpoint to handle file uploads
+    // Stop Simulation
+    CROW_ROUTE(app, "/stop").methods(crow::HTTPMethod::POST)(
+        [](const crow::request& req) {
+            if (simulation_running) {
+                simulation_running = false;
+                std::cout << "Simulation stopping..." << std::endl;
+                return crow::response(200, "Simulation stopped");
+            }
+            return crow::response(400, "Simulation not running");
+        });
+
+    std::cout << "Starting REST API on port " << port << std::endl;
+
     CROW_ROUTE(app, "/upload").methods(crow::HTTPMethod::POST)(
         [](const crow::request& req) {
             if (req.body.empty()) {
@@ -23,11 +42,8 @@ int main() {
             outFile.write(req.body.data(), req.body.size());
             outFile.close();
 
-            std::cout << "File uploaded successfully." << std::endl;
             return crow::response("File uploaded successfully");
         });
 
-    app.port(18080).multithreaded().run();
-
-    return 0;
+    app.port(port).multithreaded().run();
 }

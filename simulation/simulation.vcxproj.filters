@@ -13,16 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Coto">
-      <UniqueIdentifier>{08138065-460d-4ebf-b26c-ebbc28eaf15d}</UniqueIdentifier>
+    <Filter Include="Source Files\rest">
+      <UniqueIdentifier>{ac679929-4ee3-4626-a8f7-4dcf2e6be76f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl">
+      <UniqueIdentifier>{3fb59fe1-7ade-458f-abd9-a82b07934f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rest">
+      <UniqueIdentifier>{6550c4f6-aade-4676-ae31-10be8b069fff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="simulation.cpp">
-      <Filter>Source Files\Coto</Filter>
-    </ClCompile>
     <ClCompile Include="rest.cpp">
-      <Filter>Source Files\Coto</Filter>
+      <Filter>Source Files\rest</Filter>
     </ClCompile>
+    <ClCompile Include="src\simulation.cpp">
+      <Filter>Source Files\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rest.h">
+      <Filter>Header Files\rest</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
