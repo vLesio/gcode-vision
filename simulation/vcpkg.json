@@ -1,0 +1,12 @@
+{
+    "name": "gcode-vision",
+    "version": "0.0.0",
+    "dependencies": [
+        "crow",
+        "glfw3",
+        "glew",
+        "glm",
+        "freeglut"
+    ],
+    "builtin-baseline": "3178dc346159522b11e4b6aeb7fd6349dff427bb"
+}

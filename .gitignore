@@ -2,3 +2,4 @@ simulation/.vs
 simulation/simulation
 simulation/x64
 .vs
+simulation/vcpkg_installed
