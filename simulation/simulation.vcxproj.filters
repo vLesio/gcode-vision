@@ -22,6 +22,9 @@
     <Filter Include="Header Files\rest">
       <UniqueIdentifier>{6550c4f6-aade-4676-ae31-10be8b069fff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\simulation">
+      <UniqueIdentifier>{983d403f-1a70-489b-a714-31572624d4b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -37,6 +40,9 @@
   <ItemGroup>
     <ClInclude Include="rest.h">
       <Filter>Header Files\rest</Filter>
+    </ClInclude>
+    <ClInclude Include="simulation.h">
+      <Filter>Header Files\simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

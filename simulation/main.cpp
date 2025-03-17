@@ -1,24 +1,31 @@
 #include "rest.h"
+#include "simulation.h"
 #include <iostream>
 #include <thread>
 #include <atomic>
 #include <chrono>
 
-// Global variable for communication between threads
+// Global flag for controlling the simulation
 std::atomic<bool> simulation_running{ false };
+std::thread simulation_thread; // Thread for the OpenGL simulation
 
-// Simulation function
-void run_simulation() {
-    std::cout << "Simulation thread started.\n";
+// Function to start the simulation in a separate thread
+void start_simulation() {
+    if (!simulation_running) {
+        simulation_running = true;
+        simulation_thread = std::thread(run_opengl);
+        std::cout << "Simulation started in a separate thread.\n";
+    }
+}
 
-    while (true) {
-        if (simulation_running) {
-            std::cout << "Simulation running...\n";
+// Function to stop the simulation and close the OpenGL window
+void stop_simulation() {
+    if (simulation_running) {
+        simulation_running = false;
+        if (simulation_thread.joinable()) {
+            simulation_thread.join();
         }
-        else {
-            std::cout << "Simulation stopped.\n";
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::cout << "Simulation stopped.\n";
     }
 }
 
@@ -26,11 +33,10 @@ int main() {
     // Start the REST API in a separate thread
     std::thread rest_thread(run_rest_api, 18080);
 
-    // Start the simulation in the main thread
-    run_simulation();
-
-    // Join threads (this won't be reached due to infinite loop in simulation)
     rest_thread.join();
+
+    // Ensure the simulation is stopped before exiting the program
+    stop_simulation();
 
     return 0;
 }
