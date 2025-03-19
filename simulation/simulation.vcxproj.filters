@@ -25,16 +25,43 @@
     <Filter Include="Header Files\simulation">
       <UniqueIdentifier>{983d403f-1a70-489b-a714-31572624d4b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{13b812bb-4188-4b86-89e9-09a1aad3f5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\shaders">
+      <UniqueIdentifier>{bef0cb0d-e0d1-416b-a9e0-ee8d1cc95fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\shaders">
+      <UniqueIdentifier>{42ee380c-696c-4f83-b3d1-26e33e07cac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\buffers">
+      <UniqueIdentifier>{baa9d44d-aa6e-44eb-9d23-442935002c7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\buffers">
+      <UniqueIdentifier>{83222e42-9077-4d73-95f0-811d78590f6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
       <Filter>Source Files\rest</Filter>
     </ClCompile>
-    <ClCompile Include="src\simulation.cpp">
-      <Filter>Source Files\opengl</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shaderClass.cpp">
+      <Filter>Source Files\opengl\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="VBO.cpp">
+      <Filter>Source Files\opengl\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="EBO.cpp">
+      <Filter>Source Files\opengl\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="VAO.cpp">
+      <Filter>Source Files\opengl\buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="simulation.cpp">
+      <Filter>Source Files\opengl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,5 +71,25 @@
     <ClInclude Include="simulation.h">
       <Filter>Header Files\simulation</Filter>
     </ClInclude>
+    <ClInclude Include="shaderClass.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="VBO.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="EBO.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="VAO.h">
+      <Filter>Header Files\buffers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="default.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="default.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
