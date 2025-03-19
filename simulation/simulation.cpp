@@ -11,24 +11,21 @@
 
 
 
-/////// Triangle rendering - 3 triangles
+/////// Square
 // Vertex data for the triangles
 GLfloat vertices[] =
 {
-	// Positions														// Colors
-	-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,						1.0f, 0.0f, 0.0f, // Lower left corner
-	0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,							1.0f, 0.0f, 0.0f, // Lower right corner
-	0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,						0.0f, 1.0f, 0.0f, // Upper corner	
-	-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,						0.0f, 0.0f, 1.0f, // Inner left	
-	0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,						0.0f, 0.0f, 1.0f, // Inner right	
-	0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f,							1.0f, 0.0f, 1.0f  // Inner down
+	// Positions			// Colors
+	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f, // Bottom left corner		index: 0
+	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f, // Top left corner		index: 1
+	 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f, // Top right corner		index: 2
+	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 0.0f // Bottom right corner		index: 3
 };
 
-// Indices order for the triangles
+// Indices order for the triangles (we make a square out of two triangles)
 GLuint indices[] = {
-	0, 3, 5, // Triangle 1
-	3, 2 ,4, // Triangle 2
-	5, 4, 1  // Triangle 3
+	0, 1, 3, // First triangle
+	1, 2, 3  // Second triangle
 };
 
 
@@ -54,7 +51,7 @@ void run_opengl() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Window", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(800, 800, "OpenGL Window", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -69,7 +66,7 @@ void run_opengl() {
     gladLoadGL();
 
 	// Initialize viewport
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, 800, 800);
 
 	// Set the simulation_running flag to true
 	simulation_running = true;
@@ -87,6 +84,9 @@ void run_opengl() {
     VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
+
+	// Get the uniform ID for the scale variable located in the vertex shader file (default.vert)
+	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
 	// Screen background color
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -108,14 +108,19 @@ void run_opengl() {
 
 		// Activating shader program in OpenGL
 		shaderProgram.Activate();
+
+		// Update the uniform variable in the vertex shader, which is the scale variable.
+		// Must be done after activating the shader program but before rendering the object
+		glUniform1f(uniID, 0.5f);
+
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// Swap back and front buffers
 		//    back buffer - is where we draw things
 		//    front buffer - is what we see
         glfwSwapBuffers(window);
-		glfwPollEvents(); // Needed to update the window
+		glfwPollEvents(); // Needed to update the window, without it the window will freeze as it will not respond to any events
     }
 
 
