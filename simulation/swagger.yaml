@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: 3D Printing Visualization API
+  description: API for controlling a 3D printing visualization system. It provides endpoints to control simulation flow, adjust the virtual camera, and upload G-code files.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:18080
+
+paths:
+  /simulation/start:
+    post:
+      tags:
+        - Simulation
+      summary: Start simulation
+      description: Initializes and starts the 3D printing simulation.
+      responses:
+        '200':
+          description: Simulation successfully started.
+
+  /simulation/pause:
+    post:
+      tags:
+        - Simulation
+      summary: Pause simulation
+      description: Temporarily pauses the ongoing 3D printing simulation.
+      responses:
+        '200':
+          description: Simulation successfully paused.
+
+  /simulation/resume:
+    post:
+      tags:
+        - Simulation
+      summary: Resume simulation
+      description: Resumes the simulation from the paused state.
+      responses:
+        '200':
+          description: Simulation successfully resumed.
+
+  /simulation/stop:
+    post:
+      tags:
+        - Simulation
+      summary: Stop simulation
+      description: Completely stops and resets the current simulation.
+      responses:
+        '200':
+          description: Simulation successfully stopped.
+
+  /simulation/step/forward:
+    post:
+      tags:
+        - Simulation
+      summary: Step forward
+      description: Advances the simulation by one step forward.
+      responses:
+        '200':
+          description: Simulation stepped forward by one unit.
+
+  /simulation/step/backward:
+    post:
+      tags:
+        - Simulation
+      summary: Step backward
+      description: Rewinds the simulation by one step.
+      responses:
+        '200':
+          description: Simulation stepped backward by one unit.
+
+  /simulation/upload:
+    post:
+      tags:
+        - Upload
+      summary: Upload G-code file
+      description: Uploads a G-code file (typically with .gcode extension) for the 3D printer simulation engine. The file should be sent as `multipart/form-data` using a `file` field.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: G-code file for simulation (.gcode)
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: File uploaded successfully
+        '400':
+          description: Invalid request or missing file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No filename found in multipart body.
+
+  /camera/zoom/in:
+    post:
+      tags:
+        - Camera
+      summary: Zoom in
+      description: Zooms in the camera for a closer view of the model.
+      responses:
+        '200':
+          description: Camera zoomed in successfully.
+
+  /camera/zoom/out:
+    post:
+      tags:
+        - Camera
+      summary: Zoom out
+      description: Zooms out the camera for a wider view of the model.
+      responses:
+        '200':
+          description: Camera zoomed out successfully.
+
+  /camera/rotate/left:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera left
+      description: Rotates the virtual camera to the left around the model.
+      responses:
+        '200':
+          description: Camera rotated left successfully.
+
+  /camera/rotate/right:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera right
+      description: Rotates the virtual camera to the right around the model.
+      responses:
+        '200':
+          description: Camera rotated right successfully.
+
+  /camera/rotate/up:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera up
+      description: Rotates the virtual camera upward.
+      responses:
+        '200':
+          description: Camera rotated up successfully.
+
+  /camera/rotate/down:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera down
+      description: Rotates the virtual camera downward.
+      responses:
+        '200':
+          description: Camera rotated down successfully.
+
+tags:
+  - name: Simulation
+    description: Endpoints related to controlling the 3D printing simulation.
+  - name: Camera
+    description: Endpoints for manipulating the virtual camera view in the 3D scene.
+  - name: Upload
+    description: Endpoint for uploading G-code files for simulation input.
