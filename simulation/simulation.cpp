@@ -2,12 +2,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <atomic>
-#include <thread>
 
 #include "shaderClass.h"
 #include "VBO.h"
 #include "VAO.h"
 #include "EBO.h"
+#include "Texture.h"
 
 
 
@@ -15,11 +15,11 @@
 // Vertex data for the triangles
 GLfloat vertices[] =
 {
-	// Positions			// Colors
-	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f, // Bottom left corner		index: 0
-	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f, // Top left corner		index: 1
-	 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f, // Top right corner		index: 2
-	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 0.0f // Bottom right corner		index: 3
+	// Positions			// Colors			// Texture coordinates
+	-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // Bottom left corner		index: 0
+	-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // Top left corner			index: 1
+	 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // Top right corner			index: 2
+	 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	1.0f, 0.0f  // Bottom right corner		index: 3
 };
 
 // Indices order for the triangles (we make a square out of two triangles)
@@ -79,14 +79,23 @@ void run_opengl() {
 	VBO VBO1(vertices, sizeof(vertices));
 	EBO EBO1(indices, sizeof(indices));
 
-	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0); // Vertex positions
-	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float))); // Vertex colors
+	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); // Vertex positions
+	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); // Vertex colors
+	VAO1.LinkAttribute(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))); // Texture coordinates
     VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
 	// Get the uniform ID for the scale variable located in the vertex shader file (default.vert)
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+	// Texture
+	Texture texture("car_icon.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	texture.texUnit(shaderProgram, "tex0", 0);
+
+	GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
+	shaderProgram.Activate();
+	glUniform1i(tex0Uni, 0);
 
 	// Screen background color
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -112,6 +121,7 @@ void run_opengl() {
 		// Update the uniform variable in the vertex shader, which is the scale variable.
 		// Must be done after activating the shader program but before rendering the object
 		glUniform1f(uniID, 0.5f);
+		texture.Bind();
 
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -125,6 +135,7 @@ void run_opengl() {
 
 
 	/////// Clean up
+	texture.Delete();
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();

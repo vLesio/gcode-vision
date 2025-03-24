@@ -24,6 +24,8 @@
     <ClCompile Include="rest.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="simulation.cpp" />
+    <ClCompile Include="stb.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
@@ -32,12 +34,16 @@
     <ClInclude Include="rest.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="simulation.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />
     <None Include="default.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="car_icon.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
