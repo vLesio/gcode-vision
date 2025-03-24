@@ -8,6 +8,5 @@
         "glm",
         "glad",
         "freeglut"
-    ],
-    "builtin-baseline": "3178dc346159522b11e4b6aeb7fd6349dff427bb"
+    ]
 }
