@@ -70,6 +70,26 @@ paths:
                     items:
                       type: string
                     example: ["model1.gcode", "model2.gcode"]
+
+  /gcode/{filename}:
+    delete:
+      tags:
+        - Gcode
+      summary: Delete uploaded G-code file
+      description: |
+        Deletes the uploaded G-code file with the specified filename.
+      parameters:
+        - name: filename
+          in: path
+          description: Name of the G-code file to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully
+        '404':
+          description: File with specified filename not found
                     
   /simulation/create:
     post:
