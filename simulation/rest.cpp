@@ -7,6 +7,8 @@
 #include <sstream>
 #include <filesystem>
 
+#include "camera.h"
+
 namespace fs = std::filesystem;
 
 // Global variables for controlling the simulation
@@ -26,6 +28,18 @@ crow::response json_response(int code, const std::string& message) {
     res.write("{\"message\": \"" + message + "\"}");
     return res;
 }
+
+template<typename Func>
+crow::response safe_camera_action(Func action, const std::string& successMessage) {
+    try {
+        action();
+        return json_response(200, successMessage);
+    }
+    catch (const std::exception& e) {
+        return json_response(400, std::string("Camera error: ") + e.what());
+    }
+}
+
 
 void run_rest_api(int port) {
     crow::SimpleApp app;
@@ -49,7 +63,11 @@ void run_rest_api(int port) {
     });*/
 
     CROW_ROUTE(app, "/simulation/pause").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Simulation paused");
+        if (simulation_running) {
+            stop_simulation();
+            return json_response(200, "Simulation stopped");
+        }
+        return json_response(400, "Simulation is not running");
     });
 
     CROW_ROUTE(app, "/simulation/resume").methods(crow::HTTPMethod::POST)([] {
@@ -67,32 +85,46 @@ void run_rest_api(int port) {
     // === CAMERA CONTROL ENDPOINTS ===
 
     CROW_ROUTE(app, "/camera/zoom/in").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera zoomed in");
-    });
+        return safe_camera_action([] {
+            Camera::getInstance().zoomIn();
+            }, "Camera zoomed in");
+        });
 
     CROW_ROUTE(app, "/camera/zoom/out").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera zoomed out");
-    });
-
-    CROW_ROUTE(app, "/camera/rotate/left").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera rotated left");
-    });
-
-    CROW_ROUTE(app, "/camera/rotate/right").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera rotated right");
-    });
+        return safe_camera_action([] {
+            Camera::getInstance().zoomOut();
+            }, "Camera zoomed out");
+        });
 
     CROW_ROUTE(app, "/camera/rotate/up").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera rotated up");
-    });
+        return safe_camera_action([] {
+            Camera::getInstance().up();
+            }, "Camera rotated up");
+        });
 
     CROW_ROUTE(app, "/camera/rotate/down").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera rotated down");
-    });
+        return safe_camera_action([] {
+            Camera::getInstance().down();
+            }, "Camera rotated down");
+        });
+
+    CROW_ROUTE(app, "/camera/rotate/left").methods(crow::HTTPMethod::POST)([] {
+        return safe_camera_action([] {
+            Camera::getInstance().left();
+            }, "Camera rotated left");
+        });
+
+    CROW_ROUTE(app, "/camera/rotate/right").methods(crow::HTTPMethod::POST)([] {
+        return safe_camera_action([] {
+            Camera::getInstance().right();
+            }, "Camera rotated right");
+        });
 
     CROW_ROUTE(app, "/camera/reset").methods(crow::HTTPMethod::POST)([] {
-        return json_response(200, "Camera reset successfully");
-    });
+        return safe_camera_action([] {
+            Camera::getInstance().reset();
+            }, "Camera reset successfully");
+        });
 
     // === FILE UPLOAD ENDPOINT ===
 

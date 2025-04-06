@@ -116,7 +116,7 @@ void run_opengl() {
 	// Enables depth testing buffer
 	glEnable(GL_DEPTH_TEST);
 
-	Camera::init(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.4f, 0.0f));
+	Camera::init(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.4f, 0.0f), 0.0f, 0.0f, 5.0f, 1.0f, 5.0f);
 	Camera& camera = Camera::getInstance();
 
     // Main rendering loop

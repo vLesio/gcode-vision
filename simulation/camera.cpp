@@ -35,8 +35,7 @@ Camera& Camera::getInstance()
 {
     if (!cameraInstance)
     {
-        std::cerr << "[Camera] Error: Used before initialization!" << std::endl;
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("[Camera] Tried to use before initialization!");
     }
     return *cameraInstance;
 }
@@ -121,11 +120,11 @@ void Camera::down()
 }
 void Camera::right()
 {
-	rotate(-rotateSpeed, 0.0f);
+	rotate(rotateSpeed, 0.0f);
 }
 void Camera::left()
 {
-	rotate(rotateSpeed, 0.0f);
+	rotate(-rotateSpeed, 0.0f);
 }
 void Camera::zoomIn()
 {
@@ -140,27 +139,27 @@ void Camera::keyboardInputs(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-        up();
+		rotate(0.0f, 0.05f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-        down();
+		rotate(0.0f, -0.05f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-        left();
+		rotate(-0.05f, 0.0f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-        right();
+		rotate(0.05f, 0.0f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-        zoomOut();
+		zoom(-0.01f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		zoomIn();
+		zoom(0.01f);
 	}
 }
 
