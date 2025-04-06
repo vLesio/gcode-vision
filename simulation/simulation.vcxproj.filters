@@ -40,6 +40,18 @@
     <Filter Include="Source Files\opengl\buffers">
       <UniqueIdentifier>{83222e42-9077-4d73-95f0-811d78590f6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{ca1f2d4e-6dca-4d67-afdf-6ed39ee4a187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib_helpers">
+      <UniqueIdentifier>{ce6bf911-2942-470b-ae72-f5d2ef0ac88e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\textures">
+      <UniqueIdentifier>{d035c0a9-8106-4547-8672-b329403253c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\textures">
+      <UniqueIdentifier>{0f889c01-af09-4cbe-aa1c-bf3e2b764212}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -63,6 +75,12 @@
     <ClCompile Include="simulation.cpp">
       <Filter>Source Files\opengl</Filter>
     </ClCompile>
+    <ClCompile Include="stb.cpp">
+      <Filter>Source Files\lib_helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\opengl\textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rest.h">
@@ -83,6 +101,9 @@
     <ClInclude Include="VAO.h">
       <Filter>Header Files\buffers</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -91,5 +112,10 @@
     <None Include="default.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="car_icon.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
