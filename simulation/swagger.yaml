@@ -1,0 +1,297 @@
+openapi: 3.0.0
+info:
+  title: 3D Printing Visualization API
+  description: API for controlling a 3D printing visualization system. It provides endpoints to control simulation flow, adjust the virtual camera, and upload G-code files.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:18080
+
+paths:
+  /gcode/upload:
+    post:
+      tags:
+        - Gcode
+      summary: Upload G-code file
+      description: |
+        Uploads a G-code file (typically with .gcode extension) for the 3D printer simulation engine.
+        The file should be sent as `multipart/form-data` using a `file` field.
+        File name will be used as a name of the model inside the simulation which is used to refer this model in other methods.
+        This does not start the simulation, it only uploads a model that can be later choosen and used in simulation.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: G-code file for simulation (.gcode)
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: File uploaded successfully
+        '400':
+          description: Invalid request or missing file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No filename found in multipart body.
+  /gcode:
+    get:
+      tags:
+        - Gcode
+      summary: Get uploaded G-code files
+      description: |
+        Returns a list of all uploaded G-code files with their names.
+      responses:
+        '200':
+          description: List of uploaded G-code files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  files:
+                    type: array
+                    items:
+                      type: string
+                    example: ["model1.gcode", "model2.gcode"]
+
+  /gcode/{filename}:
+    delete:
+      tags:
+        - Gcode
+      summary: Delete uploaded G-code file
+      description: |
+        Deletes the uploaded G-code file with the specified filename.
+      parameters:
+        - name: filename
+          in: path
+          description: Name of the G-code file to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully
+        '404':
+          description: File with specified filename not found
+                    
+  /simulation/create:
+    post:
+      tags:
+        - Simulation
+      summary: Creates simulation with specified settings
+      description: |
+        Creates new simulation with specified settings.
+        If another simulation is already running, it will stop it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Simulation"
+        
+      responses:
+        '200':
+          description: Simulation loaded successfully
+        '400':
+          description: Error during creating a simulation
+
+  /simulation/printers:
+    get:
+      tags:
+        - Simulation
+      summary: Get available printers
+      description: |
+        Returns a list of all available 3D printers that can be used for simulation.
+      responses:
+        '200':
+          description: List of available printers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  printers:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Creality Ender 3 V2", "Creality Ender 3 Neo"]
+
+  /simulation/start:
+    post:
+      tags:
+        - Simulation
+      summary: Start simulation
+      description: Initializes and starts the 3D printing simulation.
+      responses:
+        '200':
+          description: Simulation successfully started.
+
+  /simulation/pause:
+    post:
+      tags:
+        - Simulation
+      summary: Pause simulation
+      description: Temporarily pauses the ongoing 3D printing simulation.
+      responses:
+        '200':
+          description: Simulation successfully paused.
+
+  /simulation/resume:
+    post:
+      tags:
+        - Simulation
+      summary: Resume simulation
+      description: Resumes the simulation from the paused state.
+      responses:
+        '200':
+          description: Simulation successfully resumed.
+
+  # /simulation/stop:
+  #   post:
+  #     tags:
+  #       - Simulation
+  #     summary: Stop simulation
+  #     description: Completely stops and resets the current simulation.
+  #     responses:
+  #       '200':
+  #         description: Simulation successfully stopped.
+
+  /simulation/step/forward:
+    post:
+      tags:
+        - Simulation
+      summary: Step forward
+      description: Advances the simulation by one step forward.
+      responses:
+        '200':
+          description: Simulation stepped forward by one unit.
+
+  /simulation/step/backward:
+    post:
+      tags:
+        - Simulation
+      summary: Step backward
+      description: Rewinds the simulation by one step.
+      responses:
+        '200':
+          description: Simulation stepped backward by one unit.
+  
+
+
+  /camera/zoom/in:
+    post:
+      tags:
+        - Camera
+      summary: Zoom in
+      description: Zooms in the camera for a closer view of the model.
+      responses:
+        '200':
+          description: Camera zoomed in successfully.
+
+  /camera/zoom/out:
+    post:
+      tags:
+        - Camera
+      summary: Zoom out
+      description: Zooms out the camera for a wider view of the model.
+      responses:
+        '200':
+          description: Camera zoomed out successfully.
+
+  /camera/rotate/left:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera left
+      description: Rotates the virtual camera to the left around the model.
+      responses:
+        '200':
+          description: Camera rotated left successfully.
+
+  /camera/rotate/right:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera right
+      description: Rotates the virtual camera to the right around the model.
+      responses:
+        '200':
+          description: Camera rotated right successfully.
+
+  /camera/rotate/up:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera up
+      description: Rotates the virtual camera upward.
+      responses:
+        '200':
+          description: Camera rotated up successfully.
+
+  /camera/rotate/down:
+    post:
+      tags:
+        - Camera
+      summary: Rotate camera down
+      description: Rotates the virtual camera downward.
+      responses:
+        '200':
+          description: Camera rotated down successfully.
+
+  /camera/reset:
+      post:
+        tags:
+          - Camera
+        summary: Reset camera to default position
+        description: Resets the virtual camera to its default position.
+        responses:
+          '200':
+            description: Camera reset successfully.
+tags:
+  - name: Simulation
+    description: Endpoints related to controlling the 3D printing simulation.
+  - name: Camera
+    description: Endpoints for manipulating the virtual camera view in the 3D scene. The camera can be zoomed in/out and rotated around the model.
+  - name: Gcode
+    description: Endpoints for uploading G-code files for simulation input.
+
+components:
+  schemas:
+    Simulation:
+      type: object
+      properties:
+        printer:
+          type: string
+        model:
+          type: string
+        speed:
+          type: string
+        extruderWidth:
+          type: number
+        retraction:
+          type: boolean
+        temperatures:
+          type: object
+          properties:
+            bed:
+              type: number
+            extruder:
+              type: number
+          
