@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="GCodeHelpers.cpp" />
+    <ClCompile Include="GCodeParser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="rest.cpp" />
     <ClCompile Include="shaderClass.cpp" />
@@ -33,6 +35,9 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="GCodeHelpers.h" />
+    <ClInclude Include="GCodeParser.h" />
+    <ClInclude Include="GCodeTypes.h" />
     <ClInclude Include="rest.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="simulation.h" />

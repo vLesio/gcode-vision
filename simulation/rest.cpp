@@ -8,6 +8,7 @@
 #include <filesystem>
 
 #include "camera.h"
+#include "GCodeParser.h"
 
 namespace fs = std::filesystem;
 
@@ -307,6 +308,38 @@ void run_rest_api(int port) {
         res.body = contents;
         return res;
     });
+
+	// === TEST ENDPOINTS ===
+    CROW_ROUTE(app, "/simulation/test-parse").methods(crow::HTTPMethod::GET)(
+        []() {
+            try {
+                GCodeParser parser;
+                if (!parser.loadFile("example.gcode")) {
+                    return json_response(500, "Could not load that file");
+                }
+
+                const auto& steps = parser.getPrintSteps();
+                size_t totalSteps = steps.size();
+                size_t extrudingSteps = std::count_if(steps.begin(), steps.end(), [](const PrintStep& s) {
+                    return s.extruding;
+                    });
+
+				for (const auto& step : steps) {
+					std::cout << step.toString() << std::endl;
+				}
+
+                crow::json::wvalue result;
+                result["totalSteps"] = static_cast<int>(totalSteps);
+                result["extrudingSteps"] = static_cast<int>(extrudingSteps);
+                result["status"] = "success";
+				result["message"] = "File parsed successfully";
+
+                return crow::response{ result };
+            }
+            catch (const std::exception& e) {
+                return json_response(500, std::string("Błąd podczas analizy G-code: ") + e.what());
+            }
+        });
 
     // === START APP ===
     std::cout << "CROW:::: Starting REST API on port " << port << std::endl;

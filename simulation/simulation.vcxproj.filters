@@ -52,6 +52,12 @@
     <Filter Include="Source Files\opengl\textures">
       <UniqueIdentifier>{0f889c01-af09-4cbe-aa1c-bf3e2b764212}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\gcode">
+      <UniqueIdentifier>{14123aab-4759-4736-a2e3-91c28135b271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gcode">
+      <UniqueIdentifier>{35f516c3-15fd-49f5-be77-feaa56879643}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -81,6 +87,15 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\opengl\textures</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCodeParser.cpp">
+      <Filter>Source Files\gcode</Filter>
+    </ClCompile>
+    <ClCompile Include="GCodeHelpers.cpp">
+      <Filter>Source Files\gcode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rest.h">
@@ -104,6 +119,18 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files\textures</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCodeParser.h">
+      <Filter>Header Files\gcode</Filter>
+    </ClInclude>
+    <ClInclude Include="GCodeHelpers.h">
+      <Filter>Header Files\gcode</Filter>
+    </ClInclude>
+    <ClInclude Include="GCodeTypes.h">
+      <Filter>Header Files\gcode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -114,8 +141,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="car_icon.png">
-      <Filter>Resource Files\Textures</Filter>
+    <Image Include="br.png">
+      <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
 </Project>

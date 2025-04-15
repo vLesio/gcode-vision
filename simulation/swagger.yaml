@@ -193,7 +193,24 @@ paths:
         '200':
           description: Simulation stepped backward by one unit.
   
-
+  /simulation/test-parse:
+    get:
+      tags:
+        - Simulation
+      summary: Test parsing G-code file
+      description: |
+        Tests the parsing of a G-code file and returns the parsed data.
+      responses:
+        '200':
+          description: G-code file parsed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: G-code file parsed successfully
 
   /camera/zoom/in:
     post:
