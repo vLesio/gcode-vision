@@ -51,7 +51,7 @@ GCodeCommand GCodeCommand::parse(const std::string& line)
 		}
 		else
 		{
-			std::cerr << "Unknown command or parameter: " << currentToken << std::endl;
+			std::cerr << "Parsing failed, unknown command or parameter: " << currentToken << std::endl;
 		}
 	}
 
@@ -101,11 +101,7 @@ void MachineState::updateFromCommand(const GCodeCommand& command, std::vector<Pr
 		}
 		return;
 	}
-
-
-	/// Move and extrude commands
-
-	if (command.command == "G0" || command.command == "G1") {						// Linear movement
+	else if (command.command == "G0" || command.command == "G1") {						// Linear movement
 		moveStep(*this, command, steps);
 	}
 	else if (command.command == "G28")												// Return to home position
@@ -117,7 +113,7 @@ void MachineState::updateFromCommand(const GCodeCommand& command, std::vector<Pr
 	}
 	else
 	{
-		std::cerr << "Unknown command: " << command.command << std::endl;
+		std::cerr << "This command is no currently supported: " << command.command << std::endl;
 	}
 }
 
