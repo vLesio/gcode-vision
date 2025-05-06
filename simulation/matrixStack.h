@@ -52,6 +52,10 @@ public:
             stack.top() = mat;
         }
     }
+
+    void resetTop() {
+        stack.top() = glm::mat4(1.0f);
+    }
 };
 
 #endif // MATRIX_STACK_H
