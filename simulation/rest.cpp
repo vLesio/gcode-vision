@@ -310,37 +310,50 @@ void run_rest_api(int port) {
     });
 
 	// === TEST ENDPOINTS ===
-    CROW_ROUTE(app, "/simulation/test-parse").methods(crow::HTTPMethod::GET)(
-        []() {
-            try {
-                GCodeParser parser;
-                if (!parser.loadFile("example.gcode")) {
-                    return json_response(500, "Could not load that file");
-                }
-
-                const auto& steps = parser.getPrintSteps();
-                size_t totalSteps = steps.size();
-                size_t extrudingSteps = std::count_if(steps.begin(), steps.end(), [](const PrintStep& s) {
-                    return s.extruding;
-                    });
-
-				for (const auto& step : steps) {
-					std::cout << step.toString() << std::endl;
-				}
-
-                crow::json::wvalue result;
-                result["totalSteps"] = static_cast<int>(totalSteps);
-                result["extrudingSteps"] = static_cast<int>(extrudingSteps);
-                result["status"] = "success";
-				result["message"] = "File parsed successfully";
-
-                return crow::response{ result };
+CROW_ROUTE(app, "/simulation/test-parse").methods(crow::HTTPMethod::GET)(
+    []() {
+        try {
+            GCodeParser parser;
+            if (!parser.loadFile("example.gcode")) {
+                return json_response(500, "Could not load that file");
             }
-            catch (const std::exception& e) {
-                return json_response(500, std::string("Błąd podczas analizy G-code: ") + e.what());
-            }
-        });
 
+            const auto& steps = parser.getPrintSteps();
+            size_t totalSteps = steps.size();
+            size_t extrudingSteps = std::count_if(steps.begin(), steps.end(), [](const PrintStep& s) {
+                return s.extruding;
+            });
+
+            std::ofstream logfile("parsed_steps.log", std::ios::out);
+
+            if (!logfile.is_open()) {
+                return json_response(500, "Could not open log file");
+            }
+
+            for (const auto& step : steps) {
+                std::string stepStr = step.toString();
+                //std::cout << stepStr << std::endl;
+                logfile << stepStr << std::endl;
+            }
+
+            logfile << "\nTotal Steps: " << totalSteps << std::endl;
+            logfile << "Extruding Steps: " << extrudingSteps << std::endl;
+
+            logfile.close();
+
+            crow::json::wvalue result;
+            result["totalSteps"] = static_cast<int>(totalSteps);
+            result["extrudingSteps"] = static_cast<int>(extrudingSteps);
+            result["status"] = "success";
+            result["message"] = "File parsed successfully";
+
+            return crow::response{ result };
+        }
+        catch (const std::exception& e) {
+            return json_response(500, std::string("Błąd podczas analizy G-code: ") + e.what());
+        }
+    });
+    
     // === START APP ===
     std::cout << "CROW:::: Starting REST API on port " << port << std::endl;
     app.port(port).multithreaded().run();
