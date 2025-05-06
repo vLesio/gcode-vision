@@ -58,6 +58,12 @@
     <Filter Include="Source Files\gcode">
       <UniqueIdentifier>{35f516c3-15fd-49f5-be77-feaa56879643}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\opengl\engine3d">
+      <UniqueIdentifier>{9d3c42b3-d6c3-4716-aaa3-03dcea0470ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine3d">
+      <UniqueIdentifier>{0500c4a8-a36e-415a-bcef-73dcb4beb104}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -96,6 +102,21 @@
     <ClCompile Include="GCodeHelpers.cpp">
       <Filter>Source Files\gcode</Filter>
     </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\opengl\engine3d</Filter>
+    </ClCompile>
+    <ClCompile Include="sceneObject.cpp">
+      <Filter>Source Files\opengl\engine3d</Filter>
+    </ClCompile>
+    <ClCompile Include="instancedMesh.cpp">
+      <Filter>Source Files\opengl\engine3d</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Source Files\opengl\engine3d</Filter>
+    </ClCompile>
+    <ClCompile Include="instancedObject.cpp">
+      <Filter>Source Files\opengl\engine3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rest.h">
@@ -130,6 +151,24 @@
     </ClInclude>
     <ClInclude Include="GCodeTypes.h">
       <Filter>Header Files\gcode</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files\engine3d</Filter>
+    </ClInclude>
+    <ClInclude Include="sceneObject.h">
+      <Filter>Header Files\engine3d</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files\engine3d</Filter>
+    </ClInclude>
+    <ClInclude Include="instancedMesh.h">
+      <Filter>Header Files\engine3d</Filter>
+    </ClInclude>
+    <ClInclude Include="instancedObject.h">
+      <Filter>Header Files\engine3d</Filter>
+    </ClInclude>
+    <ClInclude Include="matrixStack.h">
+      <Filter>Header Files\engine3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

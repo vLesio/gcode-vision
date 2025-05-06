@@ -23,8 +23,13 @@
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="GCodeHelpers.cpp" />
     <ClCompile Include="GCodeParser.cpp" />
+    <ClCompile Include="instancedMesh.cpp" />
+    <ClCompile Include="instancedObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="rest.cpp" />
+    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="sceneObject.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="simulation.cpp" />
     <ClCompile Include="stb.cpp" />
@@ -38,7 +43,13 @@
     <ClInclude Include="GCodeHelpers.h" />
     <ClInclude Include="GCodeParser.h" />
     <ClInclude Include="GCodeTypes.h" />
+    <ClInclude Include="instancedMesh.h" />
+    <ClInclude Include="instancedObject.h" />
+    <ClInclude Include="matrixStack.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="rest.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="sceneObject.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="simulation.h" />
     <ClInclude Include="texture.h" />

@@ -11,6 +11,9 @@
 #include "VBO.h"
 #include "VAO.h"
 #include "EBO.h"
+#include "mesh.h"
+#include "Scene.h"
+#include "sceneObject.h"
 #include "texture.h"
 
 //Window size
@@ -85,18 +88,24 @@ void run_opengl() {
 
 	Shader shaderProgram("default.vert", "default.frag");
 
-	VAO VAO1;
-	VAO1.Bind();
 
-	VBO VBO1(vertices, sizeof(vertices));
-	EBO EBO1(indices, sizeof(indices));
+		
+	Mesh* sharedMesh = new Mesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
 
-	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); // Vertex positions
-	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); // Vertex colors
-	VAO1.LinkAttribute(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))); // Texture coordinates
-    VAO1.Unbind();
-	VBO1.Unbind();
-	EBO1.Unbind();
+	// Root pyramid 
+	SceneObject* root = new SceneObject(sharedMesh);
+
+	// Child 1 
+	SceneObject* child1 = new SceneObject(sharedMesh);
+	root->addChild(child1);
+
+	// Child 2 
+	SceneObject* child2 = new SceneObject(sharedMesh);
+	child1->addChild(child2);
+
+
+	Scene scene;
+	scene.add(root);
 
 	// Texture
 	Texture texture("br.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
@@ -134,13 +143,27 @@ void run_opengl() {
 		// Activating shader program in OpenGL
 		shaderProgram.Activate();
 
+
+
 		camera.keyboardInputs(window);
 		camera.applyToShader(shaderProgram, "camMatrix", 45.0f, 0.1f, 100.0f);
 
-		texture.Bind();
+		// Root 
+		root->localTransform.top() = glm::mat4(1.0f);
+		root->localTransform.translate(glm::vec3(sin(glfwGetTime()), 0.0f, 0.0f));
 
-		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+		// Child1 
+		child1->localTransform.top() = glm::mat4(1.0f);
+		child1->localTransform.translate(glm::vec3(0.0f, -1.5f, 0.0f)); 
+		child1->localTransform.rotate(glfwGetTime(), glm::vec3(0, 1, 0));
+
+		// Child2 
+		child2->localTransform.top() = glm::mat4(1.0f);
+		child2->localTransform.translate(glm::vec3(0.0f, -1.5f, 0.0f)); 
+		child2->localTransform.rotate(glfwGetTime() * 2.0f, glm::vec3(0, 1, 0));
+
+		scene.Draw(shaderProgram);
+
 
 		// Swap back and front buffers
 		//    back buffer - is where we draw things
@@ -152,9 +175,9 @@ void run_opengl() {
 
 	/////// Clean up
 	texture.Delete();
-	VAO1.Delete();
-	VBO1.Delete();
-	EBO1.Delete();
+	//VAO1.Delete();
+	//VBO1.Delete();
+	//EBO1.Delete();
 	shaderProgram.Delete();
 
     // Clean up and close the window

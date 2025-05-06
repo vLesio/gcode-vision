@@ -3,14 +3,16 @@
 
 #include <glad/glad.h>
 
-class EBO
-{
+class EBO {
 public:
-	GLuint ID;
-	EBO(GLuint* indices, GLsizeiptr size);
-	void Bind();
-	void Unbind();
-	void Delete();
+    GLuint ID;
+
+    EBO() = default;
+    EBO(GLuint* indices, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW);
+
+    void Bind();
+    void Unbind();
+    void Delete();
 };
 
 #endif
