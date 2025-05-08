@@ -76,13 +76,31 @@ void run_opengl() {
     /// Create a scene and add objects
     Scene scene;
     SceneObject* cube = Primitives::createUnitCube();
-    scene.add(cube);
+    //scene.add(cube);
 	cube->setTexture(brickTexture);
 
 	SceneObject* cube2 = Primitives::createUnitCube();
 	cube2->localTransform.translate(glm::vec3(1.0f, 0.0f, 0.0f));
 
-	scene.add(cube2);
+	//scene.add(cube2);
+
+    InstancedObject* filament = Primitives::createInstancedCube();
+
+    std::vector<glm::vec3> positions;
+    std::vector<float> scales;
+
+    float spacing = 0.1f;
+    float size = 0.1f;
+
+    for (int i = 0; i < 500; ++i) {
+        positions.push_back(glm::vec3(i * spacing, 0.0f, 0.0f));
+        scales.push_back(size);
+    }
+
+    filament->setInstances(positions, scales);
+    filament->updateInstances();
+
+    scene.addInstanced(filament);
     ///
 
     while (!glfwWindowShouldClose(window)) {

@@ -76,6 +76,12 @@
     <Filter Include="Header Files\opengl\engine3d\sceneManagment">
       <UniqueIdentifier>{78297566-6d40-4e74-a5c5-3cfb0df6041d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\engine3d\filamentSimulation">
+      <UniqueIdentifier>{ca3aeb88-29b0-4b09-bb80-380eafd86138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\engine3d\filamentSimulator">
+      <UniqueIdentifier>{d6d6e474-19cd-4b48-8d1a-b94f6989cceb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -138,6 +144,9 @@
     <ClCompile Include="sceneObject.cpp">
       <Filter>Source Files\opengl\engine3d\sceneManagment</Filter>
     </ClCompile>
+    <ClCompile Include="filamentSimulator.cpp">
+      <Filter>Source Files\opengl\engine3d\filamentSimulator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rest.h">
@@ -199,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="sceneObject.h">
       <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
+    </ClInclude>
+    <ClInclude Include="filamentSimulator.h">
+      <Filter>Header Files\opengl\engine3d\filamentSimulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

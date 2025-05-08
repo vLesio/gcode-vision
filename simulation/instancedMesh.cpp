@@ -1,3 +1,6 @@
+#include <iostream>
+#include <ostream>
+
 #include "InstancedMesh.h"
 
 InstancedMesh::InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, size_t iCount)
@@ -6,9 +9,7 @@ InstancedMesh::InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, s
     vao.Bind();
     ebo.Bind(); 
 
-    vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); // pos
-    vao.LinkAttribute(vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); // color
-    vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))); // UV
+	vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0); // only position needed, color set in shader
     vao.Unbind();
 }
 
@@ -17,18 +18,21 @@ void InstancedMesh::updateInstances(const std::vector<glm::vec3>& positions, con
     vao.Bind();
 
     // Instance positions
-    instancePosVBO.Bind();
+    instancePosVBO.Bind(); 
     glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), positions.data(), GL_DYNAMIC_DRAW);
     vao.LinkAttribute(instancePosVBO, 3, 3, GL_FLOAT, sizeof(glm::vec3), (void*)0);
+    instancePosVBO.Bind();
     glVertexAttribDivisor(3, 1);
 
     // Instance scales
-    instanceScaleVBO.Bind();
+    instanceScaleVBO.Bind(); 
     glBufferData(GL_ARRAY_BUFFER, scales.size() * sizeof(float), scales.data(), GL_DYNAMIC_DRAW);
     vao.LinkAttribute(instanceScaleVBO, 4, 1, GL_FLOAT, sizeof(float), (void*)0);
+    instanceScaleVBO.Bind(); 
     glVertexAttribDivisor(4, 1);
 
     vao.Unbind();
+
 }
 
 void InstancedMesh::DrawInstanced() {

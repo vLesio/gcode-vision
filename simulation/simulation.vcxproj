@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="filamentSimulator.cpp" />
     <ClCompile Include="GCodeHelpers.cpp" />
     <ClCompile Include="GCodeParser.cpp" />
     <ClCompile Include="instancedMesh.cpp" />
@@ -43,6 +44,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="filamentSimulator.h" />
     <ClInclude Include="GCodeHelpers.h" />
     <ClInclude Include="GCodeParser.h" />
     <ClInclude Include="GCodeTypes.h" />
