@@ -82,6 +82,12 @@
     <Filter Include="Source Files\opengl\engine3d\filamentSimulator">
       <UniqueIdentifier>{d6d6e474-19cd-4b48-8d1a-b94f6989cceb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\simulation">
+      <UniqueIdentifier>{833f0cb7-b3b8-48b4-83c0-3b40dad98b97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\simulation">
+      <UniqueIdentifier>{d7289696-d9c0-4a9b-b16f-6503e623f23d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -101,9 +107,6 @@
     </ClCompile>
     <ClCompile Include="VAO.cpp">
       <Filter>Source Files\opengl\buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="simulation.cpp">
-      <Filter>Source Files\opengl</Filter>
     </ClCompile>
     <ClCompile Include="stb.cpp">
       <Filter>Source Files\lib_helpers</Filter>
@@ -147,6 +150,15 @@
     <ClCompile Include="filamentSimulator.cpp">
       <Filter>Source Files\opengl\engine3d\filamentSimulator</Filter>
     </ClCompile>
+    <ClCompile Include="simulation.cpp">
+      <Filter>Source Files\opengl\simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationContext.cpp">
+      <Filter>Source Files\opengl\simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationManager.cpp">
+      <Filter>Source Files\opengl\simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rest.h">
@@ -179,9 +191,6 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="simulation.h">
-      <Filter>Header Files\opengl</Filter>
-    </ClInclude>
     <ClInclude Include="shaderLoader.h">
       <Filter>Header Files\opengl\shaders</Filter>
     </ClInclude>
@@ -211,6 +220,15 @@
     </ClInclude>
     <ClInclude Include="filamentSimulator.h">
       <Filter>Header Files\opengl\engine3d\filamentSimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="simulation.h">
+      <Filter>Header Files\opengl\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationContext.h">
+      <Filter>Header Files\opengl\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationManager.h">
+      <Filter>Header Files\opengl\simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

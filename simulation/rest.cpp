@@ -8,7 +8,10 @@
 #include <filesystem>
 
 #include "camera.h"
+#include "filamentSimulator.h"
 #include "GCodeParser.h"
+#include "simulationContext.h"
+#include "simulationManager.h"
 
 namespace fs = std::filesystem;
 
@@ -229,22 +232,28 @@ void run_rest_api(int port) {
         [](const crow::request& req) {
             try {
                 auto body = crow::json::load(req.body);
-                if (!body) {
-                    return json_response(400, "Invalid JSON payload");
-                }
+                if (!body) return json_response(400, "Invalid JSON payload");
 
                 std::string printer = body["printer"].s();
                 std::string model = body["model"].s();
-                std::string speed = body["speed"].s();
-                double extruderWidth = body["extruderWidth"].d();
+				float speed = static_cast<float>(body["speed"].d());
+                float extruderWidth = static_cast<float>(body["extruderWidth"].d());
                 bool retraction = body["retraction"].b();
-                double bedTemp = body["temperatures"]["bed"].d();
-                double extruderTemp = body["temperatures"]["extruder"].d();
+                float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
+                float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
+				float extrusionResolution = static_cast<float>(body["extrusionResolution"].d());
 
-                return json_response(200, "Simulation created successfully");
+                SimulationManager& manager = SimulationManager::get();
 
-            } catch (const std::exception& e) {
-                return json_response(400, std::string("Error parsing simulation settings: ") + e.what());
+                if (!manager.initializeSimulation(model, extrusionResolution, printer, extruderWidth, retraction, bedTemp, extruderTemp, speed)) {
+                    return json_response(400, "Failed to initialize simulation");
+                }
+
+                return json_response(200, "Simulation initialized successfully");
+
+            }
+            catch (const std::exception& e) {
+                return json_response(500, std::string("Error: ") + e.what());
             }
         });
 

@@ -1,5 +1,7 @@
 #include "filamentSimulator.h"
 
+#include <glm/ext/scalar_constants.hpp>
+
 FilamentSimulator::FilamentSimulator(InstancedObject* target)
     : target(target), resolution(0.2f), currentStep(0) {
 }
@@ -20,15 +22,19 @@ void FilamentSimulator::simulateFullPrint(const std::vector<PrintStep>& steps, f
         float length = glm::length(dir);
         if (length <= 0.0f)
             continue;
-
-        glm::vec3 norm = glm::normalize(dir);
         int segments = std::max(1, static_cast<int>(length / resolution));
+        float segmentLength = length / segments;
 
         for (int i = 0; i < segments; ++i) {
             float t = static_cast<float>(i) / segments;
             glm::vec3 pos = step.startPosition + t * dir;
+
+  
+            float volumePerSegment = step.extrusionAmount * (segmentLength / length); // mm^3
+            float radius = std::sqrt(volumePerSegment / glm::pi<float>());            // r = sqrt(S/pi)
+
             instancePositions.push_back(pos);
-            instanceScales.push_back(resolution * 0.5f); // radius/scale
+            instanceScales.push_back(radius);
         }
     }
 

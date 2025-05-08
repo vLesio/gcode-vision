@@ -299,7 +299,7 @@ components:
         model:
           type: string
         speed:
-          type: string
+          type: number
         extruderWidth:
           type: number
         retraction:
@@ -311,4 +311,6 @@ components:
               type: number
             extruder:
               type: number
+        extrusionResolution:
+          type: number
           

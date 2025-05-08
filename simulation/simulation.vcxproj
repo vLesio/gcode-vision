@@ -35,6 +35,8 @@
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shaderLoader.cpp" />
     <ClCompile Include="simulation.cpp" />
+    <ClCompile Include="simulationContext.cpp" />
+    <ClCompile Include="simulationManager.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="textureLoader.cpp" />
@@ -59,6 +61,8 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="shaderLoader.h" />
     <ClInclude Include="simulation.h" />
+    <ClInclude Include="simulationContext.h" />
+    <ClInclude Include="simulationManager.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="textureLoader.h" />
     <ClInclude Include="VAO.h" />

@@ -13,24 +13,27 @@
 #include "primitives.h"
 #include "shaderLoader.h"
 #include "textureLoader.h"
+#include "SimulationManager.h"
 
-//Window size
+// Window size
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
-
 
 // Global variable for controlling the simulation
 extern std::atomic<bool> simulation_running;
 
-// Callback function for window resizing
+// Global pointer to scene
+Scene* scene = nullptr;
+
+// Callback for resizing
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
 void run_opengl() {
-    /// Init , viewport and libraries ///
+    // Init GLFW
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
+        std::cerr << "Failed to initialize GLFW\n";
         return;
     }
 
@@ -38,9 +41,10 @@ void run_opengl() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Window", nullptr, nullptr);
+    // Create window
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "3D Printer Simulation", nullptr, nullptr);
     if (!window) {
-        std::cerr << "Failed to create GLFW window" << std::endl;
+        std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
         return;
     }
@@ -48,82 +52,66 @@ void run_opengl() {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     gladLoadGL();
+
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-    /// /// /// ///
 
     simulation_running = true;
 
-    /// Load shaders and textures ///
+    // Load shaders
     ShaderLoader::load("default", "default.vert", "default.frag");
     ShaderLoader::load("filament", "filament.vert", "filament.frag");
 
-	Shader* filamentShader = ShaderLoader::get("filament");
-	Shader* defaultShader = ShaderLoader::get("default");
+    Shader* defaultShader = ShaderLoader::get("default");
+    Shader* filamentShader = ShaderLoader::get("filament");
 
+    // Load texture
     TextureLoader::load("brick", "br.png");
     TextureLoader::bindToShader("brick", *defaultShader, "tex0", 0);
-
-	Texture* brickTexture = TextureLoader::get("brick");
-
-    /// /// /// ///
 
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
+    // Init camera
     Camera::init(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.4f, 0.0f), 0.0f, 0.0f, 5.0f, 1.0f, 5.0f);
     Camera& camera = Camera::getInstance();
 
-    /// Create a scene and add objects
-    Scene scene;
-    SceneObject* cube = Primitives::createUnitCube();
-    //scene.add(cube);
-	cube->setTexture(brickTexture);
+    // Scene init
+    Scene localScene;
+    scene = &localScene;
 
-	SceneObject* cube2 = Primitives::createUnitCube();
-	cube2->localTransform.translate(glm::vec3(1.0f, 0.0f, 0.0f));
+    // Checking simulation state with simulation manager
+    SimulationManager& sim = SimulationManager::get();
 
-	//scene.add(cube2);
-
-    InstancedObject* filament = Primitives::createInstancedCube();
-
-    std::vector<glm::vec3> positions;
-    std::vector<float> scales;
-
-    float spacing = 0.1f;
-    float size = 0.1f;
-
-    for (int i = 0; i < 500; ++i) {
-        positions.push_back(glm::vec3(i * spacing, 0.0f, 0.0f));
-        scales.push_back(size);
+    if (sim.isReady() && !sim.wasAlreadySimulated()) {
+        InstancedObject* filamentObject = Primitives::createInstancedCube();
+        scene->addInstanced(filamentObject);
+        sim.createSimulation(filamentObject);
+        sim.simulateFullPrint();
     }
 
-    filament->setInstances(positions, scales);
-    filament->updateInstances();
+    SceneObject* cube = Primitives::createUnitCube();
+    scene->add(cube);
 
-    scene.addInstanced(filament);
-    ///
-
+    // Main render loop
     while (!glfwWindowShouldClose(window)) {
         if (!simulation_running)
             break;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    
         camera.keyboardInputs(window);
         camera.applyToShader(*defaultShader, "camMatrix", 45.0f, 0.1f, 100.0f);
         camera.applyToShader(*filamentShader, "camMatrix", 45.0f, 0.1f, 100.0f);
 
-
-		scene.Draw(*defaultShader, *filamentShader);
+        scene->Draw(*defaultShader, *filamentShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    // Cleanup
     TextureLoader::clear();
     ShaderLoader::clear();
     glfwDestroyWindow(window);
     glfwTerminate();
 }
-
