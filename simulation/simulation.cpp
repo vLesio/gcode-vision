@@ -89,8 +89,8 @@ void run_opengl() {
         sim.simulateFullPrint();
     }
 
-    SceneObject* cube = Primitives::createUnitCube();
-    scene->add(cube);
+    SceneObject* ground = Primitives::createTexturedPlane(10.0f);
+	scene->add(ground);
 
     // Main render loop
     while (!glfwWindowShouldClose(window)) {

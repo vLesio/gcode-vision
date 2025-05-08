@@ -15,6 +15,7 @@ public:
 
     void simulateStepForward();
     void resetSimulation();
+    glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
 
 private:
     InstancedObject* target;

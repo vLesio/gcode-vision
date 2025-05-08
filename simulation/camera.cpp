@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <chrono>
 
 // Singleton instance
 static std::unique_ptr<Camera> cameraInstance = nullptr;
@@ -20,8 +21,8 @@ void Camera::init(int width, int height, glm::vec3 target, float yaw, float pitc
         cameraInstance->defaultDistance = distance;
         cameraInstance->defaultTarget = target;
 
-		cameraInstance->zoomSpeed = zoomSpeed;
-		cameraInstance->rotateSpeed = rotateSpeed;
+        cameraInstance->zoomSpeed = zoomSpeed;
+        cameraInstance->rotateSpeed = rotateSpeed;
 
         cameraInstance->updatePosition();
     }
@@ -47,7 +48,6 @@ Camera::Camera(int width, int height, glm::vec3 target)
     this->target = target;
     updatePosition();
 }
-
 
 void Camera::updatePosition()
 {
@@ -111,56 +111,68 @@ void Camera::applyToShader(Shader& shader, const char* uniform, float FOVdeg, fl
     uploadToShader(shader, uniform);
 }
 
-void Camera::up()
-{
-    rotate(0.0f, rotateSpeed);
+void Camera::up() { rotate(0.0f, rotateSpeed); }
+void Camera::down() { rotate(0.0f, -rotateSpeed); }
+void Camera::right() { rotate(rotateSpeed, 0.0f); }
+void Camera::left() { rotate(-rotateSpeed, 0.0f); }
+void Camera::zoomIn() { zoom(zoomSpeed); }
+void Camera::zoomOut() { zoom(-zoomSpeed); }
+
+void Camera::toggleMode() {
+    mode = (mode == CameraMode::Orbit) ? CameraMode::Free : CameraMode::Orbit;
 }
-void Camera::down()
-{
-	rotate(0.0f, -rotateSpeed);
+
+CameraMode Camera::getMode() const {
+    return mode;
 }
-void Camera::right()
-{
-	rotate(rotateSpeed, 0.0f);
-}
-void Camera::left()
-{
-	rotate(-rotateSpeed, 0.0f);
-}
-void Camera::zoomIn()
-{
-	zoom(zoomSpeed);
-}
-void Camera::zoomOut()
-{
-	zoom(-zoomSpeed);
+
+void Camera::processFreeMovement(GLFWwindow* window, float deltaTime) {
+    glm::vec3 forward = glm::normalize(target - Position);
+    glm::vec3 right = glm::normalize(glm::cross(forward, Up));
+    glm::vec3 movement(0.0f);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) movement += forward;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) movement -= forward;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) movement -= right;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) movement += right;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) movement += Up;
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) movement -= Up;
+
+    if (glm::length(movement) > 0.0f) {
+        movement = glm::normalize(movement);
+        float speed = freeSpeed * deltaTime;
+        Position += movement * speed;
+        target += movement * speed;
+    }
 }
 
 void Camera::keyboardInputs(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		rotate(0.0f, 0.05f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		rotate(0.0f, -0.05f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		rotate(-0.05f, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		rotate(0.05f, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		zoom(-0.01f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-	{
-		zoom(0.01f);
-	}
-}
+    static bool tabPressedLastFrame = false;
 
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        if (!tabPressedLastFrame) {
+            toggleMode();
+            std::cout << "[Camera] Switched to " << (mode == CameraMode::Orbit ? "Orbit" : "Free") << " mode.\n";
+        }
+        tabPressedLastFrame = true;
+    } else {
+        tabPressedLastFrame = false;
+    }
+
+    if (mode == CameraMode::Orbit) {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) rotate(0.0f, 0.05f);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) rotate(0.0f, -0.05f);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) rotate(-0.05f, 0.0f);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) rotate(0.05f, 0.0f);
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) zoom(-0.01f);
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) zoom(0.01f);
+    } else if (mode == CameraMode::Free) {
+        static auto lastTime = std::chrono::high_resolution_clock::now();
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+        lastTime = currentTime;
+
+        processFreeMovement(window, deltaTime);
+    }
+}

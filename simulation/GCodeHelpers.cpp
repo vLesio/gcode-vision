@@ -11,26 +11,32 @@ void moveStep(MachineState& state, const GCodeCommand& command, std::vector<Prin
     float newZ = state.Z;
     float newE = state.E;
 
-    if (command.parameters.count('X')) {
+    bool hasX = command.parameters.count('X') > 0;
+    bool hasY = command.parameters.count('Y') > 0;
+    bool hasZ = command.parameters.count('Z') > 0;
+    bool hasE = command.parameters.count('E') > 0;
+
+    if (hasX) {
         float val = command.parameters.at('X');
         newX = state.absolutePositioning ? val : state.X + val;
     }
-    if (command.parameters.count('Y')) {
+    if (hasY) {
         float val = command.parameters.at('Y');
         newY = state.absolutePositioning ? val : state.Y + val;
     }
-    if (command.parameters.count('Z')) {
+    if (hasZ) {
         float val = command.parameters.at('Z');
         newZ = state.absolutePositioning ? val : state.Z + val;
     }
-    if (command.parameters.count('E')) {
+    if (hasE) {
         float val = command.parameters.at('E');
         newE = state.absoluteExtrusion ? val : state.E + val;
     }
 
     float extrusionAmount = newE - state.prevE;
     bool isG1 = command.command == "G1";
-    bool extruding = isG1 && (extrusionAmount > 0.0f);
+
+    bool extruding = isG1 && hasE && (extrusionAmount > 0.0f);
 
     PrintStep step;
     step.startPosition = { state.X, state.Y, state.Z };
@@ -47,6 +53,7 @@ void moveStep(MachineState& state, const GCodeCommand& command, std::vector<Prin
     state.Y = newY;
     state.Z = newZ;
     state.E = newE;
+
     state.prevE = newE;
 }
 
@@ -59,6 +66,8 @@ void addHomingStep(MachineState& state, const GCodeCommand& command, std::vector
     if (!command.parameters.count('X') && !command.parameters.count('Y') && !command.parameters.count('Z')) {
         end = { 0.0f, 0.0f, 0.0f };
         state.X = state.Y = state.Z = 0.0f;
+        state.E = 0.0f; // Optional reset of E on full home
+        state.prevE = 0.0f;
     }
     else {
         if (command.parameters.count('X')) { end.x = 0.0f; state.X = 0.0f; }
@@ -66,13 +75,11 @@ void addHomingStep(MachineState& state, const GCodeCommand& command, std::vector
         if (command.parameters.count('Z')) { end.z = 0.0f; state.Z = 0.0f; }
     }
 
-    state.prevE = state.E;
-
     PrintStep step;
     step.startPosition = start;
     step.endPosition = end;
     step.extrusionAmount = 0.0f;
-    step.speed = 0.0f;
+    step.speed = command.parameters.count('F') ? command.parameters.at('F') : 0.0f;
     step.extruding = false;
     step.snapshot = stateBefore;
     step.type = PrintStepType::Rapid;
@@ -106,6 +113,7 @@ void interpolateArc(MachineState& state, const GCodeCommand& command, bool clock
 
     float angleStep = (endAngle - startAngle) / segments;
     float eEnd = command.parameters.count('E') ? command.parameters.at('E') : eStart;
+    bool hasE = command.parameters.count('E') > 0;
 
     float prevNe = eStart;
 
@@ -116,24 +124,20 @@ void interpolateArc(MachineState& state, const GCodeCommand& command, bool clock
         float nz = command.parameters.count('Z') ? command.parameters.at('Z') : z;
         float ne = eStart + (eEnd - eStart) * (static_cast<float>(i) / segments);
 
+        float segmentExtrusion = ne - prevNe;
+        bool extruding = hasE && segmentExtrusion > 0.0f;
+
         PrintStep step;
         step.startPosition = { x, y, z };
         step.endPosition = { nx, ny, nz };
         step.speed = command.parameters.count('F') ? command.parameters.at('F') : 0.0f;
-
-        if (command.parameters.count('E')) {
-            step.extrusionAmount = ne - prevNe;
-            step.extruding = step.extrusionAmount > 0.0f;
-        }
-        else {
-            step.extrusionAmount = 0.0f;
-            step.extruding = false;
-        }
-
-		step.snapshot = state; // To keep things simple, we use the same snapshot for all steps
+        step.extrusionAmount = extruding ? segmentExtrusion : 0.0f;
+        step.extruding = extruding;
+        step.snapshot = state;
         step.type = PrintStepType::Arc;
 
         steps.push_back(step);
+
         x = nx;
         y = ny;
         z = nz;
@@ -143,7 +147,7 @@ void interpolateArc(MachineState& state, const GCodeCommand& command, bool clock
     state.X = xEnd;
     state.Y = yEnd;
     if (command.parameters.count('Z')) state.Z = command.parameters.at('Z');
-    if (command.parameters.count('E')) {
+    if (hasE) {
         state.E = eEnd;
         state.prevE = eEnd;
     }

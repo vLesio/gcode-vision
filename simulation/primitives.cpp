@@ -95,3 +95,23 @@ InstancedObject* Primitives::createInstancedCube() {
     InstancedMesh* mesh = new InstancedMesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
     return new InstancedObject(mesh);
 }
+
+SceneObject* Primitives::createTexturedPlane(float size) {
+    float half = size / 2.0f;
+
+    // pos(x,y,z), color(r,g,b), UV(u,v)
+    GLfloat vertices[] = {
+        -half, 0.0f, -half,   0.2f, 0.2f, 0.2f,   0.0f, 0.0f,
+         half, 0.0f, -half,   0.2f, 0.2f, 0.2f,   1.0f, 0.0f,
+         half, 0.0f,  half,   0.2f, 0.2f, 0.2f,   1.0f, 1.0f,
+        -half, 0.0f,  half,   0.2f, 0.2f, 0.2f,   0.0f, 1.0f
+    };
+
+    GLuint indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    Mesh* mesh = new Mesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    return new SceneObject(mesh);
+}
