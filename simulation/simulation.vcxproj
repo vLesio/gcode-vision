@@ -27,13 +27,16 @@
     <ClCompile Include="instancedObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="primitives.cpp" />
     <ClCompile Include="rest.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sceneObject.cpp" />
-    <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shaderLoader.cpp" />
     <ClCompile Include="simulation.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="textureLoader.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
@@ -47,18 +50,23 @@
     <ClInclude Include="instancedObject.h" />
     <ClInclude Include="matrixStack.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="primitives.h" />
     <ClInclude Include="rest.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sceneObject.h" />
-    <ClInclude Include="shaderClass.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="shaderLoader.h" />
     <ClInclude Include="simulation.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="textureLoader.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="filament.frag" />
+    <None Include="filament.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="br.png" />

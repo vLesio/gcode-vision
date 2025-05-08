@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "MatrixStack.h"
 #include "texture.h"
-#include "shaderClass.h"
+#include "shader.h"
 
 class SceneObject {
 public:

@@ -2,18 +2,20 @@
 #define SCENE_H
 
 #include <vector>
-#include "SceneObject.h"
-#include "InstancedObject.h"
+#include "sceneObject.h"
+#include "instancedObject.h"
+#include "shader.h"
 
 class Scene {
 public:
-    std::vector<SceneObject*> objects;
-    std::vector<InstancedObject*> instancedObjects;
-
     void add(SceneObject* obj);
     void addInstanced(InstancedObject* obj);
-    void Draw(Shader& shader);
+    void Draw(Shader& regularShader, Shader& instancedShader);
     void Delete();
+
+private:
+    std::vector<SceneObject*> objects;
+    std::vector<InstancedObject*> instancedObjects;
 };
 
 #endif

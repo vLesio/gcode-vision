@@ -22,20 +22,11 @@
     <Filter Include="Header Files\rest">
       <UniqueIdentifier>{6550c4f6-aade-4676-ae31-10be8b069fff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\simulation">
-      <UniqueIdentifier>{983d403f-1a70-489b-a714-31572624d4b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{13b812bb-4188-4b86-89e9-09a1aad3f5f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\shaders">
-      <UniqueIdentifier>{bef0cb0d-e0d1-416b-a9e0-ee8d1cc95fa0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\opengl\shaders">
       <UniqueIdentifier>{42ee380c-696c-4f83-b3d1-26e33e07cac3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\buffers">
-      <UniqueIdentifier>{baa9d44d-aa6e-44eb-9d23-442935002c7b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\opengl\buffers">
       <UniqueIdentifier>{83222e42-9077-4d73-95f0-811d78590f6c}</UniqueIdentifier>
@@ -46,14 +37,8 @@
     <Filter Include="Source Files\lib_helpers">
       <UniqueIdentifier>{ce6bf911-2942-470b-ae72-f5d2ef0ac88e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\textures">
-      <UniqueIdentifier>{d035c0a9-8106-4547-8672-b329403253c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\opengl\textures">
       <UniqueIdentifier>{0f889c01-af09-4cbe-aa1c-bf3e2b764212}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gcode">
-      <UniqueIdentifier>{14123aab-4759-4736-a2e3-91c28135b271}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gcode">
       <UniqueIdentifier>{35f516c3-15fd-49f5-be77-feaa56879643}</UniqueIdentifier>
@@ -61,8 +46,35 @@
     <Filter Include="Source Files\opengl\engine3d">
       <UniqueIdentifier>{9d3c42b3-d6c3-4716-aaa3-03dcea0470ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\engine3d">
+    <Filter Include="Header Files\opengl">
+      <UniqueIdentifier>{54f400ce-0b86-4836-8102-e43f1a0f100e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\buffers">
+      <UniqueIdentifier>{baa9d44d-aa6e-44eb-9d23-442935002c7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\engine3d">
       <UniqueIdentifier>{0500c4a8-a36e-415a-bcef-73dcb4beb104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\gcode">
+      <UniqueIdentifier>{14123aab-4759-4736-a2e3-91c28135b271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\shaders">
+      <UniqueIdentifier>{bef0cb0d-e0d1-416b-a9e0-ee8d1cc95fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\textures">
+      <UniqueIdentifier>{d035c0a9-8106-4547-8672-b329403253c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\engine3d\meshes">
+      <UniqueIdentifier>{5cec8859-0fd7-4fb3-a477-204e75b7645d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\engine3d\sceneManagment">
+      <UniqueIdentifier>{75fd5434-1930-4bd5-8475-62b27e848fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\engine3d\meshes">
+      <UniqueIdentifier>{f5d88613-11d8-4a6e-bba3-c6a0b5042e65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\engine3d\sceneManagment">
+      <UniqueIdentifier>{78297566-6d40-4e74-a5c5-3cfb0df6041d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +84,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shaderClass.cpp">
+    <ClCompile Include="shader.cpp">
       <Filter>Source Files\opengl\shaders</Filter>
     </ClCompile>
     <ClCompile Include="VBO.cpp">
@@ -93,82 +105,100 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\opengl\textures</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GCodeParser.cpp">
       <Filter>Source Files\gcode</Filter>
     </ClCompile>
     <ClCompile Include="GCodeHelpers.cpp">
       <Filter>Source Files\gcode</Filter>
     </ClCompile>
-    <ClCompile Include="mesh.cpp">
-      <Filter>Source Files\opengl\engine3d</Filter>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="sceneObject.cpp">
-      <Filter>Source Files\opengl\engine3d</Filter>
+    <ClCompile Include="shaderLoader.cpp">
+      <Filter>Source Files\opengl\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="textureLoader.cpp">
+      <Filter>Source Files\opengl\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\opengl\engine3d\meshes</Filter>
     </ClCompile>
     <ClCompile Include="instancedMesh.cpp">
-      <Filter>Source Files\opengl\engine3d</Filter>
+      <Filter>Source Files\opengl\engine3d\meshes</Filter>
     </ClCompile>
     <ClCompile Include="scene.cpp">
-      <Filter>Source Files\opengl\engine3d</Filter>
+      <Filter>Source Files\opengl\engine3d\sceneManagment</Filter>
     </ClCompile>
     <ClCompile Include="instancedObject.cpp">
-      <Filter>Source Files\opengl\engine3d</Filter>
+      <Filter>Source Files\opengl\engine3d\sceneManagment</Filter>
+    </ClCompile>
+    <ClCompile Include="primitives.cpp">
+      <Filter>Source Files\opengl\engine3d\sceneManagment</Filter>
+    </ClCompile>
+    <ClCompile Include="sceneObject.cpp">
+      <Filter>Source Files\opengl\engine3d\sceneManagment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rest.h">
       <Filter>Header Files\rest</Filter>
     </ClInclude>
-    <ClInclude Include="simulation.h">
-      <Filter>Header Files\simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="shaderClass.h">
-      <Filter>Header Files\shaders</Filter>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files\opengl\shaders</Filter>
     </ClInclude>
     <ClInclude Include="VBO.h">
-      <Filter>Header Files\buffers</Filter>
+      <Filter>Header Files\opengl\buffers</Filter>
     </ClInclude>
     <ClInclude Include="EBO.h">
-      <Filter>Header Files\buffers</Filter>
+      <Filter>Header Files\opengl\buffers</Filter>
     </ClInclude>
     <ClInclude Include="VAO.h">
-      <Filter>Header Files\buffers</Filter>
+      <Filter>Header Files\opengl\buffers</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Header Files\textures</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\opengl\textures</Filter>
     </ClInclude>
     <ClInclude Include="GCodeParser.h">
-      <Filter>Header Files\gcode</Filter>
+      <Filter>Header Files\opengl\gcode</Filter>
     </ClInclude>
     <ClInclude Include="GCodeHelpers.h">
-      <Filter>Header Files\gcode</Filter>
+      <Filter>Header Files\opengl\gcode</Filter>
     </ClInclude>
     <ClInclude Include="GCodeTypes.h">
-      <Filter>Header Files\gcode</Filter>
+      <Filter>Header Files\opengl\gcode</Filter>
     </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>Header Files\engine3d</Filter>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="sceneObject.h">
-      <Filter>Header Files\engine3d</Filter>
+    <ClInclude Include="simulation.h">
+      <Filter>Header Files\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>Header Files\engine3d</Filter>
+    <ClInclude Include="shaderLoader.h">
+      <Filter>Header Files\opengl\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="textureLoader.h">
+      <Filter>Header Files\opengl\textures</Filter>
     </ClInclude>
     <ClInclude Include="instancedMesh.h">
-      <Filter>Header Files\engine3d</Filter>
+      <Filter>Header Files\opengl\engine3d\meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files\opengl\engine3d\meshes</Filter>
     </ClInclude>
     <ClInclude Include="instancedObject.h">
-      <Filter>Header Files\engine3d</Filter>
+      <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
     </ClInclude>
     <ClInclude Include="matrixStack.h">
-      <Filter>Header Files\engine3d</Filter>
+      <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
+    </ClInclude>
+    <ClInclude Include="primitives.h">
+      <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
+    </ClInclude>
+    <ClInclude Include="sceneObject.h">
+      <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +206,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="default.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="filament.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="filament.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

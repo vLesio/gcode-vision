@@ -15,7 +15,6 @@ void SceneObject::Draw(Shader& shader) const {
 
     glm::mat4 model = getGlobalMatrix();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform1i(glGetUniformLocation(shader.ID, "isInstanced"), false);
     glUniform1f(glGetUniformLocation(shader.ID, "useTexture"), hasTexture ? 1.0f : 0.0f);
 
     if (hasTexture && texture)

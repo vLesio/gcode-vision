@@ -106,6 +106,7 @@ void Camera::uploadToShader(Shader& shader, const char* uniform)
 
 void Camera::applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane)
 {
+    shader.Activate();
     computeCameraMatrix(FOVdeg, nearPlane, farPlane);
     uploadToShader(shader, uniform);
 }

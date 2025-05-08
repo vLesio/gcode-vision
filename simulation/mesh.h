@@ -14,5 +14,7 @@ public:
     Mesh(GLfloat* vertices, size_t vSize, GLuint* indices, size_t iCount);
     void Draw();
     void Delete();
+
+	static Mesh* createUnitCube();
 };
 #endif
