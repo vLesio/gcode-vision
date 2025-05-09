@@ -40,7 +40,7 @@ crow::response safe_camera_action(Func action, const std::string& successMessage
         return json_response(200, successMessage);
     }
     catch (const std::exception& e) {
-        return json_response(400, std::string("Camera error: ") + e.what());
+        return json_response(400, e.what());
     }
 }
 
@@ -129,6 +129,29 @@ void run_rest_api(int port) {
             Camera::getInstance().reset();
             }, "Camera reset successfully");
         });
+
+	CROW_ROUTE(app, "/camera/mode").methods(crow::HTTPMethod::POST)([] {
+		return safe_camera_action([] {
+			Camera::getInstance().toggleMode();
+			}, "Camera mode toggled");
+		});
+
+    CROW_ROUTE(app, "/camera/target").methods(crow::HTTPMethod::POST)([](const crow::request& req) {
+        return safe_camera_action([&req] {
+
+            if (!req.url_params.get("x") || !req.url_params.get("y") || !req.url_params.get("z")) {
+                throw std::invalid_argument("Missing x, y, or z parameter");
+            }
+
+            float x = std::stof(req.url_params.get("x"));
+            float y = std::stof(req.url_params.get("y"));
+            float z = std::stof(req.url_params.get("z"));
+
+            Camera::getInstance().setTarget(glm::vec3(x, y, z));
+            }, 
+            "Camera target set successfully");
+		});
+            
 
     // === FILE UPLOAD ENDPOINT ===
 
@@ -235,8 +258,8 @@ void run_rest_api(int port) {
                 if (!body) return json_response(400, "Invalid JSON payload");
 
                 std::string printer = body["printer"].s();
-                std::string model = body["model"].s();
-				float speed = static_cast<float>(body["speed"].d());
+                std::string gcodeFile = body["gcodeFile"].s();
+				float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
                 float extruderWidth = static_cast<float>(body["extruderWidth"].d());
                 bool retraction = body["retraction"].b();
                 float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
@@ -245,7 +268,7 @@ void run_rest_api(int port) {
 
                 SimulationManager& manager = SimulationManager::get();
 
-                if (!manager.initializeSimulation(model, extrusionResolution, printer, extruderWidth, retraction, bedTemp, extruderTemp, speed)) {
+                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, extruderWidth, retraction, bedTemp, extruderTemp, simulationSpeed)) {
                     return json_response(400, "Failed to initialize simulation");
                 }
 

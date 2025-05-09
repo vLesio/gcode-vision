@@ -42,11 +42,13 @@ public:
     void uploadToShader(Shader& shader, const char* uniform);
     void applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane);
 
+	// Helper function to read inputs from keyboard
     void keyboardInputs(GLFWwindow* window);
 
-    // New: Free camera movement
+    // Free camera movement
     void toggleMode();                        // Switch Orbit/Free mode
     void processFreeMovement(GLFWwindow* window, float deltaTime);
+    void processMouseMovement(float xpos, float ypos);
     CameraMode getMode() const;
 
 private:
@@ -56,8 +58,9 @@ private:
     Camera(const Camera&) = delete;
     Camera& operator=(const Camera&) = delete;
 
-    void updatePosition();
-    glm::vec3 getForwardVector() const;
+    void updatePositionOrbit();
+	glm::vec3 getForwardVector() const;
+	void faceTarget();
 
     int width, height;
 
@@ -71,10 +74,17 @@ private:
 
     glm::mat4 cameraMatrix = glm::mat4(1.0f);
 
+	// Default values, used for resetting the camera
     glm::vec3 defaultTarget;
     float defaultYaw = 0.0f;
     float defaultPitch = 0.0f;
     float defaultDistance = 5.0f;
+
+	// Last values, used when switching modes back to Orbit
+    glm::vec3 lastOrbitTarget;
+    float lastOrbitYaw;
+    float lastOrbitPitch;
+    float lastOrbitDistance;
 
     float zoomSpeed = 0.01f;
     float rotateSpeed = 0.1f;
@@ -82,6 +92,11 @@ private:
     // Free camera mode
     CameraMode mode = CameraMode::Orbit;
     float freeSpeed = 2.0f;
+    bool firstMouse = true;
+    float lastX = 0.0f, lastY = 0.0f;
+    float mouseSensitivity = 0.1f;
+
+    void ensureOrbitMode() const;
 };
 
 #endif

@@ -30,6 +30,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// Callback for mouse movement
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (Camera::getInstance().getMode() == CameraMode::Free) {
+        Camera::getInstance().processMouseMovement(static_cast<float>(xpos), static_cast<float>(ypos));
+    }
+}
+
 void run_opengl() {
     // Init GLFW
     if (!glfwInit()) {
@@ -49,13 +56,17 @@ void run_opengl() {
         return;
     }
 
+	// Set the context, callbacks, and load GLAD
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     gladLoadGL();
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
     simulation_running = true;
+
 
     // Load shaders
     ShaderLoader::load("default", "default.vert", "default.frag");

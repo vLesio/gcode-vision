@@ -281,6 +281,46 @@ paths:
         responses:
           '200':
             description: Camera reset successfully.
+  
+  /camera/target:
+    post:
+      tags:
+        - Camera
+      summary: Set camera target
+      description: Sets the target point for the camera to focus on.
+      parameters:
+        - name: x
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: z
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Camera target set successfully
+        '400':
+          description: Invalid or missing parameters
+
+  /camera/mode:
+    post:
+      tags:
+        - Camera
+      summary: Toggle camera mode
+      description: Toggles between free and orbit camera modes.
+      responses:
+        '200':
+          description: Camera mode toggled successfully.
+        '400':
+          description: Invalid request 
 tags:
   - name: Simulation
     description: Endpoints related to controlling the 3D printing simulation.
@@ -296,10 +336,13 @@ components:
       properties:
         printer:
           type: string
-        model:
+          example: "Prusa i3 MK3S"
+        gcodeFile:
           type: string
-        speed:
+          example: "example.gcode"
+        simulationSpeed:
           type: number
+          example: 1.0
         extruderWidth:
           type: number
         retraction:
@@ -313,4 +356,5 @@ components:
               type: number
         extrusionResolution:
           type: number
+          example: 0.1
           

@@ -88,6 +88,9 @@
     <Filter Include="Source Files\opengl\simulation">
       <UniqueIdentifier>{d7289696-d9c0-4a9b-b16f-6503e623f23d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\exceptions">
+      <UniqueIdentifier>{5b069f89-c7cb-4fde-8110-3e0ebe000088}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -229,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="simulationManager.h">
       <Filter>Header Files\opengl\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="exceptions.h">
+      <Filter>Header Files\opengl\exceptions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

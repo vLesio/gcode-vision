@@ -46,6 +46,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="exceptions.h" />
     <ClInclude Include="filamentSimulator.h" />
     <ClInclude Include="GCodeHelpers.h" />
     <ClInclude Include="GCodeParser.h" />
