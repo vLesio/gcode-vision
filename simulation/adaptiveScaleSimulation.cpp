@@ -19,7 +19,14 @@ void AdaptiveScaleSimulation::simulate(const std::vector<PrintStep>& steps, Fila
         if (length <= 0.0f)
             continue;
 
-        glm::vec3 scale(length * simulator.simulationScale, 0.002f, 0.002f);
+		// Calculate filament diameter based on extrusion amount, length, nozzle diameter, and layer height
+        float nozzleDiameter = 1.75f;
+        float layerHeight = 0.2f;
+
+        float filamentVolume = glm::pi<float>() * 0.25f * nozzleDiameter * nozzleDiameter * step.extrusionAmount;
+        float width = filamentVolume / (length * layerHeight);
+
+        glm::vec3 scale(length * simulator.simulationScale, width * simulator.simulationScale, width * simulator.simulationScale);
         glm::quat rotation = glm::rotation(glm::vec3(1, 0, 0), glm::normalize(dir));
         glm::vec3 position = start * simulator.simulationScale;
 
