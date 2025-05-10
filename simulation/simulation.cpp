@@ -2,162 +2,128 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <atomic>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "camera.h"
-#include "shaderClass.h"
-#include "VBO.h"
-#include "VAO.h"
-#include "EBO.h"
+#include "FixedSizeSimulation.h"
+#include "shader.h"
+#include "mesh.h"
+#include "scene.h"
+#include "sceneObject.h"
 #include "texture.h"
+#include "primitives.h"
+#include "shaderLoader.h"
+#include "textureLoader.h"
+#include "SimulationManager.h"
 
-//Window size
+// Window size
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
-
-
-/////// Square
-// Vertex data for the triangles
-GLfloat vertices[] =
-{
-	// Positions			// Colors			// Texture coordinates
-	-0.5f, 0.0f, 0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f, 
-	-0.5f, 0.0f, -0.5f,		0.0f, 1.0f, 0.0f,	5.0f, 0.0f,
-	 0.5f, 0.0f, -0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
-	 0.5f, 0.0f, 0.5f,		1.0f, 1.0f, 0.0f,	5.0f, 0.0f,  
-	 0.0f, 0.8f, 0.0f,		1.0f, 1.0f, 0.0f,	2.5f, 5.0f  
-};
-
-// Indices order for the triangles 
-GLuint indices[] = {
-	0, 1, 2,
-	0, 2, 3,
-	0, 1, 4,
-	1, 2, 4,
-	2, 3, 4,
-	3, 0, 4
-};
-
 
 // Global variable for controlling the simulation
 extern std::atomic<bool> simulation_running;
 
-// Callback function for window resizing
+// Global pointer to scene
+Scene* scene = nullptr;
+
+// Callback for resizing
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-// OpenGL rendering function
+// Callback for mouse movement
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (Camera::getInstance().getMode() == CameraMode::Free) {
+        Camera::getInstance().processMouseMovement(static_cast<float>(xpos), static_cast<float>(ypos));
+    }
+}
+
 void run_opengl() {
-    // Initialize GLFW
+    // Init GLFW
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
+        std::cerr << "Failed to initialize GLFW\n";
         return;
     }
 
-    // Set OpenGL version and profile
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Window", nullptr, nullptr);
+    // Create window
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "3D Printer Simulation", nullptr, nullptr);
     if (!window) {
-        std::cerr << "Failed to create GLFW window" << std::endl;
+        std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
         return;
     }
 
-    // Set OpenGL context
+	// Set the context, callbacks, and load GLAD
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	// Initialize GLAD
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     gladLoadGL();
 
-	// Initialize viewport
-	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-	// Set the simulation_running flag to true
-	simulation_running = true;
+    simulation_running = true;
 
-	Shader shaderProgram("default.vert", "default.frag");
 
-	VAO VAO1;
-	VAO1.Bind();
+    // Load shaders
+    ShaderLoader::load("default", "default.vert", "default.frag");
+    ShaderLoader::load("filament", "filament.vert", "filament.frag");
 
-	VBO VBO1(vertices, sizeof(vertices));
-	EBO EBO1(indices, sizeof(indices));
+    Shader* defaultShader = ShaderLoader::get("default");
+    Shader* filamentShader = ShaderLoader::get("filament");
 
-	VAO1.LinkAttribute(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0); // Vertex positions
-	VAO1.LinkAttribute(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))); // Vertex colors
-	VAO1.LinkAttribute(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))); // Texture coordinates
-    VAO1.Unbind();
-	VBO1.Unbind();
-	EBO1.Unbind();
+    // Load texture
+    TextureLoader::load("brick", "br.png");
+    TextureLoader::bindToShader("brick", *defaultShader, "tex0", 0);
 
-	// Texture
-	Texture texture("br.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-	texture.texUnit(shaderProgram, "tex0", 0);
-
-	GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
-	shaderProgram.Activate();
-	glUniform1i(tex0Uni, 0);
-
-	// Screen background color
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers(window);
+    glEnable(GL_DEPTH_TEST);
+
+    // Init camera
+    Camera::init(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.4f, 0.0f), 0.0f, 0.0f, 5.0f, 1.0f, 5.0f);
+    Camera& camera = Camera::getInstance();
+
+    // Scene init
+    Scene localScene;
+    scene = &localScene;
 
 
+    SimulationManager& sim = SimulationManager::get();
 
-	// Enables depth testing buffer
-	glEnable(GL_DEPTH_TEST);
-
-	Camera::init(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.4f, 0.0f), 0.0f, 0.0f, 5.0f, 1.0f, 5.0f);
-	Camera& camera = Camera::getInstance();
-
-    // Main rendering loop
-    while (!glfwWindowShouldClose(window)) {
-        // Check if the simulation should stop
-        if (!simulation_running) {
-            break;
-        }
-
-
-		// Scene rendering
-        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Activating shader program in OpenGL
-		shaderProgram.Activate();
-
-		camera.keyboardInputs(window);
-		camera.applyToShader(shaderProgram, "camMatrix", 45.0f, 0.1f, 100.0f);
-
-		texture.Bind();
-
-		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
-
-		// Swap back and front buffers
-		//    back buffer - is where we draw things
-		//    front buffer - is what we see
-        glfwSwapBuffers(window);
-		glfwPollEvents(); // Needed to update the window, without it the window will freeze as it will not respond to any events
+    if (sim.isReady() && !sim.wasAlreadySimulated()) {
+        sim.createSimulation(); 
+        scene->addInstanced(sim.getContext().filamentObject); 
+        sim.simulateFullPrint();
     }
 
+    SceneObject* ground = Primitives::createTexturedPlane(10.0f);
+	scene->add(ground);
 
-	/////// Clean up
-	texture.Delete();
-	VAO1.Delete();
-	VBO1.Delete();
-	EBO1.Delete();
-	shaderProgram.Delete();
+    // Main render loop
+    while (!glfwWindowShouldClose(window)) {
+        if (!simulation_running)
+            break;
 
-    // Clean up and close the window
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        camera.keyboardInputs(window);
+        camera.applyToShader(*defaultShader, "camMatrix", 45.0f, 0.1f, 100.0f);
+        camera.applyToShader(*filamentShader, "camMatrix", 45.0f, 0.1f, 100.0f);
+
+        scene->Draw(*defaultShader, *filamentShader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // Cleanup
+    TextureLoader::clear();
+    ShaderLoader::clear();
     glfwDestroyWindow(window);
     glfwTerminate();
+	simulation_running = false;
 }

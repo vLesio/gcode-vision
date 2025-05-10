@@ -8,6 +8,11 @@
 #include <filesystem>
 
 #include "camera.h"
+#include "filamentSimulator.h"
+#include "GCodeParser.h"
+#include "simulationContext.h"
+#include "simulationManager.h"
+#include "simulationModeFactory.h"
 
 namespace fs = std::filesystem;
 
@@ -36,7 +41,7 @@ crow::response safe_camera_action(Func action, const std::string& successMessage
         return json_response(200, successMessage);
     }
     catch (const std::exception& e) {
-        return json_response(400, std::string("Camera error: ") + e.what());
+        return json_response(400, e.what());
     }
 }
 
@@ -125,6 +130,29 @@ void run_rest_api(int port) {
             Camera::getInstance().reset();
             }, "Camera reset successfully");
         });
+
+	CROW_ROUTE(app, "/camera/mode").methods(crow::HTTPMethod::POST)([] {
+		return safe_camera_action([] {
+			Camera::getInstance().toggleMode();
+			}, "Camera mode toggled");
+		});
+
+    CROW_ROUTE(app, "/camera/target").methods(crow::HTTPMethod::POST)([](const crow::request& req) {
+        return safe_camera_action([&req] {
+
+            if (!req.url_params.get("x") || !req.url_params.get("y") || !req.url_params.get("z")) {
+                throw std::invalid_argument("Missing x, y, or z parameter");
+            }
+
+            float x = std::stof(req.url_params.get("x"));
+            float y = std::stof(req.url_params.get("y"));
+            float z = std::stof(req.url_params.get("z"));
+
+            Camera::getInstance().setTarget(glm::vec3(x, y, z));
+            }, 
+            "Camera target set successfully");
+		});
+            
 
     // === FILE UPLOAD ENDPOINT ===
 
@@ -228,22 +256,35 @@ void run_rest_api(int port) {
         [](const crow::request& req) {
             try {
                 auto body = crow::json::load(req.body);
-                if (!body) {
-                    return json_response(400, "Invalid JSON payload");
+                if (!body) return json_response(400, "Invalid JSON payload");
+
+                std::string mode = "fixed";
+                if (body.has("mode")) mode = std::string(body["mode"].s());
+                std::string printer = body["printer"].s();
+                std::string gcodeFile = body["gcodeFile"].s();
+                float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
+                float extruderWidth = static_cast<float>(body["extruderWidth"].d());
+                bool retraction = body["retraction"].b();
+                float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
+                float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
+                float extrusionResolution = static_cast<float>(body["extrusionResolution"].d());
+
+                SimulationManager& manager = SimulationManager::get();
+
+                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, extruderWidth, retraction, bedTemp, extruderTemp, simulationSpeed)) {
+                    return json_response(400, "Failed to initialize simulation");
                 }
 
-                std::string printer = body["printer"].s();
-                std::string model = body["model"].s();
-                std::string speed = body["speed"].s();
-                double extruderWidth = body["extruderWidth"].d();
-                bool retraction = body["retraction"].b();
-                double bedTemp = body["temperatures"]["bed"].d();
-                double extruderTemp = body["temperatures"]["extruder"].d();
+                ISimulationMode* strategy = SimulationModeFactory::createMode(mode, extrusionResolution);
+                if (!strategy) {
+                    return json_response(400, "Unknown simulation mode: " + mode);
+                }
 
-                return json_response(200, "Simulation created successfully");
-
-            } catch (const std::exception& e) {
-                return json_response(400, std::string("Error parsing simulation settings: ") + e.what());
+                manager.setSimulationMode(strategy);
+                return json_response(200, "Simulation initialized with mode: " + mode);
+            }
+            catch (const std::exception& e) {
+                return json_response(500, std::string("Error: ") + e.what());
             }
         });
 
@@ -308,6 +349,51 @@ void run_rest_api(int port) {
         return res;
     });
 
+	// === TEST ENDPOINTS ===
+CROW_ROUTE(app, "/simulation/test-parse").methods(crow::HTTPMethod::GET)(
+    []() {
+        try {
+            GCodeParser parser;
+            if (!parser.loadFile("example.gcode")) {
+                return json_response(500, "Could not load that file");
+            }
+
+            const auto& steps = parser.getPrintSteps();
+            size_t totalSteps = steps.size();
+            size_t extrudingSteps = std::count_if(steps.begin(), steps.end(), [](const PrintStep& s) {
+                return s.extruding;
+            });
+
+            std::ofstream logfile("parsed_steps.log", std::ios::out);
+
+            if (!logfile.is_open()) {
+                return json_response(500, "Could not open log file");
+            }
+
+            for (const auto& step : steps) {
+                std::string stepStr = step.toString();
+                //std::cout << stepStr << std::endl;
+                logfile << stepStr << std::endl;
+            }
+
+            logfile << "\nTotal Steps: " << totalSteps << std::endl;
+            logfile << "Extruding Steps: " << extrudingSteps << std::endl;
+
+            logfile.close();
+
+            crow::json::wvalue result;
+            result["totalSteps"] = static_cast<int>(totalSteps);
+            result["extrudingSteps"] = static_cast<int>(extrudingSteps);
+            result["status"] = "success";
+            result["message"] = "File parsed successfully";
+
+            return crow::response{ result };
+        }
+        catch (const std::exception& e) {
+            return json_response(500, std::string("Błąd podczas analizy G-code: ") + e.what());
+        }
+    });
+    
     // === START APP ===
     std::cout << "CROW:::: Starting REST API on port " << port << std::endl;
     app.port(port).multithreaded().run();

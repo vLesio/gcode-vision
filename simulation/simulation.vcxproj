@@ -19,30 +19,68 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="adaptiveScaleSimulation.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="filamentSimulator.cpp" />
+    <ClCompile Include="fixedSizeSimulation.cpp" />
+    <ClCompile Include="GCodeHelpers.cpp" />
+    <ClCompile Include="GCodeParser.cpp" />
+    <ClCompile Include="instancedMesh.cpp" />
+    <ClCompile Include="instancedObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="primitives.cpp" />
     <ClCompile Include="rest.cpp" />
-    <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="sceneObject.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shaderLoader.cpp" />
     <ClCompile Include="simulation.cpp" />
+    <ClCompile Include="simulationContext.cpp" />
+    <ClCompile Include="simulationManager.cpp" />
+    <ClCompile Include="simulationModeFactory.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="textureLoader.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="adaptiveScaleSimulation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="exceptions.h" />
+    <ClInclude Include="filamentSimulator.h" />
+    <ClInclude Include="fixedSizeSimulation.h" />
+    <ClInclude Include="GCodeHelpers.h" />
+    <ClInclude Include="GCodeParser.h" />
+    <ClInclude Include="GCodeTypes.h" />
+    <ClInclude Include="instancedMesh.h" />
+    <ClInclude Include="instancedObject.h" />
+    <ClInclude Include="ISimulationMode.h" />
+    <ClInclude Include="matrixStack.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="primitives.h" />
     <ClInclude Include="rest.h" />
-    <ClInclude Include="shaderClass.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="sceneObject.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="shaderLoader.h" />
     <ClInclude Include="simulation.h" />
+    <ClInclude Include="simulationContext.h" />
+    <ClInclude Include="simulationManager.h" />
+    <ClInclude Include="simulationModeFactory.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="textureLoader.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="filament.frag" />
+    <None Include="filament.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="br.png" />

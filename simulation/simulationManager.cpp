@@ -1,0 +1,149 @@
+#include "SimulationManager.h"
+#include <iostream>
+
+#include "primitives.h"
+#include "scene.h"
+
+SimulationManager& SimulationManager::get() {
+    static SimulationManager instance;
+    return instance;
+}
+
+bool SimulationManager::loadGCode(const std::string& path) {
+    context.loadedFilename = path;
+
+    GCodeParser parser;
+    if (!parser.loadFile(path)) {
+        std::cerr << "[SimulationManager] Failed to load G-code file: " << path << std::endl;
+        return false;
+    }
+
+    context.printSteps = parser.getPrintSteps();
+    return true;
+}
+
+bool SimulationManager::initializeSimulation(
+    const std::string& gcodeFile,
+    float extrusionResolution,
+    const std::string& printerName,
+    float extruderWidth,
+    bool retraction,
+    float bedTemp,
+    float extruderTemp,
+    float speed)
+{
+    context.clear();
+
+    context.loadedFilename = gcodeFile;
+    context.extrusionResolution = extrusionResolution;
+    context.printerName = printerName;
+    context.extruderWidth = extruderWidth;
+    context.retractionEnabled = retraction;
+    context.temperatureBed = bedTemp;
+    context.temperatureExtruder = extruderTemp;
+    context.userSpeed = speed;
+
+    if (!loadGCode(gcodeFile))
+        return false;
+
+    ready = true;
+    simulated = false;
+
+    return true;
+}
+
+void SimulationManager::createSimulation() {
+    if (simulator) {
+        delete simulator;
+        simulator = nullptr;
+    }
+
+    if (!strategy) {
+        std::cerr << "[SimulationManager] No simulation strategy set. Cannot create simulation.\n";
+        return;
+    }
+
+    InstancedObject* filamentTarget = nullptr;
+    std::string mode = strategy->getName();
+
+    if (mode == "adaptive") {
+        filamentTarget = Primitives::createDirectionalCube();
+    }
+    else {
+        filamentTarget = Primitives::createInstancedCube(); 
+    }
+
+    context.filamentObject = filamentTarget;
+    simulator = new FilamentSimulator(filamentTarget);
+    ready = true;
+    simulated = false;
+}
+
+
+
+void SimulationManager::setSimulationMode(ISimulationMode* mode) {
+    strategy = mode;
+}
+
+void SimulationManager::simulateFullPrint() {
+    if (!ready || !simulator || context.printSteps.empty()) {
+        std::cerr << "[SimulationManager] Cannot simulate. Context incomplete.\n";
+        return;
+    }
+
+    if (!strategy) {
+        std::cerr << "[SimulationManager] No simulation strategy set.\n";
+        return;
+    }
+
+    strategy->simulate(context.printSteps, *simulator);
+    simulated = true;
+}
+
+const SimulationContext& SimulationManager::getContext() const {
+    return context;
+}
+
+SimulationContext& SimulationManager::getContextMutable() {
+    return context;
+}
+
+bool SimulationManager::isReady() const {
+    return ready;
+}
+
+void SimulationManager::markSimulated() {
+    simulated = true;
+}
+
+bool SimulationManager::wasAlreadySimulated() const {
+    return simulated;
+}
+
+void SimulationManager::pauseSimulation() {
+    // TODO: Implement pause logic
+    std::cout << "[SimulationManager] Simulation paused (stub).\n";
+}
+
+void SimulationManager::resumeSimulation() {
+    // TODO: Implement resume logic
+    std::cout << "[SimulationManager] Simulation resumed (stub).\n";
+}
+
+void SimulationManager::stepForward() {
+    // TODO: Implement step forward logic
+    std::cout << "[SimulationManager] Simulation step forward (stub).\n";
+}
+
+void SimulationManager::stepBackward() {
+    // TODO: Implement step backward logic
+    std::cout << "[SimulationManager] Simulation step backward (stub).\n";
+}
+
+void SimulationManager::resetSimulation() {
+    if (simulator) {
+        simulator->resetSimulation();
+    }
+    simulated = false;
+    std::cout << "[SimulationManager] Simulation reset.\n";
+}

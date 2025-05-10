@@ -193,7 +193,24 @@ paths:
         '200':
           description: Simulation stepped backward by one unit.
   
-
+  /simulation/test-parse:
+    get:
+      tags:
+        - Simulation
+      summary: Test parsing G-code file
+      description: |
+        Tests the parsing of a G-code file and returns the parsed data.
+      responses:
+        '200':
+          description: G-code file parsed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: G-code file parsed successfully
 
   /camera/zoom/in:
     post:
@@ -264,6 +281,46 @@ paths:
         responses:
           '200':
             description: Camera reset successfully.
+  
+  /camera/target:
+    post:
+      tags:
+        - Camera
+      summary: Set camera target
+      description: Sets the target point for the camera to focus on.
+      parameters:
+        - name: x
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: z
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Camera target set successfully
+        '400':
+          description: Invalid or missing parameters
+
+  /camera/mode:
+    post:
+      tags:
+        - Camera
+      summary: Toggle camera mode
+      description: Toggles between free and orbit camera modes.
+      responses:
+        '200':
+          description: Camera mode toggled successfully.
+        '400':
+          description: Invalid request 
 tags:
   - name: Simulation
     description: Endpoints related to controlling the 3D printing simulation.
@@ -279,10 +336,19 @@ components:
       properties:
         printer:
           type: string
-        model:
+          example: "Prusa i3 MK3S"
+        mode:
           type: string
-        speed:
+          enum:
+            - "fixed"
+            - "adaptive"
+          example: "fixed"
+        gcodeFile:
           type: string
+          example: "example.gcode"
+        simulationSpeed:
+          type: number
+          example: 1.0
         extruderWidth:
           type: number
         retraction:
@@ -294,4 +360,7 @@ components:
               type: number
             extruder:
               type: number
+        extrusionResolution:
+          type: number
+          example: 0.001
           
