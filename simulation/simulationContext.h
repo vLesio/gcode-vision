@@ -25,7 +25,6 @@ struct SimulationContext {
     glm::vec3 headPosition = glm::vec3(0.0f);
     size_t currentStepIndex = 0;
     float simulationTime = 0.0f;
-    bool isPaused = false;
 
     void clear() {
         loadedFilename.clear();
@@ -34,7 +33,12 @@ struct SimulationContext {
         extrusionResolution = 0.2f;
         currentStepIndex = 0;
         simulationTime = 0.0f;
-        isPaused = false;
+        headPosition = glm::vec3(0.0f);
+    }
+
+    void resetRuntime() {
+        currentStepIndex = 0;
+        simulationTime = 0.0f;
         headPosition = glm::vec3(0.0f);
     }
 };

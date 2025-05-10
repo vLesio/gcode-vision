@@ -8,6 +8,13 @@ void Scene::addInstanced(InstancedObject* obj) {
     instancedObjects.push_back(obj);
 }
 
+void Scene::removeInstanced(InstancedObject* obj) {
+    instancedObjects.erase(
+        std::remove(instancedObjects.begin(), instancedObjects.end(), obj),
+        instancedObjects.end()
+    );
+}
+
 void Scene::Draw(Shader& regularShader, Shader& instancedShader) {
     for (auto& obj : objects)
         obj->Draw(regularShader);

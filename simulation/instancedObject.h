@@ -18,6 +18,10 @@ public:
 
     void Draw(Shader& shader);
 
+	InstancedMesh* getMesh() const {
+		return mesh;
+	}
+
 private:
     std::vector<glm::vec3> instancePositions;
     std::vector<glm::vec3> instanceScales;

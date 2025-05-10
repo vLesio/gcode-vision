@@ -11,6 +11,11 @@ void InstancedObject::setInstances(const std::vector<glm::vec3>& positions,
 }
 
 void InstancedObject::updateInstances() {
+    if (!mesh) {
+        std::cerr << "[InstancedObject] Mesh is null!\n";
+        return;
+    }
+
     if (mesh && instancePositions.size() == instanceScales.size() && instanceScales.size() == instanceRotations.size()) {
         mesh->updateInstances(instancePositions, instanceScales, instanceRotations);
     }

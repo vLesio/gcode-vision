@@ -73,6 +73,7 @@
     <ClInclude Include="simulationContext.h" />
     <ClInclude Include="simulationManager.h" />
     <ClInclude Include="simulationModeFactory.h" />
+    <ClInclude Include="simulationState.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="textureLoader.h" />
     <ClInclude Include="VAO.h" />

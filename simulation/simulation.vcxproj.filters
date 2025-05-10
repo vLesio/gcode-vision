@@ -97,6 +97,9 @@
     <Filter Include="Source Files\opengl\engine3d\filamentSimulator\simulationModes">
       <UniqueIdentifier>{e081b554-84dc-43e9-8eb5-4dc40c84a4ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\global">
+      <UniqueIdentifier>{b510b1a7-9c92-44d1-a217-e4f30eaa3a60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -176,6 +179,9 @@
     </ClCompile>
     <ClCompile Include="simulationModeFactory.cpp">
       <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
+    </ClCompile>
+    <ClCompile Include="deltaTimer.cpp">
+      <Filter>Source Files\opengl\simulation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,6 +268,12 @@
     </ClInclude>
     <ClInclude Include="simulationModeFactory.h">
       <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
+    </ClInclude>
+    <ClInclude Include="deltaTimer.h">
+      <Filter>Header Files\opengl\simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationState.h">
+      <Filter>Header Files\global</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

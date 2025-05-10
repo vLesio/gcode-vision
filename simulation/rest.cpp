@@ -13,11 +13,11 @@
 #include "simulationContext.h"
 #include "simulationManager.h"
 #include "simulationModeFactory.h"
+#include "simulationState.h"
 
 namespace fs = std::filesystem;
 
 // Global variables for controlling the simulation
-extern std::atomic<bool> simulation_running;
 extern void start_simulation();
 extern void stop_simulation();
 
@@ -45,54 +45,157 @@ crow::response safe_camera_action(Func action, const std::string& successMessage
     }
 }
 
+bool isStateOneOf(SimulationState current, std::initializer_list<SimulationState> validStates) {
+    return std::find(validStates.begin(), validStates.end(), current) != validStates.end();
+}
 
 void run_rest_api(int port) {
     crow::SimpleApp app;
 
     // === SIMULATION CONTROL ENDPOINTS ===
 
-    CROW_ROUTE(app, "/simulation/start").methods(crow::HTTPMethod::POST)([] {
-        if (!simulation_running) {
-            start_simulation();
-            return json_response(200, "Simulation started");
-        }
-        return json_response(400, "Simulation is already running");
-    });
-	// Deprecated: Uncomment if you want to stop the simulation
- /*   CROW_ROUTE(app, "/simulation/stop").methods(crow::HTTPMethod::POST)([] {
-        if (simulation_running) {
-            stop_simulation();
-            return json_response(200, "Simulation stopped");
-        }
-        return json_response(400, "Simulation is not running");
-    });*/
+    // === CREATE SIMULATION ===
+    CROW_ROUTE(app, "/simulation/create").methods(crow::HTTPMethod::POST)(
+        [](const crow::request& req) {
+            try {
+                auto& manager = SimulationManager::get();
+				// Terminate any existing simulation
+                if (opengl_running && manager.getState() != SimulationState::Uninitialized) {
+                    {
+                        std::unique_lock<std::mutex> lock(manager.terminateMutex);
+                        manager.terminateDone = false;
+                        manager.enqueueEvent(SimulationEvent::Terminate);
+                        manager.terminateCV.wait(lock, [&manager] {
+                            return manager.terminateDone;
+                            });
+                    }
+                }
 
+				// Parse JSON body
+                auto body = crow::json::load(req.body);
+                if (!body) return json_response(400, "Invalid JSON payload");
+
+                std::string mode = body.has("mode") ? std::string(body["mode"].s()) : "fixed";
+                std::string printer = body["printer"].s();
+                std::string gcodeFile = body["gcodeFile"].s();
+                float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
+                float nozzleDiameter = static_cast<float>(body["nozzleDiameter"].d());
+                float layerHeight = static_cast<float>(body["layerHeight"].d());
+                bool retraction = body["retraction"].b();
+                float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
+                float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
+                float extrusionResolution = static_cast<float>(body["extrusionResolution"].d());
+
+				// Run initialization
+                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, nozzleDiameter,
+                    layerHeight, retraction, bedTemp, extruderTemp, simulationSpeed)) {
+                    return json_response(400, "Failed to initialize simulation");
+                }
+
+				// Select simulation strategy
+                ISimulationMode* strategy = SimulationModeFactory::createMode(mode);
+                if (!strategy) {
+                    return json_response(400, "Unknown simulation mode: " + mode);
+                }
+                manager.setSimulationMode(strategy);
+
+                return json_response(200, "Simulation initialized with mode: " + mode);
+            }
+            catch (const std::exception& e) {
+                return json_response(500, std::string("Error: ") + e.what());
+            }
+        });
+
+
+    // BEGIN (resume/start/restart depending on state)
+    CROW_ROUTE(app, "/simulation/begin").methods(crow::HTTPMethod::POST)([] {
+        if (!opengl_running)
+            return json_response(400, "OpenGL is not running. Use /simulation/launch first.");
+
+        auto& sim = SimulationManager::get();
+        if (!isStateOneOf(sim.getState(), {
+            SimulationState::Initialized,
+            SimulationState::Prepared,
+            SimulationState::Paused,
+            SimulationState::Completed
+            })) {
+            return json_response(400, "Simulation is in invalid state for begin.");
+        }
+
+        sim.enqueueEvent(SimulationEvent::Begin);
+        return json_response(200, "Begin enqueued.");
+        });
+
+	// LAUNCH
+	CROW_ROUTE(app, "/simulation/launch").methods(crow::HTTPMethod::POST)([] {
+		if (opengl_running) return json_response(400, "OpenGL is already running");
+		start_simulation();
+		return json_response(200, "OpenGL launched");
+		});
+
+    // PAUSE
     CROW_ROUTE(app, "/simulation/pause").methods(crow::HTTPMethod::POST)([] {
-        if (!simulation_running) return json_response(400, "Simulation is not running");
+        if (!opengl_running) return json_response(400, "Simulation is not running");
 
-        SimulationManager::get().pauseSimulation();
-        return json_response(200, "Simulation paused");
+        auto& sim = SimulationManager::get();
+        if (sim.getState() != SimulationState::Running)
+            return json_response(400, "Simulation must be running to pause.");
+
+        sim.enqueueEvent(SimulationEvent::Pause);
+        return json_response(200, "Pause enqueued");
         });
 
+    // RESUME
     CROW_ROUTE(app, "/simulation/resume").methods(crow::HTTPMethod::POST)([] {
-        if (!simulation_running) return json_response(400, "Simulation is not running");
+        if (!opengl_running) return json_response(400, "Simulation is not running");
 
-        SimulationManager::get().resumeSimulation();
-        return json_response(200, "Simulation resumed");
+        auto& sim = SimulationManager::get();
+        if (sim.getState() != SimulationState::Paused)
+            return json_response(400, "Simulation must be paused to resume.");
+
+        sim.enqueueEvent(SimulationEvent::Resume);
+        return json_response(200, "Resume enqueued");
         });
 
+    // STEP FORWARD
     CROW_ROUTE(app, "/simulation/step/forward").methods(crow::HTTPMethod::POST)([] {
-        if (!simulation_running) return json_response(400, "Simulation is not running");
+        if (!opengl_running) return json_response(400, "Simulation is not running");
 
-        SimulationManager::get().stepForward();
-        return json_response(200, "Simulation stepped forward");
+        auto& sim = SimulationManager::get();
+        if (sim.getState() != SimulationState::Paused)
+            return json_response(400, "Can only step forward when simulation is paused.");
+
+        sim.enqueueEvent(SimulationEvent::StepForward);
+        return json_response(200, "Step forward enqueued");
         });
 
+    // STEP BACKWARD
     CROW_ROUTE(app, "/simulation/step/backward").methods(crow::HTTPMethod::POST)([] {
-        if (!simulation_running) return json_response(400, "Simulation is not running");
+        if (!opengl_running) return json_response(400, "Simulation is not running");
 
-        SimulationManager::get().stepBackward();
-        return json_response(200, "Simulation stepped backward");
+        auto& sim = SimulationManager::get();
+        if (sim.getState() != SimulationState::Paused)
+            return json_response(400, "Can only step backward when simulation is paused.");
+
+        sim.enqueueEvent(SimulationEvent::StepBackward);
+        return json_response(200, "Step backward enqueued");
+        });
+
+    // RESET
+    CROW_ROUTE(app, "/simulation/reset").methods(crow::HTTPMethod::POST)([] {
+        if (!opengl_running) return json_response(400, "Simulation is not running");
+
+        auto& sim = SimulationManager::get();
+        if (!isStateOneOf(sim.getState(), {
+            SimulationState::Running,
+            SimulationState::Paused,
+            SimulationState::Completed
+            })) {
+            return json_response(400, "Simulation must be running, paused, or completed to reset.");
+        }
+
+        sim.enqueueEvent(SimulationEvent::Reset);
+        return json_response(200, "Reset enqueued");
         });
 
     // === CAMERA CONTROL ENDPOINTS ===
@@ -257,45 +360,6 @@ void run_rest_api(int port) {
         res.set_header("Content-Type", "application/json");
         return res;
     });
-
-    // === CREATE SIMULATION ===
-
-    CROW_ROUTE(app, "/simulation/create").methods(crow::HTTPMethod::POST)(
-        [](const crow::request& req) {
-            try {
-                auto body = crow::json::load(req.body);
-                if (!body) return json_response(400, "Invalid JSON payload");
-
-                std::string mode = "fixed";
-                if (body.has("mode")) mode = std::string(body["mode"].s());
-                std::string printer = body["printer"].s();
-                std::string gcodeFile = body["gcodeFile"].s();
-                float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
-                float nozzleDiameter = static_cast<float>(body["nozzleDiameter"].d());
-				float layerHeight = static_cast<float>(body["layerHeight"].d());
-                bool retraction = body["retraction"].b();
-                float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
-                float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
-                float extrusionResolution = static_cast<float>(body["extrusionResolution"].d());
-
-                SimulationManager& manager = SimulationManager::get();
-
-                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, nozzleDiameter, layerHeight, retraction, bedTemp, extruderTemp, simulationSpeed)) {
-                    return json_response(400, "Failed to initialize simulation");
-                }
-
-                ISimulationMode* strategy = SimulationModeFactory::createMode(mode);
-                if (!strategy) {
-                    return json_response(400, "Unknown simulation mode: " + mode);
-                }
-
-                manager.setSimulationMode(strategy);
-                return json_response(200, "Simulation initialized with mode: " + mode);
-            }
-            catch (const std::exception& e) {
-                return json_response(500, std::string("Error: ") + e.what());
-            }
-        });
 
     // === SWAGGER UI ===
 

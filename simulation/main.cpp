@@ -4,15 +4,15 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+#include "simulationState.h"
 
 // Global flag for controlling the simulation
-std::atomic<bool> simulation_running{ false };
 std::thread simulation_thread; // Thread for the OpenGL simulation
 
 // Function to start the simulation in a separate thread
 void start_simulation() {
-    if (!simulation_running) {
-        simulation_running = true;
+    if (!opengl_running) {
+        opengl_running = true;
         simulation_thread = std::thread(run_opengl);
         std::cout << "Simulation started in a separate thread.\n";
     }
@@ -20,8 +20,8 @@ void start_simulation() {
 
 // Function to stop the simulation and close the OpenGL window
 void stop_simulation() {
-    if (simulation_running) {
-        simulation_running = false;
+    if (opengl_running) {
+        opengl_running = false;
         if (simulation_thread.joinable()) {
             simulation_thread.join();
         }

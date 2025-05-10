@@ -21,7 +21,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
 // Global variable for controlling the simulation
-extern std::atomic<bool> simulation_running;
+extern std::atomic<bool> opengl_running;
 
 // Global pointer to scene
 Scene* scene = nullptr;
@@ -57,7 +57,7 @@ void run_opengl() {
         return;
     }
 
-	// Set the context, callbacks, and load GLAD
+    // Set the context, callbacks, and load GLAD
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -66,8 +66,7 @@ void run_opengl() {
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    simulation_running = true;
-
+    opengl_running = true;
 
     // Load shaders
     ShaderLoader::load("default", "default.vert", "default.frag");
@@ -91,40 +90,32 @@ void run_opengl() {
     Scene localScene;
     scene = &localScene;
 
-
+    // Register scene in simulation manager
     SimulationManager& sim = SimulationManager::get();
+    sim.setScene(scene);
 
-	// Fullprint simulation
-    /*if (sim.isReady() && !sim.wasAlreadySimulated()) {
-        sim.createSimulation(); 
-        scene->addInstanced(sim.getContext().filamentObject); 
-        sim.simulateFullPrint();
-    }*/
-
-	// Step by step simulation
-    if (sim.isReady() && !sim.wasAlreadySimulated()) {
-        sim.createSimulation();
-        scene->addInstanced(sim.getContext().filamentObject);
-        sim.startSimulation(); 
-    }
-
+    // Add ground plane
     SceneObject* ground = Primitives::createTexturedPlane(10.0f);
-	scene->add(ground);
+    scene->add(ground);
 
     // Main render loop
     while (!glfwWindowShouldClose(window)) {
-        if (!simulation_running)
+        if (!opengl_running)
             break;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.keyboardInputs(window);
 
+        // Process REST API events
+        sim.processEvents();
+
+        // Update simulation
         sim.tickSimulation();
 
+        // Render scene
         camera.applyToShader(*defaultShader, "camMatrix", 45.0f, 0.1f, 100.0f);
         camera.applyToShader(*filamentShader, "camMatrix", 45.0f, 0.1f, 100.0f);
-
         scene->Draw(*defaultShader, *filamentShader);
 
         glfwSwapBuffers(window);
@@ -136,5 +127,5 @@ void run_opengl() {
     ShaderLoader::clear();
     glfwDestroyWindow(window);
     glfwTerminate();
-	simulation_running = false;
+    opengl_running = false;
 }

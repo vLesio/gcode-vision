@@ -95,7 +95,7 @@ paths:
     post:
       tags:
         - Simulation
-      summary: Creates simulation with specified settings
+      summary: Initializes a new simulation, loads G-code file and sets simulation parameters
       description: |
         Creates new simulation with specified settings.
         If another simulation is already running, it will stop it.
@@ -112,36 +112,26 @@ paths:
         '400':
           description: Error during creating a simulation
 
-  /simulation/printers:
-    get:
+
+  /simulation/launch:
+    post:
       tags:
         - Simulation
-      summary: Get available printers
-      description: |
-        Returns a list of all available 3D printers that can be used for simulation.
+      summary: Launch simulation
+      description: Opens Opengl window and prepares the simulation for rendering.
       responses:
         '200':
-          description: List of available printers
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  printers:
-                    type: array
-                    items:
-                      type: string
-                    example: ["Creality Ender 3 V2", "Creality Ender 3 Neo"]
+          description: Simulation successfully launched.
 
-  /simulation/start:
+  /simulation/begin:
     post:
       tags:
         - Simulation
       summary: Start simulation
-      description: Initializes and starts the 3D printing simulation.
+      description: Starts the 3D printing simulation.
       responses:
         '200':
-          description: Simulation successfully started.
+          description: Simulation started successfully.
 
   /simulation/pause:
     post:
@@ -162,6 +152,15 @@ paths:
       responses:
         '200':
           description: Simulation successfully resumed.
+  /simulation/reset:
+    post:
+      tags:
+        - Simulation
+      summary: Reset simulation
+      description: Resets the simulation to its initial state.
+      responses:
+        '200':
+          description: Simulation successfully reset.
 
   # /simulation/stop:
   #   post:
@@ -342,7 +341,7 @@ components:
           enum:
             - "fixed"
             - "adaptive"
-          example: "fixed"
+          example: "adaptive"
         gcodeFile:
           type: string
           example: "example.gcode"

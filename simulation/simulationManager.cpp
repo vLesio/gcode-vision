@@ -1,26 +1,10 @@
 #include "SimulationManager.h"
 #include <iostream>
-
+#include <condition_variable>
 #include "primitives.h"
 #include "scene.h"
 
-SimulationManager& SimulationManager::get() {
-    static SimulationManager instance;
-    return instance;
-}
-
-bool SimulationManager::loadGCode(const std::string& path) {
-    context.loadedFilename = path;
-
-    GCodeParser parser;
-    if (!parser.loadFile(path)) {
-        std::cerr << "[SimulationManager] Failed to load G-code file: " << path << std::endl;
-        return false;
-    }
-
-    context.printSteps = parser.getPrintSteps();
-    return true;
-}
+/// Simulation lifecycle management
 
 bool SimulationManager::initializeSimulation(
     const std::string& gcodeFile,
@@ -34,12 +18,11 @@ bool SimulationManager::initializeSimulation(
     float speed)
 {
     context.clear();
-
     context.loadedFilename = gcodeFile;
     context.extrusionResolution = extrusionResolution;
     context.printerName = printerName;
-	context.nozzleDiameter = nozzleDiameter;
-	context.layerHeight = layerHeight;
+    context.nozzleDiameter = nozzleDiameter;
+    context.layerHeight = layerHeight;
     context.retractionEnabled = retraction;
     context.temperatureBed = bedTemp;
     context.temperatureExtruder = extruderTemp;
@@ -48,49 +31,19 @@ bool SimulationManager::initializeSimulation(
     if (!loadGCode(gcodeFile))
         return false;
 
-    ready = true;
-    simulated = false;
-
+    state = SimulationState::Initialized;
     return true;
 }
 
-void SimulationManager::createSimulation() {
+void SimulationManager::prepareSimulationScene(Scene* scene) {
+    if (state != SimulationState::Initialized) {
+        std::cerr << "[SimulationManager] Cannot prepare scene. Initialize first.\n";
+        return;
+    }
+
     if (simulator) {
         delete simulator;
         simulator = nullptr;
-    }
-
-    if (!strategy) {
-        std::cerr << "[SimulationManager] No simulation strategy set. Cannot create simulation.\n";
-        return;
-    }
-
-    InstancedObject* filamentTarget = nullptr;
-    std::string mode = strategy->getName();
-
-    if (mode == "adaptive") {
-        filamentTarget = Primitives::createDirectionalCube();
-    }
-    else {
-        filamentTarget = Primitives::createInstancedCube(); 
-    }
-
-    context.filamentObject = filamentTarget;
-    simulator = new FilamentSimulator(filamentTarget);
-    ready = true;
-    simulated = false;
-}
-
-
-
-void SimulationManager::setSimulationMode(ISimulationMode* mode) {
-    strategy = mode;
-}
-
-void SimulationManager::simulateFullPrint() {
-    if (!ready || !simulator || context.printSteps.empty()) {
-        std::cerr << "[SimulationManager] Cannot simulate. Context incomplete.\n";
-        return;
     }
 
     if (!strategy) {
@@ -98,56 +51,73 @@ void SimulationManager::simulateFullPrint() {
         return;
     }
 
-    strategy->simulate(context, *simulator);
-    simulated = true;
+    std::string mode = strategy->getName();
+    context.filamentObject = (mode == "adaptive") ?
+        Primitives::createDirectionalCube() :
+        Primitives::createInstancedCube();
+
+    scene->addInstanced(context.filamentObject);
+    simulator = new FilamentSimulator(context.filamentObject);
+    state = SimulationState::Prepared;
 }
 
-const SimulationContext& SimulationManager::getContext() const {
-    return context;
-}
+void SimulationManager::beginSimulation() {
+    if (state != SimulationState::Prepared) {
+        std::cerr << "[SimulationManager] Cannot begin. Scene not prepared.\n";
+        return;
+    }
 
-SimulationContext& SimulationManager::getContextMutable() {
-    return context;
-}
+    simulator->clear();
+    context.simulationTime = 0.0f;
+    context.currentStepIndex = 0;
+    timer.reset();
+    state = SimulationState::Running;
 
-bool SimulationManager::isReady() const {
-    return ready;
-}
-
-void SimulationManager::markSimulated() {
-    simulated = true;
-}
-
-bool SimulationManager::wasAlreadySimulated() const {
-    return simulated;
+    std::cout << "[SimulationManager] Simulation started.\n";
 }
 
 void SimulationManager::pauseSimulation() {
-    context.isPaused = true;
-    timer.pause();
+    if (state == SimulationState::Running) {
+        timer.pause();
+        state = SimulationState::Paused;
+        std::cout << "[SimulationManager] Simulation paused.\n";
+    }
 }
 
 void SimulationManager::resumeSimulation() {
-    context.isPaused = false;
-    timer.resume();
+    if (state == SimulationState::Paused) {
+        timer.resume();
+        state = SimulationState::Running;
+        std::cout << "[SimulationManager] Simulation resumed.\n";
+    }
 }
 
 void SimulationManager::stepForward() {
-    if (!context.isPaused) return;
+    if (state != SimulationState::Paused) {
+        std::cerr << "[SimulationManager] Cannot step forward unless paused.\n";
+        return;
+    }
+
+    if (!context.filamentObject || !context.filamentObject->getMesh()) {
+        std::cerr << "[SimulationManager] Step failed: mesh is null.\n";
+        return;
+    }
 
     if (context.currentStepIndex >= context.printSteps.size()) return;
     const PrintStep& step = context.printSteps[context.currentStepIndex];
     strategy->simulateStep(context, *simulator, step);
-	simulator->updateBuffers();
+    simulator->updateBuffers();
     context.currentStepIndex++;
     context.simulationTime = 0.0f;
-	std::cout << "[SimulationManager] Step forward: " << context.currentStepIndex << "\n";
+
+    std::cout << "[SimulationManager] Step forward: " << context.currentStepIndex << "\n";
 }
 
-
-
 void SimulationManager::stepBackward() {
-    if (!context.isPaused) return;
+    if (state != SimulationState::Paused) {
+        std::cerr << "[SimulationManager] Cannot step backward unless paused.\n";
+        return;
+    }
 
     if (context.currentStepIndex > 0) {
         context.currentStepIndex--;
@@ -157,14 +127,13 @@ void SimulationManager::stepBackward() {
     }
 }
 
-
 void SimulationManager::recomputeStepsUpTo(size_t index) {
     if (strategy && simulator) {
         simulator->clear();
         for (size_t i = 0; i < index; ++i) {
-			strategy->simulateStep(context, *simulator, context.printSteps[i]);
+            strategy->simulateStep(context, *simulator, context.printSteps[i]);
         }
-		simulator->updateBuffers();
+        simulator->updateBuffers();
     }
 }
 
@@ -172,28 +141,14 @@ void SimulationManager::resetSimulation() {
     if (simulator) {
         simulator->resetSimulation();
     }
-    simulated = false;
+    context.resetRuntime();
+    timer.pause();
+    state = SimulationState::Prepared;
     std::cout << "[SimulationManager] Simulation reset.\n";
 }
 
-void SimulationManager::startSimulation() {
-    if (!ready || !simulator || context.printSteps.empty() || !strategy) {
-        std::cerr << "[SimulationManager] Cannot start simulation.\n";
-        return;
-    }
-
-    simulator->clear(); 
-    context.simulationTime = 0.0f;
-    context.currentStepIndex = 0;
-    context.isPaused = false;
-
-    timer.reset();
-
-	std::cout << "[SimulationManager] Simulation started.\n";
-}
-
 void SimulationManager::tickSimulation() {
-    if (!ready || !simulator || context.isPaused)
+    if (state != SimulationState::Running || !simulator)
         return;
 
     float deltaTime = timer.tick();
@@ -204,13 +159,8 @@ void SimulationManager::tickSimulation() {
 
     while (context.currentStepIndex < context.printSteps.size()) {
         const PrintStep& step = context.printSteps[context.currentStepIndex];
-
         float moveLength = glm::distance(step.startPosition, step.endPosition);
         float speed = (step.speed > 0.0f) ? step.speed : 1500.0f;
-        if (step.speed <= 0.0f)
-        {
-			//std::cerr << "[SimulationManager] Warning: Step " << context.currentStepIndex << " has no speed set. Using default speed of 1500 mm/min.\n";
-        }
         float moveDuration = moveLength / (speed / 60.0f);
 
         if (context.simulationTime < moveDuration)
@@ -223,8 +173,141 @@ void SimulationManager::tickSimulation() {
         context.currentStepIndex++;
     }
 
-    if (context.currentStepIndex >= context.printSteps.size() && !simulated) {
-        simulated = true;
-		std::cout << "[SimulationManager] Simulation completed.\n";
+    if (context.currentStepIndex >= context.printSteps.size() && state == SimulationState::Running) {
+        state = SimulationState::Completed;
+        std::cout << "[SimulationManager] Simulation completed.\n";
     }
+}
+
+void SimulationManager::handleTerminate() {
+    {
+        std::lock_guard<std::mutex> lock(terminateMutex);
+        terminateDone = false;
+    }
+
+    if (simulator) {
+        simulator->resetSimulation();
+        delete simulator;
+        simulator = nullptr;
+    }
+
+    strategy = nullptr;
+
+    if (context.filamentObject && scenePtr) {
+        scenePtr->removeInstanced(context.filamentObject);
+    }
+
+    context.filamentObject = nullptr;
+    context.clear();
+    state = SimulationState::Uninitialized;
+
+    {
+        std::lock_guard<std::mutex> lock(terminateMutex);
+        terminateDone = true;
+    }
+    terminateCV.notify_one();
+    std::cout << "[SimulationManager] Simulation terminated.\n";
+}
+
+bool SimulationManager::tryStartSimulation(Scene* scene) {
+    switch (state) {
+    case SimulationState::Initialized:
+        prepareSimulationScene(scene);
+        //fallthrough
+    case SimulationState::Prepared:
+        beginSimulation();
+        return true;
+    case SimulationState::Paused:
+        resumeSimulation();
+        return true;
+    case SimulationState::Completed:
+        resetSimulation();
+        beginSimulation();
+        return true;
+    default:
+        std::cerr << "[SimulationManager] Cannot start simulation in current state.\n";
+        return false;
+    }
+}
+
+/// REST API Event queue management
+
+void SimulationManager::enqueueEvent(SimulationEvent event) {
+    std::lock_guard<std::mutex> lock(eventMutex);
+    eventQueue.push(event);
+}
+
+void SimulationManager::processEvents() {
+    std::lock_guard<std::mutex> lock(eventMutex);
+    while (!eventQueue.empty()) {
+        SimulationEvent ev = eventQueue.front();
+        eventQueue.pop();
+
+        switch (ev) {
+        case SimulationEvent::StepForward: stepForward(); break;
+        case SimulationEvent::StepBackward: stepBackward(); break;
+        case SimulationEvent::Pause: pauseSimulation(); break;
+        case SimulationEvent::Resume: resumeSimulation(); break;
+        case SimulationEvent::Reset: resetSimulation(); break;
+        case SimulationEvent::Begin:
+            if (scenePtr) tryStartSimulation(scenePtr);
+            break;
+        case SimulationEvent::Terminate:
+            handleTerminate();
+            break;
+        }
+    }
+}
+
+/// Other methods
+
+SimulationManager& SimulationManager::get() {
+    static SimulationManager instance;
+    return instance;
+}
+
+bool SimulationManager::loadGCode(const std::string& path) {
+    context.loadedFilename = path;
+    GCodeParser parser;
+    if (!parser.loadFile(path)) {
+        std::cerr << "[SimulationManager] Failed to load G-code file: " << path << std::endl;
+        return false;
+    }
+    context.printSteps = parser.getPrintSteps();
+    return true;
+}
+
+void SimulationManager::setSimulationMode(ISimulationMode* mode) {
+    strategy = mode;
+}
+
+void SimulationManager::simulateFullPrint() {
+    if (state != SimulationState::Prepared || !strategy || !simulator) {
+        std::cerr << "[SimulationManager] Cannot simulate full print.\n";
+        return;
+    }
+
+    strategy->simulate(context, *simulator);
+    simulator->updateBuffers();
+    state = SimulationState::Completed;
+}
+
+const SimulationContext& SimulationManager::getContext() const {
+    return context;
+}
+
+SimulationContext& SimulationManager::getContextMutable() {
+    return context;
+}
+
+SimulationState SimulationManager::getState() const {
+    return state;
+}
+
+bool SimulationManager::wasAlreadySimulated() const {
+    return state == SimulationState::Completed;
+}
+
+void SimulationManager::setScene(Scene* scene) {
+    scenePtr = scene;
 }
