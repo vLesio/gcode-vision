@@ -1,11 +1,11 @@
 #include "camera.h"
 #include "FixedSizeSimulation.h"
 
-FixedSizeSimulation::FixedSizeSimulation(float resolution)
-    : resolution(resolution) {
-}
 
-void FixedSizeSimulation::simulate(const std::vector<PrintStep>& steps, FilamentSimulator& simulator) {
+void FixedSizeSimulation::simulate(const SimulationContext& context, FilamentSimulator& simulator) {
+    const auto& steps = context.printSteps;
+	float resolution = context.extrusionResolution;
+
     simulator.clear();
 
     for (const PrintStep& step : steps) {
@@ -36,4 +36,8 @@ void FixedSizeSimulation::simulate(const std::vector<PrintStep>& steps, Filament
     Camera::getInstance().setTarget(center);
 
     simulator.finalize();
+}
+
+void FixedSizeSimulation::simulateStep(const SimulationContext& context, FilamentSimulator& sim, const PrintStep& step) {
+	std::cout << "[FixedSizeSimulation] No step simulation for fixed size yet TODO\n";
 }

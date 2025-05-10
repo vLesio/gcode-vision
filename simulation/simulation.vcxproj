@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="adaptiveScaleSimulation.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="deltaTimer.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="filamentSimulator.cpp" />
     <ClCompile Include="fixedSizeSimulation.cpp" />
@@ -49,6 +50,7 @@
   <ItemGroup>
     <ClInclude Include="adaptiveScaleSimulation.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="deltaTimer.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="filamentSimulator.h" />

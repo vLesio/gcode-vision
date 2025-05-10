@@ -94,10 +94,18 @@ void run_opengl() {
 
     SimulationManager& sim = SimulationManager::get();
 
-    if (sim.isReady() && !sim.wasAlreadySimulated()) {
+	// Fullprint simulation
+    /*if (sim.isReady() && !sim.wasAlreadySimulated()) {
         sim.createSimulation(); 
         scene->addInstanced(sim.getContext().filamentObject); 
         sim.simulateFullPrint();
+    }*/
+
+	// Step by step simulation
+    if (sim.isReady() && !sim.wasAlreadySimulated()) {
+        sim.createSimulation();
+        scene->addInstanced(sim.getContext().filamentObject);
+        sim.startSimulation(); 
     }
 
     SceneObject* ground = Primitives::createTexturedPlane(10.0f);
@@ -111,6 +119,9 @@ void run_opengl() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.keyboardInputs(window);
+
+        sim.tickSimulation();
+
         camera.applyToShader(*defaultShader, "camMatrix", 45.0f, 0.1f, 100.0f);
         camera.applyToShader(*filamentShader, "camMatrix", 45.0f, 0.1f, 100.0f);
 

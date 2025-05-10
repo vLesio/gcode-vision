@@ -349,8 +349,12 @@ components:
         simulationSpeed:
           type: number
           example: 1.0
-        extruderWidth:
+        nozzleDiameter:
           type: number
+          example: 1.75
+        layerHeight:
+          type: number
+          example: 0.2
         retraction:
           type: boolean
         temperatures:

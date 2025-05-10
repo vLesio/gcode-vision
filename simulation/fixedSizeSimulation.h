@@ -5,13 +5,9 @@
 
 class FixedSizeSimulation : public ISimulationMode {
 public:
-    explicit FixedSizeSimulation(float resolution);
-
-    void simulate(const std::vector<PrintStep>& steps, FilamentSimulator& simulator) override;
+    virtual void simulate(const SimulationContext& context, FilamentSimulator& simulator) override;
+	virtual void simulateStep(const SimulationContext& context, FilamentSimulator& sim, const PrintStep& step) override;
 	std::string getName() const override { return "fixed"; }
-
-private:
-    float resolution;
 };
 
 #endif

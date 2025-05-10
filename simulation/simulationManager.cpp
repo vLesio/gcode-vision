@@ -26,7 +26,8 @@ bool SimulationManager::initializeSimulation(
     const std::string& gcodeFile,
     float extrusionResolution,
     const std::string& printerName,
-    float extruderWidth,
+    float nozzleDiameter,
+    float layerHeight,
     bool retraction,
     float bedTemp,
     float extruderTemp,
@@ -37,11 +38,12 @@ bool SimulationManager::initializeSimulation(
     context.loadedFilename = gcodeFile;
     context.extrusionResolution = extrusionResolution;
     context.printerName = printerName;
-    context.extruderWidth = extruderWidth;
+	context.nozzleDiameter = nozzleDiameter;
+	context.layerHeight = layerHeight;
     context.retractionEnabled = retraction;
     context.temperatureBed = bedTemp;
     context.temperatureExtruder = extruderTemp;
-    context.userSpeed = speed;
+    context.simulationSpeed = speed;
 
     if (!loadGCode(gcodeFile))
         return false;
@@ -96,7 +98,7 @@ void SimulationManager::simulateFullPrint() {
         return;
     }
 
-    strategy->simulate(context.printSteps, *simulator);
+    strategy->simulate(context, *simulator);
     simulated = true;
 }
 
@@ -121,23 +123,49 @@ bool SimulationManager::wasAlreadySimulated() const {
 }
 
 void SimulationManager::pauseSimulation() {
-    // TODO: Implement pause logic
-    std::cout << "[SimulationManager] Simulation paused (stub).\n";
+    context.isPaused = true;
+    timer.pause();
 }
 
 void SimulationManager::resumeSimulation() {
-    // TODO: Implement resume logic
-    std::cout << "[SimulationManager] Simulation resumed (stub).\n";
+    context.isPaused = false;
+    timer.resume();
 }
 
 void SimulationManager::stepForward() {
-    // TODO: Implement step forward logic
-    std::cout << "[SimulationManager] Simulation step forward (stub).\n";
+    if (!context.isPaused) return;
+
+    if (context.currentStepIndex >= context.printSteps.size()) return;
+    const PrintStep& step = context.printSteps[context.currentStepIndex];
+    strategy->simulateStep(context, *simulator, step);
+	simulator->updateBuffers();
+    context.currentStepIndex++;
+    context.simulationTime = 0.0f;
+	std::cout << "[SimulationManager] Step forward: " << context.currentStepIndex << "\n";
 }
 
+
+
 void SimulationManager::stepBackward() {
-    // TODO: Implement step backward logic
-    std::cout << "[SimulationManager] Simulation step backward (stub).\n";
+    if (!context.isPaused) return;
+
+    if (context.currentStepIndex > 0) {
+        context.currentStepIndex--;
+        recomputeStepsUpTo(context.currentStepIndex);
+        context.simulationTime = 0.0f;
+        std::cout << "[SimulationManager] Step backward: " << context.currentStepIndex << "\n";
+    }
+}
+
+
+void SimulationManager::recomputeStepsUpTo(size_t index) {
+    if (strategy && simulator) {
+        simulator->clear();
+        for (size_t i = 0; i < index; ++i) {
+			strategy->simulateStep(context, *simulator, context.printSteps[i]);
+        }
+		simulator->updateBuffers();
+    }
 }
 
 void SimulationManager::resetSimulation() {
@@ -146,4 +174,57 @@ void SimulationManager::resetSimulation() {
     }
     simulated = false;
     std::cout << "[SimulationManager] Simulation reset.\n";
+}
+
+void SimulationManager::startSimulation() {
+    if (!ready || !simulator || context.printSteps.empty() || !strategy) {
+        std::cerr << "[SimulationManager] Cannot start simulation.\n";
+        return;
+    }
+
+    simulator->clear(); 
+    context.simulationTime = 0.0f;
+    context.currentStepIndex = 0;
+    context.isPaused = false;
+
+    timer.reset();
+
+	std::cout << "[SimulationManager] Simulation started.\n";
+}
+
+void SimulationManager::tickSimulation() {
+    if (!ready || !simulator || context.isPaused)
+        return;
+
+    float deltaTime = timer.tick();
+    if (deltaTime <= 0.0f)
+        return;
+
+    context.simulationTime += deltaTime * context.simulationSpeed;
+
+    while (context.currentStepIndex < context.printSteps.size()) {
+        const PrintStep& step = context.printSteps[context.currentStepIndex];
+
+        float moveLength = glm::distance(step.startPosition, step.endPosition);
+        float speed = (step.speed > 0.0f) ? step.speed : 1500.0f;
+        if (step.speed <= 0.0f)
+        {
+			//std::cerr << "[SimulationManager] Warning: Step " << context.currentStepIndex << " has no speed set. Using default speed of 1500 mm/min.\n";
+        }
+        float moveDuration = moveLength / (speed / 60.0f);
+
+        if (context.simulationTime < moveDuration)
+            break;
+
+        strategy->simulateStep(context, *simulator, step);
+        simulator->updateBuffers();
+
+        context.simulationTime -= moveDuration;
+        context.currentStepIndex++;
+    }
+
+    if (context.currentStepIndex >= context.printSteps.size() && !simulated) {
+        simulated = true;
+		std::cout << "[SimulationManager] Simulation completed.\n";
+    }
 }

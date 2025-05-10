@@ -13,6 +13,12 @@ void FilamentSimulator::addSegment(glm::vec3 position, glm::vec3 scale, glm::qua
     instanceRotations.push_back(rotation);
 }
 
+void FilamentSimulator::updateBuffers()
+{
+	target->setInstances(instancePositions, instanceScales, instanceRotations);
+	target->updateInstances();
+}
+
 void FilamentSimulator::finalize() {
     target->setInstances(instancePositions, instanceScales, instanceRotations);
     target->updateInstances();
@@ -26,9 +32,6 @@ void FilamentSimulator::clear() {
     allSteps.clear();
 }
 
-void FilamentSimulator::simulateStepForward() {
-    // Placeholder
-}
 
 void FilamentSimulator::resetSimulation() {
     clear();

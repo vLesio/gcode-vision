@@ -6,7 +6,7 @@
 
 class SimulationModeFactory {
 public:
-    static ISimulationMode* createMode(const std::string& name, float resolution = 0.01f);
+    static ISimulationMode* createMode(const std::string& name);
 };
 
 #endif

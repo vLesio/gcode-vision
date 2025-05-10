@@ -1,6 +1,7 @@
 #ifndef SIMULATION_MANAGER_H
 #define SIMULATION_MANAGER_H
 
+#include "deltaTimer.h"
 #include "SimulationContext.h"
 #include "FilamentSimulator.h"
 #include "ISimulationMode.h"
@@ -11,7 +12,7 @@ public:
 
     bool loadGCode(const std::string& path);
     void createSimulation();
-    bool initializeSimulation(const std::string& gcodeFile, float extrusionResolution, const std::string& printerName, float extruderWidth, bool retraction, float bedTemp, float extruderTemp, float speed);
+    bool initializeSimulation(const std::string& gcodeFile, float extrusionResolution, const std::string& printerName, float nozzleDiameter, float layerHeight, bool retraction, float bedTemp, float extruderTemp, float speed);
 
     void simulateFullPrint();
 
@@ -28,14 +29,19 @@ public:
     void resumeSimulation();
     void stepForward();
     void stepBackward();
+    void recomputeStepsUpTo(size_t index);
     void resetSimulation();
+    void startSimulation();
+    void tickSimulation();
 
 private:
     SimulationManager() = default;
 
     SimulationContext context;
     FilamentSimulator* simulator = nullptr;
-    ISimulationMode* strategy = nullptr; 
+    ISimulationMode* strategy = nullptr;
+
+	DeltaTimer timer;
 
     bool ready = false;
     bool simulated = false;

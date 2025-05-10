@@ -10,22 +10,34 @@ struct SimulationContext {
     std::string loadedFilename;
     std::vector<PrintStep> printSteps;
     InstancedObject* filamentObject = nullptr;
-    float extrusionResolution = 0.2f;
 
-    /// Config parameters from json
+    // Configuration
     std::string printerName;
-    float extruderWidth = 0.4f;
+    float extrusionResolution = 0.2f;
+    float nozzleDiameter = 1.75f;
+    float layerHeight = 0.2f;
     bool retractionEnabled = false;
     float temperatureBed = 0.0f;
     float temperatureExtruder = 0.0f;
-    float userSpeed = 60.0f;
+    float simulationSpeed = 1.0f;
+
+    // Runtime state
+    glm::vec3 headPosition = glm::vec3(0.0f);
+    size_t currentStepIndex = 0;
+    float simulationTime = 0.0f;
+    bool isPaused = false;
 
     void clear() {
         loadedFilename.clear();
         printSteps.clear();
         filamentObject = nullptr;
         extrusionResolution = 0.2f;
+        currentStepIndex = 0;
+        simulationTime = 0.0f;
+        isPaused = false;
+        headPosition = glm::vec3(0.0f);
     }
 };
+
 
 #endif

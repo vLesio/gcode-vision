@@ -68,24 +68,32 @@ void run_rest_api(int port) {
     });*/
 
     CROW_ROUTE(app, "/simulation/pause").methods(crow::HTTPMethod::POST)([] {
-        if (simulation_running) {
-            stop_simulation();
-            return json_response(200, "Simulation stopped");
-        }
-        return json_response(400, "Simulation is not running");
-    });
+        if (!simulation_running) return json_response(400, "Simulation is not running");
+
+        SimulationManager::get().pauseSimulation();
+        return json_response(200, "Simulation paused");
+        });
 
     CROW_ROUTE(app, "/simulation/resume").methods(crow::HTTPMethod::POST)([] {
+        if (!simulation_running) return json_response(400, "Simulation is not running");
+
+        SimulationManager::get().resumeSimulation();
         return json_response(200, "Simulation resumed");
-    });
+        });
 
     CROW_ROUTE(app, "/simulation/step/forward").methods(crow::HTTPMethod::POST)([] {
+        if (!simulation_running) return json_response(400, "Simulation is not running");
+
+        SimulationManager::get().stepForward();
         return json_response(200, "Simulation stepped forward");
-    });
+        });
 
     CROW_ROUTE(app, "/simulation/step/backward").methods(crow::HTTPMethod::POST)([] {
+        if (!simulation_running) return json_response(400, "Simulation is not running");
+
+        SimulationManager::get().stepBackward();
         return json_response(200, "Simulation stepped backward");
-    });
+        });
 
     // === CAMERA CONTROL ENDPOINTS ===
 
@@ -263,7 +271,8 @@ void run_rest_api(int port) {
                 std::string printer = body["printer"].s();
                 std::string gcodeFile = body["gcodeFile"].s();
                 float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
-                float extruderWidth = static_cast<float>(body["extruderWidth"].d());
+                float nozzleDiameter = static_cast<float>(body["nozzleDiameter"].d());
+				float layerHeight = static_cast<float>(body["layerHeight"].d());
                 bool retraction = body["retraction"].b();
                 float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
                 float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
@@ -271,11 +280,11 @@ void run_rest_api(int port) {
 
                 SimulationManager& manager = SimulationManager::get();
 
-                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, extruderWidth, retraction, bedTemp, extruderTemp, simulationSpeed)) {
+                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, nozzleDiameter, layerHeight, retraction, bedTemp, extruderTemp, simulationSpeed)) {
                     return json_response(400, "Failed to initialize simulation");
                 }
 
-                ISimulationMode* strategy = SimulationModeFactory::createMode(mode, extrusionResolution);
+                ISimulationMode* strategy = SimulationModeFactory::createMode(mode);
                 if (!strategy) {
                     return json_response(400, "Unknown simulation mode: " + mode);
                 }

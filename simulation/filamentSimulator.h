@@ -13,10 +13,10 @@ public:
     explicit FilamentSimulator(InstancedObject* target);
 
     void addSegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
+    void updateBuffers();
     void finalize();
     void clear();
 
-    void simulateStepForward(); // TODO
     void resetSimulation();
 
     glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
