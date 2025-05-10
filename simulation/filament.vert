@@ -11,10 +11,23 @@ uniform mat4 camMatrix;
 // Converts a quaternion to a 4x4 rotation matrix
 mat4 quatToMat4(vec4 q) {
     float x = q.x, y = q.y, z = q.z, w = q.w;
+    float x2 = x + x;
+    float y2 = y + y;
+    float z2 = z + z;
+    float xx = x * x2;
+    float xy = x * y2;
+    float xz = x * z2;
+    float yy = y * y2;
+    float yz = y * z2;
+    float zz = z * z2;
+    float wx = w * x2;
+    float wy = w * y2;
+    float wz = w * z2;
+
     return mat4(
-        vec4(1 - 2*y*y - 2*z*z,     2*x*y - 2*w*z,     2*x*z + 2*w*y, 0.0),
-        vec4(2*x*y + 2*w*z, 1 - 2*x*x - 2*z*z,     2*y*z - 2*w*x, 0.0),
-        vec4(2*x*z - 2*w*y,     2*y*z + 2*w*x, 1 - 2*x*x - 2*y*y, 0.0),
+        vec4(1.0 - (yy + zz), xy + wz, xz - wy, 0.0),
+        vec4(xy - wz, 1.0 - (xx + zz), yz + wx, 0.0),
+        vec4(xz + wy, yz - wx, 1.0 - (xx + yy), 0.0),
         vec4(0.0, 0.0, 0.0, 1.0)
     );
 }

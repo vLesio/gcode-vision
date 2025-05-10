@@ -35,7 +35,7 @@ private:
 
     SimulationContext context;
     FilamentSimulator* simulator = nullptr;
-    ISimulationMode* strategy = nullptr; // <--- kluczowy punkt refaktoru
+    ISimulationMode* strategy = nullptr; 
 
     bool ready = false;
     bool simulated = false;
