@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ostream>
 
+
 #include "InstancedMesh.h"
 
 InstancedMesh::InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, size_t iCount)
@@ -13,27 +14,30 @@ InstancedMesh::InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, s
     vao.Unbind();
 }
 
-void InstancedMesh::updateInstances(const std::vector<glm::vec3>& positions, const std::vector<float>& scales) {
+void InstancedMesh::updateInstances(const std::vector<glm::vec3>& positions,
+    const std::vector<glm::vec3>& scales,
+    const std::vector<glm::quat>& rotations) {
     instanceCount = positions.size();
     vao.Bind();
 
-    // Instance positions
-    instancePosVBO.Bind(); 
+    instancePosVBO.Bind();
     glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), positions.data(), GL_DYNAMIC_DRAW);
     vao.LinkAttribute(instancePosVBO, 3, 3, GL_FLOAT, sizeof(glm::vec3), (void*)0);
-    instancePosVBO.Bind();
     glVertexAttribDivisor(3, 1);
 
-    // Instance scales
-    instanceScaleVBO.Bind(); 
-    glBufferData(GL_ARRAY_BUFFER, scales.size() * sizeof(float), scales.data(), GL_DYNAMIC_DRAW);
-    vao.LinkAttribute(instanceScaleVBO, 4, 1, GL_FLOAT, sizeof(float), (void*)0);
-    instanceScaleVBO.Bind(); 
+    instanceScaleVBO.Bind();
+    glBufferData(GL_ARRAY_BUFFER, scales.size() * sizeof(glm::vec3), scales.data(), GL_DYNAMIC_DRAW);
+    vao.LinkAttribute(instanceScaleVBO, 4, 3, GL_FLOAT, sizeof(glm::vec3), (void*)0);
     glVertexAttribDivisor(4, 1);
 
-    vao.Unbind();
+    instanceRotVBO.Bind();
+    glBufferData(GL_ARRAY_BUFFER, rotations.size() * sizeof(glm::quat), rotations.data(), GL_DYNAMIC_DRAW);
+    vao.LinkAttribute(instanceRotVBO, 5, 4, GL_FLOAT, sizeof(glm::quat), (void*)0); // quaternion = 4 floats
+    glVertexAttribDivisor(5, 1);
 
+    vao.Unbind();
 }
+
 
 void InstancedMesh::DrawInstanced() {
     vao.Bind();

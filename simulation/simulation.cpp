@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "camera.h"
+#include "FixedSizeSimulation.h"
 #include "shader.h"
 #include "mesh.h"
 #include "scene.h"
@@ -90,13 +91,12 @@ void run_opengl() {
     Scene localScene;
     scene = &localScene;
 
-    // Checking simulation state with simulation manager
+
     SimulationManager& sim = SimulationManager::get();
 
     if (sim.isReady() && !sim.wasAlreadySimulated()) {
-        InstancedObject* filamentObject = Primitives::createInstancedCube();
-        scene->addInstanced(filamentObject);
-        sim.createSimulation(filamentObject);
+        sim.createSimulation(); 
+        scene->addInstanced(sim.getContext().filamentObject); 
         sim.simulateFullPrint();
     }
 
@@ -125,4 +125,5 @@ void run_opengl() {
     ShaderLoader::clear();
     glfwDestroyWindow(window);
     glfwTerminate();
+	simulation_running = false;
 }

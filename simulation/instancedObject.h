@@ -9,17 +9,20 @@
 class InstancedObject {
 public:
     InstancedObject(InstancedMesh* mesh);
+    InstancedMesh* mesh;
 
-    void setInstances(const std::vector<glm::vec3>& positions, const std::vector<float>& scales);
+    void setInstances(const std::vector<glm::vec3>& positions,
+        const std::vector<glm::vec3>& scales,
+        const std::vector<glm::quat>& rotations);
     void updateInstances();
 
     void Draw(Shader& shader);
 
-    InstancedMesh* mesh = nullptr;
-
 private:
     std::vector<glm::vec3> instancePositions;
-    std::vector<float> instanceScales;
+    std::vector<glm::vec3> instanceScales;
+    std::vector<glm::quat> instanceRotations;
 };
+
 
 #endif

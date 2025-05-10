@@ -10,7 +10,6 @@ SimulationManager& SimulationManager::get() {
 }
 
 bool SimulationManager::loadGCode(const std::string& path) {
-    context.clear();
     context.loadedFilename = path;
 
     GCodeParser parser;
@@ -53,12 +52,25 @@ bool SimulationManager::initializeSimulation(
     return true;
 }
 
-
-
-void SimulationManager::createSimulation(InstancedObject* filamentTarget) {
+void SimulationManager::createSimulation() {
     if (simulator) {
         delete simulator;
         simulator = nullptr;
+    }
+
+    if (!strategy) {
+        std::cerr << "[SimulationManager] No simulation strategy set. Cannot create simulation.\n";
+        return;
+    }
+
+    InstancedObject* filamentTarget = nullptr;
+    std::string mode = strategy->getName();
+
+    if (mode == "adaptive") {
+        filamentTarget = Primitives::createDirectionalCube();
+    }
+    else {
+        filamentTarget = Primitives::createInstancedCube(); 
     }
 
     context.filamentObject = filamentTarget;
@@ -67,12 +79,24 @@ void SimulationManager::createSimulation(InstancedObject* filamentTarget) {
     simulated = false;
 }
 
+
+
+void SimulationManager::setSimulationMode(ISimulationMode* mode) {
+    strategy = mode;
+}
+
 void SimulationManager::simulateFullPrint() {
     if (!ready || !simulator || context.printSteps.empty()) {
         std::cerr << "[SimulationManager] Cannot simulate. Context incomplete.\n";
         return;
     }
-    simulator->simulateFullPrint(context.printSteps, context.extrusionResolution);
+
+    if (!strategy) {
+        std::cerr << "[SimulationManager] No simulation strategy set.\n";
+        return;
+    }
+
+    strategy->simulate(context.printSteps, *simulator);
     simulated = true;
 }
 
@@ -117,6 +141,9 @@ void SimulationManager::stepBackward() {
 }
 
 void SimulationManager::resetSimulation() {
-    // TODO: Implement reset logic
-    std::cout << "[SimulationManager] Simulation reset (stub).\n";
+    if (simulator) {
+        simulator->resetSimulation();
+    }
+    simulated = false;
+    std::cout << "[SimulationManager] Simulation reset.\n";
 }

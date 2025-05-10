@@ -3,15 +3,19 @@
 
 #include "SimulationContext.h"
 #include "FilamentSimulator.h"
+#include "ISimulationMode.h"
 
 class SimulationManager {
 public:
     static SimulationManager& get();
 
     bool loadGCode(const std::string& path);
-    void createSimulation(InstancedObject* filamentTarget);
+    void createSimulation();
     bool initializeSimulation(const std::string& gcodeFile, float extrusionResolution, const std::string& printerName, float extruderWidth, bool retraction, float bedTemp, float extruderTemp, float speed);
+
     void simulateFullPrint();
+
+    void setSimulationMode(ISimulationMode* mode);
 
     const SimulationContext& getContext() const;
     SimulationContext& getContextMutable();
@@ -20,7 +24,6 @@ public:
     void markSimulated();
     bool wasAlreadySimulated() const;
 
-    // For future control over simulation steps
     void pauseSimulation();
     void resumeSimulation();
     void stepForward();
@@ -32,6 +35,8 @@ private:
 
     SimulationContext context;
     FilamentSimulator* simulator = nullptr;
+    ISimulationMode* strategy = nullptr; // <--- kluczowy punkt refaktoru
+
     bool ready = false;
     bool simulated = false;
 };

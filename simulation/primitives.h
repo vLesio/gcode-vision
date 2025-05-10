@@ -7,6 +7,7 @@ class Primitives {
 public:
     static SceneObject* createUnitCube();
     static InstancedObject* createInstancedCube();
+	static InstancedObject* createDirectionalCube();
     static SceneObject* createTexturedPlane(float size);
 };
 

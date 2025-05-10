@@ -3,25 +3,34 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "GCodeTypes.h"
 #include "instancedObject.h"
 
 class FilamentSimulator {
 public:
-    FilamentSimulator(InstancedObject* target);
+    explicit FilamentSimulator(InstancedObject* target);
 
-    void simulateFullPrint(const std::vector<PrintStep>& steps, float resolution = 0.2f);
+    void addSegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
+    void finalize();
+    void clear();
 
-    void simulateStepForward();
+    void simulateStepForward(); // TODO
     void resetSimulation();
+
     glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
+
+    float simulationScale = 0.01f;
 
 private:
     InstancedObject* target;
-    std::vector<PrintStep> allSteps;
-    float resolution;
 
+    std::vector<glm::vec3> instancePositions;
+    std::vector<glm::vec3> instanceScales;
+    std::vector<glm::quat> instanceRotations;
+
+    std::vector<PrintStep> allSteps;
     size_t currentStep = 0;
 };
 

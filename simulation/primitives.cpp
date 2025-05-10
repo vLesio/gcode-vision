@@ -64,37 +64,73 @@ SceneObject* Primitives::createUnitCube() {
 }
 
 InstancedObject* Primitives::createInstancedCube() {
-    //pos(3) 
     GLfloat vertices[] = {
-    -0.5f, -0.5f, -0.5f,  // 0
-     0.5f, -0.5f, -0.5f,  // 1
-     0.5f,  0.5f, -0.5f,  // 2
-    -0.5f,  0.5f, -0.5f,  // 3
-    -0.5f, -0.5f,  0.5f,  // 4
-     0.5f, -0.5f,  0.5f,  // 5
-     0.5f,  0.5f,  0.5f,  // 6
-    -0.5f,  0.5f,  0.5f   // 7
-    };
+        // Front face
+        -0.5f, -0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
 
+        // Back face
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+        -0.5f,  0.5f, -0.5f,
+    };
 
     GLuint indices[] = {
         // Front
-        4, 5, 6, 6, 7, 4,
+        0, 1, 2, 2, 3, 0,
         // Back
-        1, 0, 3, 3, 2, 1,
+        5, 4, 7, 7, 6, 5,
         // Left
-        0, 4, 7, 7, 3, 0,
+        4, 0, 3, 3, 7, 4,
         // Right
-        5, 1, 2, 2, 6, 5,
+        1, 5, 6, 6, 2, 1,
         // Bottom
-        0, 1, 5, 5, 4, 0,
+        4, 5, 1, 1, 0, 4,
         // Top
-        3, 7, 6, 6, 2, 3
+        3, 2, 6, 6, 7, 3
     };
 
-    InstancedMesh* mesh = new InstancedMesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    auto* mesh = new InstancedMesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
     return new InstancedObject(mesh);
 }
+
+InstancedObject* Primitives::createDirectionalCube() {
+    GLfloat vertices[] = {
+        // Front face
+        0.0f, -0.5f,  0.5f,
+        1.0f, -0.5f,  0.5f,
+        1.0f,  0.5f,  0.5f,
+        0.0f,  0.5f,  0.5f,
+
+        // Back face
+        0.0f, -0.5f, -0.5f,
+        1.0f, -0.5f, -0.5f,
+        1.0f,  0.5f, -0.5f,
+        0.0f,  0.5f, -0.5f
+    };
+
+    GLuint indices[] = {
+        // Front
+        0, 1, 2, 2, 3, 0,
+        // Back
+        5, 4, 7, 7, 6, 5,
+        // Left
+        4, 0, 3, 3, 7, 4,
+        // Right
+        1, 5, 6, 6, 2, 1,
+        // Bottom
+        4, 5, 1, 1, 0, 4,
+        // Top
+        3, 2, 6, 6, 7, 3
+    };
+
+    auto* mesh = new InstancedMesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    return new InstancedObject(mesh);
+}
+
 
 SceneObject* Primitives::createTexturedPlane(float size) {
     float half = size / 2.0f;

@@ -91,6 +91,12 @@
     <Filter Include="Header Files\opengl\exceptions">
       <UniqueIdentifier>{5b069f89-c7cb-4fde-8110-3e0ebe000088}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\engine3d\filamentSimulation\simulationModes">
+      <UniqueIdentifier>{8d2da783-0a78-46ef-a947-3ef3c97b0e79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\engine3d\filamentSimulator\simulationModes">
+      <UniqueIdentifier>{e081b554-84dc-43e9-8eb5-4dc40c84a4ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -161,6 +167,15 @@
     </ClCompile>
     <ClCompile Include="simulationManager.cpp">
       <Filter>Source Files\opengl\simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="fixedSizeSimulation.cpp">
+      <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
+    </ClCompile>
+    <ClCompile Include="adaptiveScaleSimulation.cpp">
+      <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
+    </ClCompile>
+    <ClCompile Include="simulationModeFactory.cpp">
+      <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +250,18 @@
     </ClInclude>
     <ClInclude Include="exceptions.h">
       <Filter>Header Files\opengl\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="ISimulationMode.h">
+      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
+    </ClInclude>
+    <ClInclude Include="fixedSizeSimulation.h">
+      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
+    </ClInclude>
+    <ClInclude Include="adaptiveScaleSimulation.h">
+      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
+    </ClInclude>
+    <ClInclude Include="simulationModeFactory.h">
+      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
