@@ -4,34 +4,28 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-
+#include "InstancedObject.h"
 #include "GCodeTypes.h"
-#include "instancedObject.h"
 
 class FilamentSimulator {
 public:
-    explicit FilamentSimulator(InstancedObject* target);
+    FilamentSimulator(InstancedObject* target);
 
     void addSegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
-    void updateBuffers();
-    void finalize();
-    void clear();
 
+    void clear();
     void resetSimulation();
+
+    void attachTemporaryObject(InstancedObject* temp);
+    void setTemporarySegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
+    void clearTemporarySegment();
 
     glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
 
-    float simulationScale = 0.01f;
-
 private:
-    InstancedObject* target;
-
-    std::vector<glm::vec3> instancePositions;
-    std::vector<glm::vec3> instanceScales;
-    std::vector<glm::quat> instanceRotations;
-
-    std::vector<PrintStep> allSteps;
-    size_t currentStep = 0;
+    InstancedObject* target = nullptr;
+    InstancedObject* tempSegmentObject = nullptr;
+    bool hasTempSegment = false;
 };
 
 #endif

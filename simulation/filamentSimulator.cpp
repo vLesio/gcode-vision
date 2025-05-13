@@ -7,36 +7,42 @@ FilamentSimulator::FilamentSimulator(InstancedObject* target)
     : target(target) {
 }
 
+void FilamentSimulator::attachTemporaryObject(InstancedObject* temp) {
+    tempSegmentObject = temp;
+}
+
 void FilamentSimulator::addSegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation) {
-    instancePositions.push_back(position);
-    instanceScales.push_back(scale);
-    instanceRotations.push_back(rotation);
+    if (target)
+        target->appendDynamicInstance(position, scale, rotation);
 }
 
-void FilamentSimulator::updateBuffers()
-{
-	target->setInstances(instancePositions, instanceScales, instanceRotations);
-	target->updateInstances();
+void FilamentSimulator::setTemporarySegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation) {
+    if (!tempSegmentObject) return;
+
+    tempSegmentObject->clear();
+	tempSegmentObject->appendDynamicInstance(position, scale, rotation);
+    hasTempSegment = true;
 }
 
-void FilamentSimulator::finalize() {
-    target->setInstances(instancePositions, instanceScales, instanceRotations);
-    target->updateInstances();
-    std::cout << "[FilamentSimulator] Segments: " << instancePositions.size() << std::endl;
+void FilamentSimulator::clearTemporarySegment() {
+    if (!tempSegmentObject) return;
+
+    tempSegmentObject->clear();
+    hasTempSegment = false;
 }
 
 void FilamentSimulator::clear() {
-    instancePositions.clear();
-    instanceScales.clear();
-    instanceRotations.clear();
-    allSteps.clear();
-}
+    if (target)
+        target->clear();
 
+    if (tempSegmentObject)
+        tempSegmentObject->clear();
+
+    hasTempSegment = false;
+}
 
 void FilamentSimulator::resetSimulation() {
     clear();
-    target->setInstances({}, {}, {});
-    target->updateInstances();
     Camera::getInstance().reset();
     std::cout << "[FilamentSimulator] Simulation reset.\n";
 }

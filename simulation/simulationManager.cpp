@@ -4,8 +4,6 @@
 #include "primitives.h"
 #include "scene.h"
 
-/// Simulation lifecycle management
-
 bool SimulationManager::initializeSimulation(
     const std::string& gcodeFile,
     float extrusionResolution,
@@ -27,6 +25,7 @@ bool SimulationManager::initializeSimulation(
     context.temperatureBed = bedTemp;
     context.temperatureExtruder = extruderTemp;
     context.simulationSpeed = speed;
+    context.simulationScale = 0.01f;
 
     if (!loadGCode(gcodeFile))
         return false;
@@ -51,13 +50,18 @@ void SimulationManager::prepareSimulationScene(Scene* scene) {
         return;
     }
 
-    std::string mode = strategy->getName();
-    context.filamentObject = (mode == "adaptive") ?
-        Primitives::createDirectionalCube() :
-        Primitives::createInstancedCube();
+    context.filamentObject = Primitives::createDirectionalCube();
+    context.filamentObject->reserveInstances(context.printSteps.size() + 100);
+
+    context.tempSegmentObject = Primitives::createDirectionalCube();
+    context.tempSegmentObject->reserveInstances(1);
 
     scene->addInstanced(context.filamentObject);
+    scene->addInstanced(context.tempSegmentObject);
+
     simulator = new FilamentSimulator(context.filamentObject);
+    simulator->attachTemporaryObject(context.tempSegmentObject);
+
     state = SimulationState::Prepared;
 }
 
@@ -98,15 +102,12 @@ void SimulationManager::stepForward() {
         return;
     }
 
-    if (!context.filamentObject || !context.filamentObject->getMesh()) {
-        std::cerr << "[SimulationManager] Step failed: mesh is null.\n";
-        return;
-    }
-
     if (context.currentStepIndex >= context.printSteps.size()) return;
+
     const PrintStep& step = context.printSteps[context.currentStepIndex];
-    strategy->simulateStep(context, *simulator, step);
-    simulator->updateBuffers();
+    simulator->clearTemporarySegment();
+	strategy->simulateStep(context, *simulator, step);
+
     context.currentStepIndex++;
     context.simulationTime = 0.0f;
 
@@ -121,19 +122,9 @@ void SimulationManager::stepBackward() {
 
     if (context.currentStepIndex > 0) {
         context.currentStepIndex--;
-        recomputeStepsUpTo(context.currentStepIndex);
+        strategy->simulateStepsInRange(context, *simulator, context.currentStepIndex);
         context.simulationTime = 0.0f;
         std::cout << "[SimulationManager] Step backward: " << context.currentStepIndex << "\n";
-    }
-}
-
-void SimulationManager::recomputeStepsUpTo(size_t index) {
-    if (strategy && simulator) {
-        simulator->clear();
-        for (size_t i = 0; i < index; ++i) {
-            strategy->simulateStep(context, *simulator, context.printSteps[i]);
-        }
-        simulator->updateBuffers();
     }
 }
 
@@ -152,8 +143,7 @@ void SimulationManager::tickSimulation() {
         return;
 
     float deltaTime = timer.tick();
-    if (deltaTime <= 0.0f)
-        return;
+    if (deltaTime <= 0.0f) return;
 
     context.simulationTime += deltaTime * context.simulationSpeed;
 
@@ -163,19 +153,24 @@ void SimulationManager::tickSimulation() {
         float speed = (step.speed > 0.0f) ? step.speed : 1500.0f;
         float moveDuration = moveLength / (speed / 60.0f);
 
-        if (context.simulationTime < moveDuration)
-            break;
+        float progress = glm::clamp(context.simulationTime / moveDuration, 0.0f, 1.0f);
+
+        if (progress < 1.0f) {
+            strategy->simulatePartialStep(context, *simulator, step, progress);
+            return;
+        }
 
         strategy->simulateStep(context, *simulator, step);
-        simulator->updateBuffers();
+        simulator->clearTemporarySegment();
 
         context.simulationTime -= moveDuration;
         context.currentStepIndex++;
-    }
 
-    if (context.currentStepIndex >= context.printSteps.size() && state == SimulationState::Running) {
-        state = SimulationState::Completed;
-        std::cout << "[SimulationManager] Simulation completed.\n";
+        if (context.currentStepIndex >= context.printSteps.size()) {
+            state = SimulationState::Completed;
+            std::cout << "[SimulationManager] Simulation completed.\n";
+            break;
+        }
     }
 }
 
@@ -193,11 +188,14 @@ void SimulationManager::handleTerminate() {
 
     strategy = nullptr;
 
-    if (context.filamentObject && scenePtr) {
+    if (context.filamentObject && scenePtr)
         scenePtr->removeInstanced(context.filamentObject);
-    }
+    if (context.tempSegmentObject && scenePtr)
+        scenePtr->removeInstanced(context.tempSegmentObject);
 
     context.filamentObject = nullptr;
+    context.tempSegmentObject = nullptr;
+
     context.clear();
     state = SimulationState::Uninitialized;
 
@@ -206,6 +204,7 @@ void SimulationManager::handleTerminate() {
         terminateDone = true;
     }
     terminateCV.notify_one();
+
     std::cout << "[SimulationManager] Simulation terminated.\n";
 }
 
@@ -229,8 +228,6 @@ bool SimulationManager::tryStartSimulation(Scene* scene) {
         return false;
     }
 }
-
-/// REST API Event queue management
 
 void SimulationManager::enqueueEvent(SimulationEvent event) {
     std::lock_guard<std::mutex> lock(eventMutex);
@@ -259,8 +256,6 @@ void SimulationManager::processEvents() {
     }
 }
 
-/// Other methods
-
 SimulationManager& SimulationManager::get() {
     static SimulationManager instance;
     return instance;
@@ -274,6 +269,7 @@ bool SimulationManager::loadGCode(const std::string& path) {
         return false;
     }
     context.printSteps = parser.getPrintSteps();
+    context.printStepsCount = context.printSteps.size();
     return true;
 }
 
@@ -288,7 +284,6 @@ void SimulationManager::simulateFullPrint() {
     }
 
     strategy->simulate(context, *simulator);
-    simulator->updateBuffers();
     state = SimulationState::Completed;
 }
 

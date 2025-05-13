@@ -3,15 +3,21 @@
 
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
 #include "GCodeParser.h"
 #include "InstancedObject.h"
 
 struct SimulationContext {
+    // G-code
     std::string loadedFilename;
     std::vector<PrintStep> printSteps;
-    InstancedObject* filamentObject = nullptr;
+    size_t printStepsCount = 0;
 
-    // Configuration
+    // Visualisation objects
+    InstancedObject* filamentObject = nullptr;       
+    InstancedObject* tempSegmentObject = nullptr;     
+
+    // Printer config
     std::string printerName;
     float extrusionResolution = 0.2f;
     float nozzleDiameter = 1.75f;
@@ -20,6 +26,7 @@ struct SimulationContext {
     float temperatureBed = 0.0f;
     float temperatureExtruder = 0.0f;
     float simulationSpeed = 1.0f;
+    float simulationScale = 0.1f;
 
     // Runtime state
     glm::vec3 headPosition = glm::vec3(0.0f);
@@ -29,11 +36,20 @@ struct SimulationContext {
     void clear() {
         loadedFilename.clear();
         printSteps.clear();
+        printStepsCount = 0;
         filamentObject = nullptr;
+        tempSegmentObject = nullptr;
         extrusionResolution = 0.2f;
         currentStepIndex = 0;
         simulationTime = 0.0f;
         headPosition = glm::vec3(0.0f);
+        printerName.clear();
+        nozzleDiameter = 1.75f;
+        layerHeight = 0.2f;
+        retractionEnabled = false;
+        temperatureBed = 0.0f;
+        temperatureExtruder = 0.0f;
+        simulationSpeed = 1.0f;
     }
 
     void resetRuntime() {
@@ -43,5 +59,4 @@ struct SimulationContext {
     }
 };
 
-
-#endif
+#endif // SIMULATION_CONTEXT_H

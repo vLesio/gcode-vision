@@ -2,16 +2,21 @@
 #define ISIMULATION_MODE_H
 
 #include <vector>
-#include "GCodeTypes.h"
+#include <string>
 #include "filamentSimulator.h"
-#include "simulationContext.h"
+#include "GCodeTypes.h"
+#include "SimulationContext.h"
+
 
 class ISimulationMode {
 public:
-    virtual void simulate(const SimulationContext& context, FilamentSimulator& simulator) = 0;
-    virtual void simulateStep(const SimulationContext& context, FilamentSimulator& sim, const PrintStep& step) = 0;
     virtual ~ISimulationMode() = default;
+    virtual void simulate(const SimulationContext& context, FilamentSimulator& simulator) = 0;
+    virtual void simulateStep(const SimulationContext& context, FilamentSimulator& simulator, const PrintStep& step) = 0;
+    virtual void simulatePartialStep(const SimulationContext& context, FilamentSimulator& simulator, const PrintStep& step, float progress) = 0;
+	virtual void simulateStepsInRange(const SimulationContext& context, FilamentSimulator& simulator, size_t count) = 0;
+
     virtual std::string getName() const = 0;
 };
 
-#endif
+#endif // ISIMULATION_MODE_H

@@ -82,7 +82,6 @@ public:
 
 private:
     SimulationManager() = default;
-    void recomputeStepsUpTo(size_t index);
 
     SimulationContext context;
     FilamentSimulator* simulator = nullptr;
