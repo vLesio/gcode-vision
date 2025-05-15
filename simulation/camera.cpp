@@ -9,11 +9,11 @@
 // Singleton instance
 static std::unique_ptr<Camera> cameraInstance = nullptr;
 
-void Camera::init(int width, int height, glm::vec3 target, float yaw, float pitch, float distance, float zoomSpeed, float rotateSpeed)
+void Camera::init(glm::vec3 target, float yaw, float pitch, float distance, float zoomSpeed, float rotateSpeed)
 {
     if (!cameraInstance)
     {
-        cameraInstance.reset(new Camera(width, height, target));
+        cameraInstance.reset(new Camera(target));
         cameraInstance->yaw = yaw;
         cameraInstance->pitch = pitch;
         cameraInstance->distance = distance;
@@ -43,10 +43,8 @@ Camera& Camera::getInstance()
     return *cameraInstance;
 }
 
-Camera::Camera(int width, int height, glm::vec3 target)
+Camera::Camera(glm::vec3 target)
 {
-    this->width = width;
-    this->height = height;
     this->target = target;
     updatePositionOrbit();
 }
@@ -107,7 +105,7 @@ void Camera::zoom(float offset)
     updatePositionOrbit();
 }
 
-void Camera::computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane)
+void Camera::computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane, int width, int height)
 {
     glm::mat4 view;
 
@@ -136,11 +134,11 @@ void Camera::uploadToShader(Shader& shader, const char* uniform)
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 }
 
-void Camera::applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane)
+void Camera::applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane, int screenWidth, int screenHeight)
 {
     shader.Activate();
-    computeCameraMatrix(FOVdeg, nearPlane, farPlane);
-    uploadToShader(shader, uniform);
+	computeCameraMatrix(FOVdeg, nearPlane, farPlane, screenWidth, screenHeight);
+	uploadToShader(shader, uniform);
 }
 
 // Helper functions for camera control - used in REST API

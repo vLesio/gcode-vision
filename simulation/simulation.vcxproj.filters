@@ -100,6 +100,12 @@
     <Filter Include="Header Files\global">
       <UniqueIdentifier>{b510b1a7-9c92-44d1-a217-e4f30eaa3a60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\windowManager">
+      <UniqueIdentifier>{490bef89-eb82-4c91-80d4-9f48b3d8a946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\windowManager">
+      <UniqueIdentifier>{f1ddf851-3c28-43d9-b6d1-52497cda88e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -182,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="deltaTimer.cpp">
       <Filter>Source Files\opengl\simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="windowManager.cpp">
+      <Filter>Source Files\opengl\windowManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -274,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="simulationState.h">
       <Filter>Header Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="windowManager.h">
+      <Filter>Header Files\opengl\windowManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,7 @@
     <ClCompile Include="textureLoader.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="windowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adaptiveScaleSimulation.h" />
@@ -78,6 +79,7 @@
     <ClInclude Include="textureLoader.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
+    <ClInclude Include="windowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />

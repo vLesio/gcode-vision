@@ -19,7 +19,7 @@ class Camera
 {
 public:
     // Singleton access
-    static void init(int width, int height, glm::vec3 target = glm::vec3(0.0f),
+    static void init(glm::vec3 target = glm::vec3(0.0f),
         float yaw = 0.0f, float pitch = 0.0f, float distance = 5.0f, float zoomSpeed = 0.01f, float rotateSpeed = 0.1f);
     static Camera& getInstance();
 
@@ -38,9 +38,9 @@ public:
     void zoomOut();
 
     // Shader upload and camera matrix computation
-    void computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane);
+    void computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane, int width, int height);
     void uploadToShader(Shader& shader, const char* uniform);
-    void applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane);
+    void applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane, int screenWidth, int screenHeight);
 
 	// Helper function to read inputs from keyboard
     void keyboardInputs(GLFWwindow* window);
@@ -52,7 +52,7 @@ public:
     CameraMode getMode() const;
 
 private:
-    Camera(int width, int height, glm::vec3 target);
+    Camera(glm::vec3 target);
 
     // Block copy and assignment
     Camera(const Camera&) = delete;
@@ -61,8 +61,6 @@ private:
     void updatePositionOrbit();
 	glm::vec3 getForwardVector() const;
 	void faceTarget();
-
-    int width, height;
 
     glm::vec3 target;
     glm::vec3 Position;
