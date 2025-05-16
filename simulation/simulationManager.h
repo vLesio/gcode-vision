@@ -10,6 +10,7 @@
 #include "SimulationContext.h"
 #include "FilamentSimulator.h"
 #include "ISimulationMode.h"
+#include "PrintheadAnimator.h"
 #include "scene.h"
 
 
@@ -87,6 +88,8 @@ private:
     FilamentSimulator* simulator = nullptr;
     ISimulationMode* strategy = nullptr;
     DeltaTimer timer;
+
+	PrintheadAnimator* printheadAnimator = nullptr;
 
     SimulationState state = SimulationState::Uninitialized;
     std::queue<SimulationEvent> eventQueue;

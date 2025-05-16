@@ -58,9 +58,9 @@ SceneObject* Primitives::createUnitCube() {
         20,21,22,22,23,20
     };
 
-    Mesh* cubeMesh = new Mesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    auto cubeMesh = std::make_unique<Mesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
 
-    return new SceneObject(cubeMesh);
+    return new SceneObject(std::move(cubeMesh));
 }
 
 InstancedObject* Primitives::createInstancedCube() {
@@ -93,8 +93,8 @@ InstancedObject* Primitives::createInstancedCube() {
         3, 2, 6, 6, 7, 3
     };
 
-    auto* mesh = new InstancedMesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
-    return new InstancedObject(mesh);
+    auto mesh = std::make_unique<InstancedMesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    return new InstancedObject(std::move(mesh));
 }
 
 InstancedObject* Primitives::createDirectionalCube() {
@@ -127,8 +127,8 @@ InstancedObject* Primitives::createDirectionalCube() {
         3, 2, 6, 6, 7, 3
     };
 
-    auto* mesh = new InstancedMesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
-    return new InstancedObject(mesh);
+    auto mesh = std::make_unique<InstancedMesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    return new InstancedObject(std::move(mesh));
 }
 
 
@@ -148,6 +148,6 @@ SceneObject* Primitives::createTexturedPlane(float size) {
         2, 3, 0
     };
 
-    Mesh* mesh = new Mesh(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
-    return new SceneObject(mesh);
+    auto mesh = std::make_unique<Mesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    return new SceneObject(std::move(mesh));
 }

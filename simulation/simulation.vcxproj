@@ -32,6 +32,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="primitives.cpp" />
+    <ClCompile Include="printheadAnimator.cpp" />
     <ClCompile Include="rest.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sceneObject.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="matrixStack.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="primitives.h" />
+    <ClInclude Include="printheadAnimator.h" />
     <ClInclude Include="rest.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sceneObject.h" />

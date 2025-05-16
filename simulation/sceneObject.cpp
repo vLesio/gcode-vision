@@ -1,8 +1,12 @@
 #include "SceneObject.h"
 #include <glm/gtc/type_ptr.hpp>
 
-SceneObject::SceneObject(Mesh* mesh) : mesh(mesh) {}
+SceneObject::SceneObject(std::unique_ptr<Mesh> mesh) : mesh(std::move(mesh)) {}
 
+SceneObject::~SceneObject() {
+    for (auto* child : children)
+        delete child;
+}
 
 glm::mat4 SceneObject::getGlobalMatrix() const {
     if (parent)

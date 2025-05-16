@@ -10,6 +10,10 @@ InstancedMesh::InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, s
     vao.Unbind();
 }
 
+InstancedMesh::~InstancedMesh() {
+	Delete();
+}
+
 void InstancedMesh::uploadStaticInstances(const std::vector<glm::vec3>& positions,
     const std::vector<glm::vec3>& scales,
     const std::vector<glm::quat>& rotations) {

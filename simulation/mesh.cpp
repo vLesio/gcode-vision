@@ -13,6 +13,10 @@ Mesh::Mesh(GLfloat* vertices, size_t vSize, GLuint* indices, size_t iCount)
     vao.Unbind();
 }
 
+Mesh::~Mesh() {
+	Delete();
+}
+
 void Mesh::Draw() {
     vao.Bind();
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);

@@ -50,6 +50,13 @@ void SimulationManager::prepareSimulationScene(Scene* scene) {
         return;
     }
 
+    if (printheadAnimator)
+    {
+		delete printheadAnimator;
+		printheadAnimator = nullptr;
+    }
+
+    // Initialize filament objects
     context.filamentObject = Primitives::createDirectionalCube();
     context.filamentObject->reserveInstances(context.printSteps.size() + 100);
 
@@ -61,6 +68,13 @@ void SimulationManager::prepareSimulationScene(Scene* scene) {
 
     simulator = new FilamentSimulator(context.filamentObject);
     simulator->attachTemporaryObject(context.tempSegmentObject);
+
+	// Initialize print-head animator
+    if (!context.printSteps.empty()) {
+        printheadAnimator = new PrintheadAnimator(context.simulationScale, context.printSteps[0].startPosition);
+        printheadAnimator->initialize();
+        printheadAnimator->attachToScene(scene);
+    }
 
     state = SimulationState::Prepared;
 }
@@ -134,6 +148,11 @@ void SimulationManager::resetSimulation() {
     }
     context.resetRuntime();
     timer.pause();
+
+    if (printheadAnimator) {
+        printheadAnimator->reset();
+    }
+
     state = SimulationState::Prepared;
     std::cout << "[SimulationManager] Simulation reset.\n";
 }
@@ -157,11 +176,16 @@ void SimulationManager::tickSimulation() {
 
         if (progress < 1.0f) {
             strategy->simulatePartialStep(context, *simulator, step, progress);
+            if (printheadAnimator)
+                printheadAnimator->updateInterpolated(step.startPosition, step.endPosition, progress);
             return;
         }
 
         strategy->simulateStep(context, *simulator, step);
         simulator->clearTemporarySegment();
+
+        if (printheadAnimator)
+            printheadAnimator->update(step.endPosition);
 
         context.simulationTime -= moveDuration;
         context.currentStepIndex++;
@@ -184,6 +208,11 @@ void SimulationManager::handleTerminate() {
         simulator->resetSimulation();
         delete simulator;
         simulator = nullptr;
+    }
+
+    if (printheadAnimator) {
+        delete printheadAnimator;
+        printheadAnimator = nullptr;
     }
 
     strategy = nullptr;

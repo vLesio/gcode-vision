@@ -16,7 +16,7 @@ WindowManager::WindowManager(int width, int height, const char* title)
     mode = glfwGetVideoMode(monitor);
 
     windowedPosX = 100;
-	windowedPosY = 100;
+    windowedPosY = 100;
 
     createWindow(width, height, title, false);
 }

@@ -106,6 +106,12 @@
     <Filter Include="Source Files\opengl\windowManager">
       <UniqueIdentifier>{f1ddf851-3c28-43d9-b6d1-52497cda88e2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\engine3d\printheadAnimator">
+      <UniqueIdentifier>{29a3a5da-b044-4139-97dd-6aac55c7cbc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\engine3d\printheadAnimator">
+      <UniqueIdentifier>{812055ea-1a6b-4dae-93c1-0d3a8735e51a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -191,6 +197,9 @@
     </ClCompile>
     <ClCompile Include="windowManager.cpp">
       <Filter>Source Files\opengl\windowManager</Filter>
+    </ClCompile>
+    <ClCompile Include="printheadAnimator.cpp">
+      <Filter>Source Files\opengl\engine3d\printheadAnimator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="windowManager.h">
       <Filter>Header Files\opengl\windowManager</Filter>
+    </ClInclude>
+    <ClInclude Include="printheadAnimator.h">
+      <Filter>Header Files\opengl\engine3d\printheadAnimator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

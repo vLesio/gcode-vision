@@ -28,8 +28,10 @@ struct SimulationContext {
     float simulationSpeed = 1.0f;
     float simulationScale = 0.1f;
 
+    glm::vec3 headStartPosition = glm::vec3(0.0f);
+
+
     // Runtime state
-    glm::vec3 headPosition = glm::vec3(0.0f);
     size_t currentStepIndex = 0;
     float simulationTime = 0.0f;
 
@@ -42,7 +44,7 @@ struct SimulationContext {
         extrusionResolution = 0.2f;
         currentStepIndex = 0;
         simulationTime = 0.0f;
-        headPosition = glm::vec3(0.0f);
+        headStartPosition = glm::vec3(0.0f);
         printerName.clear();
         nozzleDiameter = 1.75f;
         layerHeight = 0.2f;
@@ -55,7 +57,6 @@ struct SimulationContext {
     void resetRuntime() {
         currentStepIndex = 0;
         simulationTime = 0.0f;
-        headPosition = glm::vec3(0.0f);
     }
 };
 

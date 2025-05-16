@@ -91,8 +91,10 @@ void run_opengl() {
     }
 
     // Cleanup
+	Camera::getInstance().reset();
     TextureLoader::clear();
     ShaderLoader::clear();
+	scene->Delete();
 
-    opengl_running = false;
+	opengl_running = false;
 }

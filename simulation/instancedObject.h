@@ -9,9 +9,9 @@
 
 class InstancedObject {
 public:
-    InstancedMesh* mesh;
+    std::unique_ptr<InstancedMesh> mesh;
 
-    InstancedObject(InstancedMesh* mesh);
+    InstancedObject(std::unique_ptr<InstancedMesh> mesh);
 
     void Draw(Shader& shader);
 

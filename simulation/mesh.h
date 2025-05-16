@@ -12,6 +12,7 @@ public:
     size_t indexCount;
 
     Mesh(GLfloat* vertices, size_t vSize, GLuint* indices, size_t iCount);
+    ~Mesh();
     void Draw();
     void Delete();
 };

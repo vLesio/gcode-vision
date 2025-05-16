@@ -14,10 +14,11 @@ enum class InstanceBufferMode { Static, Dynamic };
 class InstancedMesh {
 public:
     InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, size_t iCount);
+    ~InstancedMesh();
 
     void uploadStaticInstances(const std::vector<glm::vec3>& positions,
-        const std::vector<glm::vec3>& scales,
-        const std::vector<glm::quat>& rotations);
+                               const std::vector<glm::vec3>& scales,
+                               const std::vector<glm::quat>& rotations);
 
     void initializeDynamicBuffer(size_t maxInstances);
     void appendInstance(const glm::vec3& position, const glm::vec3& scale, const glm::quat& rotation);

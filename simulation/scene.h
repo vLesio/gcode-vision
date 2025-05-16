@@ -9,6 +9,7 @@
 class Scene {
 public:
     void add(SceneObject* obj);
+	void remove(SceneObject* obj);
     void addInstanced(InstancedObject* obj);
     void removeInstanced(InstancedObject* obj);
     void Draw(Shader& regularShader, Shader& instancedShader);

@@ -11,7 +11,7 @@
 
 class SceneObject {
 public:
-    Mesh* mesh;
+    std::unique_ptr<Mesh> mesh;
     Texture* texture = nullptr;
     bool hasTexture = false;
 
@@ -19,7 +19,9 @@ public:
     SceneObject* parent = nullptr;    
     std::vector<SceneObject*> children;
 
-    SceneObject(Mesh* mesh);
+    SceneObject(std::unique_ptr<Mesh> mesh);
+    ~SceneObject();
+
 
     glm::mat4 getGlobalMatrix() const;
     void Draw(Shader& shader) const;

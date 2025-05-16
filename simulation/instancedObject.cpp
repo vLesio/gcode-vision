@@ -1,8 +1,8 @@
 #include "InstancedObject.h"
 #include <iostream>
 
-InstancedObject::InstancedObject(InstancedMesh* mesh)
-    : mesh(mesh) {
+InstancedObject::InstancedObject(std::unique_ptr<InstancedMesh> mesh)
+    : mesh(std::move(mesh)) {
 }
 
 void InstancedObject::Draw(Shader& shader) {
