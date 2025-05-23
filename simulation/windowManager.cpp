@@ -3,6 +3,9 @@
 #include <unordered_map>
 #include "camera.h"
 
+// Singleton instance
+static std::unique_ptr<WindowManager> managerInstance = nullptr;
+
 WindowManager::WindowManager(int width, int height, const char* title)
     : window(nullptr), isFullscreen(false), title(title),
     windowedWidth(width), windowedHeight(height) {
@@ -19,6 +22,26 @@ WindowManager::WindowManager(int width, int height, const char* title)
     windowedPosY = 100;
 
     createWindow(width, height, title, false);
+}
+
+void WindowManager::init(int width, int height, const char* title)
+{
+	if (!managerInstance) {
+		managerInstance.reset(new WindowManager(width, height, title));
+	}
+    else
+    {
+		std::cerr << "[WindowManager] Warning: Already initialized!" << std::endl;
+    }
+}
+
+WindowManager& WindowManager::getInstance()
+{
+	if (!managerInstance)
+	{
+		throw std::runtime_error("[WindowManager] Tried to use before initialization!");
+	}
+	return *managerInstance;
 }
 
 WindowManager::~WindowManager() {
@@ -60,10 +83,19 @@ void WindowManager::createWindow(int width, int height, const char* title, bool 
 
     setCallbacks();
 }
+///////// Callbacks
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (Camera::getInstance().getMode() == CameraMode::Free) {
         Camera::getInstance().processMouseMovement(static_cast<float>(xpos), static_cast<float>(ypos));
+    }
+}
+
+void WindowManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_F11 && action == GLFW_PRESS)
+    {
+        getInstance().toggleFullscreen();
     }
 }
 
@@ -79,6 +111,8 @@ void WindowManager::setCallbacks() {
             glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
         });
+
+    glfwSetKeyCallback(window, key_callback);
 }
 
 void WindowManager::toggleFullscreen() {
@@ -100,19 +134,8 @@ void WindowManager::toggleFullscreen() {
     }
 }
 
-bool WindowManager::isKeyPressedOnce(int key) {
-    static std::unordered_map<int, bool> keyStates;
-    bool isPressed = glfwGetKey(window, key) == GLFW_PRESS;
-    bool wasPressed = keyStates[key];
-    keyStates[key] = isPressed;
-    return isPressed && !wasPressed;
-}
 
 void WindowManager::processInput() {
-    if (isKeyPressedOnce(GLFW_KEY_F11)) {
-        toggleFullscreen();
-    }
-
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }

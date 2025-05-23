@@ -122,6 +122,9 @@ void SimulationManager::stepForward() {
     simulator->clearTemporarySegment();
 	strategy->simulateStep(context, *simulator, step);
 
+    if (printheadAnimator)
+        printheadAnimator->step(step);
+
     context.currentStepIndex++;
     context.simulationTime = 0.0f;
 
@@ -138,6 +141,10 @@ void SimulationManager::stepBackward() {
         context.currentStepIndex--;
         strategy->simulateStepsInRange(context, *simulator, context.currentStepIndex);
         context.simulationTime = 0.0f;
+
+        if (printheadAnimator)
+			printheadAnimator->step(context.printSteps[context.currentStepIndex]);
+
         std::cout << "[SimulationManager] Step backward: " << context.currentStepIndex << "\n";
     }
 }

@@ -29,7 +29,8 @@ Scene* scene = nullptr;
 void run_opengl() {
 
     // Set the window context, callbacks,
-	WindowManager windowManager(SCR_WIDTH, SCR_HEIGHT, "3D Printer Simulator");
+	WindowManager::init(SCR_WIDTH, SCR_HEIGHT, "3D Printer Simulator");
+	WindowManager& windowManager = WindowManager::getInstance();
 
     opengl_running = true;
 

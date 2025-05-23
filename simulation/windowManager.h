@@ -1,5 +1,5 @@
-#ifndef  WINDOW_MANAGER_H
-#define  WINDOW_MANAGER_H
+#ifndef WINDOW_MANAGER_H
+#define WINDOW_MANAGER_H
 
 #include <utility>
 #include <glad/glad.h>
@@ -7,11 +7,13 @@
 
 class WindowManager {
 public:
-    WindowManager(int width, int height, const char* title);
+	//Singleton access
+	static void init(int width, int height, const char* title);
+    static WindowManager& getInstance();
+
     ~WindowManager();
 
     void toggleFullscreen();
-    bool isKeyPressedOnce(int key);
     void processInput();
     GLFWwindow* getWindow() const;
     void updateDisplay();
@@ -19,8 +21,15 @@ public:
     std::pair<int, int> getWindowSize() const;
 
 private:
+    WindowManager(int width, int height, const char* title);
+    // Block copy and assignment
+    WindowManager(const WindowManager&) = delete;
+    WindowManager& operator=(const WindowManager&) = delete;
+
     void createWindow(int width, int height, const char* title, bool fullscreen);
     void setCallbacks();
+
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
     GLFWwindow* window;
     GLFWmonitor* monitor;
@@ -33,4 +42,3 @@ private:
 };
 
 #endif
-

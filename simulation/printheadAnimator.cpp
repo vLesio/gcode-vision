@@ -1,3 +1,4 @@
+#include "GCodeTypes.h"
 #include "PrintheadAnimator.h"
 #include "Primitives.h"
 
@@ -42,6 +43,11 @@ void PrintheadAnimator::updateInterpolated(const glm::vec3& from, const glm::vec
 
 	glm::vec3 interpolated = glm::mix(from, to, progress);
     update(interpolated);
+}
+
+void PrintheadAnimator::step(const PrintStep& step) {
+	if (!isInitialized || !nozzleObject) return;
+	update(step.endPosition);
 }
 
 void PrintheadAnimator::reset()

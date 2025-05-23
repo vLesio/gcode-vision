@@ -15,6 +15,7 @@ public:
 
     void update(const glm::vec3& position);
     void updateInterpolated(const glm::vec3& from, const glm::vec3& to, float progress);
+	void step(const PrintStep& step);
 
     void reset();
     glm::vec3 getCurrentPosition() const { return currentPosition; }
