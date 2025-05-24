@@ -11,7 +11,7 @@ public:
     EBO(GLuint* indices, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW);
 
     void Bind();
-    void Unbind();
+    static void Unbind();
     void Delete();
 };
 

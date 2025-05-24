@@ -57,9 +57,9 @@ void Camera::updatePositionOrbit()
     float yawRad = glm::radians(yaw);
     float pitchRad = glm::radians(pitch);
 
-    Position.x = target.x + distance * cos(pitchRad) * sin(yawRad);
-    Position.y = target.y + distance * sin(pitchRad);
-    Position.z = target.z + distance * cos(pitchRad) * cos(yawRad);
+    position.x = target.x + distance * cos(pitchRad) * sin(yawRad);
+    position.y = target.y + distance * sin(pitchRad);
+    position.z = target.z + distance * cos(pitchRad) * cos(yawRad);
 }
 
 void Camera::ensureOrbitMode() const
@@ -111,10 +111,10 @@ void Camera::computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane, 
 
     if (mode == CameraMode::Free) {
         glm::vec3 forward = getForwardVector();
-        view = glm::lookAt(Position, Position + forward, Up);
+        view = glm::lookAt(position, position + forward, upVec);
     }
     else {
-        view = glm::lookAt(Position, target, Up);
+        view = glm::lookAt(position, target, upVec);
     }
 
     glm::mat4 projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
@@ -129,16 +129,17 @@ glm::vec3 Camera::getForwardVector() const {
     return glm::normalize(forward);
 }
 
-void Camera::uploadToShader(Shader& shader, const char* uniform)
+void Camera::uploadToShader(Shader& shader)
 {
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
+    glUniform3fv(glGetUniformLocation(shader.ID, "viewPos"), 1, glm::value_ptr(position));
 }
 
-void Camera::applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane, int screenWidth, int screenHeight)
+void Camera::applyToShader(Shader& shader, float FOVdeg, float nearPlane, float farPlane, int screenWidth, int screenHeight)
 {
     shader.Activate();
 	computeCameraMatrix(FOVdeg, nearPlane, farPlane, screenWidth, screenHeight);
-	uploadToShader(shader, uniform);
+	uploadToShader(shader);
 }
 
 // Helper functions for camera control - used in REST API
@@ -174,20 +175,20 @@ CameraMode Camera::getMode() const {
 
 void Camera::processFreeMovement(GLFWwindow* window, float deltaTime) {
     glm::vec3 forward = getForwardVector();
-    glm::vec3 right = glm::normalize(glm::cross(forward, Up));
+    glm::vec3 right = glm::normalize(glm::cross(forward, upVec));
     glm::vec3 movement(0.0f);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) movement += forward;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) movement -= forward;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) movement -= right;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) movement += right;
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) movement += Up;
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) movement -= Up;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) movement += upVec;
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) movement -= upVec;
 
     if (glm::length(movement) > 0.0f) {
         movement = glm::normalize(movement);
         float speed = freeSpeed * deltaTime;
-        Position += movement * speed;
+        position += movement * speed;
     }
 }
 
@@ -251,7 +252,7 @@ void Camera::processMouseMovement(float xpos, float ypos) {
 }
 
 void Camera::faceTarget() {
-    glm::vec3 direction = glm::normalize(target - Position);
+    glm::vec3 direction = glm::normalize(target - position);
     yaw = glm::degrees(atan2(direction.x, direction.z));
     pitch = glm::degrees(asin(direction.y));
 }

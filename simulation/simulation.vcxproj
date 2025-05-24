@@ -29,6 +29,7 @@
     <ClCompile Include="GCodeParser.cpp" />
     <ClCompile Include="instancedMesh.cpp" />
     <ClCompile Include="instancedObject.cpp" />
+    <ClCompile Include="lightObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="primitives.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="instancedMesh.h" />
     <ClInclude Include="instancedObject.h" />
     <ClInclude Include="ISimulationMode.h" />
+    <ClInclude Include="lightObject.h" />
     <ClInclude Include="matrixStack.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="primitives.h" />

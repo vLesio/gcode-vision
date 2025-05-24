@@ -64,33 +64,59 @@ SceneObject* Primitives::createUnitCube() {
 }
 
 InstancedObject* Primitives::createInstancedCube() {
+    // pos(x, y, z) + normal(x, y, z)
     GLfloat vertices[] = {
-        // Front face
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
+        // Front (+Z)
+        -0.5f, -0.5f,  0.5f,   0,  0,  1,
+         0.5f, -0.5f,  0.5f,   0,  0,  1,
+         0.5f,  0.5f,  0.5f,   0,  0,  1,
+        -0.5f,  0.5f,  0.5f,   0,  0,  1,
 
-        // Back face
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
+        // Back (-Z)
+         0.5f, -0.5f, -0.5f,   0,  0, -1,
+        -0.5f, -0.5f, -0.5f,   0,  0, -1,
+        -0.5f,  0.5f, -0.5f,   0,  0, -1,
+         0.5f,  0.5f, -0.5f,   0,  0, -1,
+
+         // Left (-X)
+         -0.5f, -0.5f, -0.5f,  -1,  0,  0,
+         -0.5f, -0.5f,  0.5f,  -1,  0,  0,
+         -0.5f,  0.5f,  0.5f,  -1,  0,  0,
+         -0.5f,  0.5f, -0.5f,  -1,  0,  0,
+
+         // Right (+X)
+          0.5f, -0.5f,  0.5f,   1,  0,  0,
+          0.5f, -0.5f, -0.5f,   1,  0,  0,
+          0.5f,  0.5f, -0.5f,   1,  0,  0,
+          0.5f,  0.5f,  0.5f,   1,  0,  0,
+
+          // Bottom (-Y)
+          -0.5f, -0.5f, -0.5f,   0, -1,  0,
+           0.5f, -0.5f, -0.5f,   0, -1,  0,
+           0.5f, -0.5f,  0.5f,   0, -1,  0,
+          -0.5f, -0.5f,  0.5f,   0, -1,  0,
+
+          // Top (+Y)
+          -0.5f,  0.5f,  0.5f,   0,  1,  0,
+           0.5f,  0.5f,  0.5f,   0,  1,  0,
+           0.5f,  0.5f, -0.5f,   0,  1,  0,
+          -0.5f,  0.5f, -0.5f,   0,  1,  0
     };
+
 
     GLuint indices[] = {
         // Front
         0, 1, 2, 2, 3, 0,
         // Back
-        5, 4, 7, 7, 6, 5,
+        4, 5, 6, 6, 7, 4,
         // Left
-        4, 0, 3, 3, 7, 4,
+        8, 9,10,10,11, 8,
         // Right
-        1, 5, 6, 6, 2, 1,
-        // Bottom
-        4, 5, 1, 1, 0, 4,
-        // Top
-        3, 2, 6, 6, 7, 3
+		12,13,14,14,15,12,
+    	// Bottom
+    	16,17,18,18,19,16,
+    	// Top
+    	20,21,22,22,23,20
     };
 
     auto mesh = std::make_unique<InstancedMesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
@@ -98,38 +124,64 @@ InstancedObject* Primitives::createInstancedCube() {
 }
 
 InstancedObject* Primitives::createDirectionalCube() {
+    // pos(x, y, z) + normal(x, y, z)
     GLfloat vertices[] = {
-        // Front face
-        0.0f, -0.5f,  0.5f,
-        1.0f, -0.5f,  0.5f,
-        1.0f,  0.5f,  0.5f,
-        0.0f,  0.5f,  0.5f,
+        // Front (+Z)
+        0.0f, -0.5f,  0.5f,   0,  0,  1,
+        1.0f, -0.5f,  0.5f,   0,  0,  1,
+        1.0f,  0.5f,  0.5f,   0,  0,  1,
+        0.0f,  0.5f,  0.5f,   0,  0,  1,
 
-        // Back face
-        0.0f, -0.5f, -0.5f,
-        1.0f, -0.5f, -0.5f,
-        1.0f,  0.5f, -0.5f,
-        0.0f,  0.5f, -0.5f
+        // Back (-Z)
+        1.0f, -0.5f, -0.5f,   0,  0, -1,
+        0.0f, -0.5f, -0.5f,   0,  0, -1,
+        0.0f,  0.5f, -0.5f,   0,  0, -1,
+        1.0f,  0.5f, -0.5f,   0,  0, -1,
+
+        // Left (-X)
+        0.0f, -0.5f, -0.5f,  -1,  0,  0,
+        0.0f, -0.5f,  0.5f,  -1,  0,  0,
+        0.0f,  0.5f,  0.5f,  -1,  0,  0,
+        0.0f,  0.5f, -0.5f,  -1,  0,  0,
+
+        // Right (+X)
+        1.0f, -0.5f,  0.5f,   1,  0,  0,
+        1.0f, -0.5f, -0.5f,   1,  0,  0,
+        1.0f,  0.5f, -0.5f,   1,  0,  0,
+        1.0f,  0.5f,  0.5f,   1,  0,  0,
+
+        // Bottom (-Y)
+        0.0f, -0.5f, -0.5f,   0, -1,  0,
+        1.0f, -0.5f, -0.5f,   0, -1,  0,
+        1.0f, -0.5f,  0.5f,   0, -1,  0,
+        0.0f, -0.5f,  0.5f,   0, -1,  0,
+
+        // Top (+Y)
+        0.0f,  0.5f,  0.5f,   0,  1,  0,
+        1.0f,  0.5f,  0.5f,   0,  1,  0,
+        1.0f,  0.5f, -0.5f,   0,  1,  0,
+        0.0f,  0.5f, -0.5f,   0,  1,  0
     };
 
     GLuint indices[] = {
         // Front
         0, 1, 2, 2, 3, 0,
         // Back
-        5, 4, 7, 7, 6, 5,
+        4, 5, 6, 6, 7, 4,
         // Left
-        4, 0, 3, 3, 7, 4,
+        8, 9,10,10,11, 8,
         // Right
-        1, 5, 6, 6, 2, 1,
-        // Bottom
-        4, 5, 1, 1, 0, 4,
-        // Top
-        3, 2, 6, 6, 7, 3
+		12,13,14,14,15,12,
+		// Bottom
+    	16,17,18,18,19,16,
+		// Top
+		20,21,22,22,23,20
     };
 
     auto mesh = std::make_unique<InstancedMesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
     return new InstancedObject(std::move(mesh));
 }
+
 
 
 SceneObject* Primitives::createTexturedPlane(float size) {
@@ -151,3 +203,4 @@ SceneObject* Primitives::createTexturedPlane(float size) {
     auto mesh = std::make_unique<Mesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
     return new SceneObject(std::move(mesh));
 }
+

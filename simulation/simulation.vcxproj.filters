@@ -112,6 +112,12 @@
     <Filter Include="Source Files\opengl\engine3d\printheadAnimator">
       <UniqueIdentifier>{812055ea-1a6b-4dae-93c1-0d3a8735e51a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl\engine3d\sceneManagment\light">
+      <UniqueIdentifier>{3c9f4f44-bc6c-4e12-8a10-69feedd66a0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl\engine3d\sceneManagment\light">
+      <UniqueIdentifier>{cf513e4f-0419-4f6d-9aa0-95bac4ddf5c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -200,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="printheadAnimator.cpp">
       <Filter>Source Files\opengl\engine3d\printheadAnimator</Filter>
+    </ClCompile>
+    <ClCompile Include="lightObject.cpp">
+      <Filter>Source Files\opengl\engine3d\sceneManagment\light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="printheadAnimator.h">
       <Filter>Header Files\opengl\engine3d\printheadAnimator</Filter>
+    </ClInclude>
+    <ClInclude Include="lightObject.h">
+      <Filter>Header Files\opengl\engine3d\sceneManagment\light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

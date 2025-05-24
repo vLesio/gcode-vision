@@ -39,8 +39,8 @@ public:
 
     // Shader upload and camera matrix computation
     void computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane, int width, int height);
-    void uploadToShader(Shader& shader, const char* uniform);
-    void applyToShader(Shader& shader, const char* uniform, float FOVdeg, float nearPlane, float farPlane, int screenWidth, int screenHeight);
+    void uploadToShader(Shader& shader);
+    void applyToShader(Shader& shader, float FOVdeg, float nearPlane, float farPlane, int screenWidth, int screenHeight);
 
 	// Helper function to read inputs from keyboard
     void keyboardInputs(GLFWwindow* window);
@@ -63,8 +63,8 @@ private:
 	void faceTarget();
 
     glm::vec3 target;
-    glm::vec3 Position;
-    glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 position;
+    glm::vec3 upVec = glm::vec3(0.0f, 1.0f, 0.0f);
 
     float yaw = 0.0f;
     float pitch = 0.0f;

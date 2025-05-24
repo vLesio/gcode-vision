@@ -14,6 +14,7 @@
 #include "textureLoader.h"
 #include "SimulationManager.h"
 #include "windowManager.h"
+#include "lightObject.h"
 
 // Window size
 const unsigned int SCR_WIDTH = 1200;
@@ -64,6 +65,11 @@ void run_opengl() {
     SceneObject* ground = Primitives::createTexturedPlane(10.0f);
     scene->add(ground);
 
+    // Light object setup
+    auto* light = new LightObject(glm::vec3(1.0f, 1.0f, 1.0f)); 
+    light->localTransform.setTop(glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 10.0f, 5.0f)));
+    scene->add(light);
+
     // Main render loop
     while (!windowManager.shouldClose()) {
         if (!opengl_running)
@@ -79,10 +85,14 @@ void run_opengl() {
         // Update simulation
         sim.tickSimulation();
 
+		// Upload light to shaders
+        light->uploadToShader(*defaultShader);
+        light->uploadToShader(*filamentShader);
+
 		// Update camera
         auto [width, height] = windowManager.getWindowSize();
-        camera.applyToShader(*defaultShader, "camMatrix", 45.0f, 0.1f, 100.0f, width, height);
-        camera.applyToShader(*filamentShader, "camMatrix", 45.0f, 0.1f, 100.0f, width, height);
+        camera.applyToShader(*defaultShader, 45.0f, 0.1f, 100.0f, width, height);
+        camera.applyToShader(*filamentShader, 45.0f, 0.1f, 100.0f, width, height);
 
         // Render scene
         scene->Draw(*defaultShader, *filamentShader);

@@ -6,7 +6,9 @@ InstancedMesh::InstancedMesh(GLfloat* vertices, size_t vSize, GLuint* indices, s
 {
     vao.Bind();
     ebo.Bind();
-    vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+	vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);                    // Position
+	vao.LinkAttribute(vbo, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));  // Normal
+
     vao.Unbind();
 }
 

@@ -20,7 +20,7 @@ public:
     void setTemporarySegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
     void clearTemporarySegment();
 
-    glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
+    static glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
 
 private:
     InstancedObject* target = nullptr;

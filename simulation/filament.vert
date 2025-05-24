@@ -1,6 +1,10 @@
 #version 330 core
 
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+
+out vec3 FragPos;
+out vec3 Normal;
 
 layout (location = 3) in vec3 instancePos;
 layout (location = 4) in vec3 instanceScale;
@@ -39,11 +43,14 @@ void main() {
     scaleMat[2][2] = instanceScale.z;
 
     mat4 rotMat = quatToMat4(instanceRotation);
-
     mat4 translateMat = mat4(1.0);
     translateMat[3] = vec4(instancePos, 1.0);
 
     mat4 model = translateMat * rotMat * scaleMat;
+    vec4 worldPosition = model * vec4(aPos, 1.0);
+    FragPos = vec3(worldPosition);
+    
+    Normal = mat3(transpose(inverse(model))) * aNormal; 
 
-    gl_Position = camMatrix * model * vec4(aPos, 1.0);
+    gl_Position = camMatrix * worldPosition;
 }

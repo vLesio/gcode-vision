@@ -7,6 +7,9 @@ out vec4 FragColor;
 
 uniform sampler2D tex0;
 uniform float useTexture;
+uniform vec3 viewPos;
+uniform vec3 lightPos = vec3(1.0, 5.0, 1.0);  
+uniform vec3 lightColor = vec3(1.0);         
 
 void main()
 {
