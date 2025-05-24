@@ -10,7 +10,7 @@ PrintheadAnimator::~PrintheadAnimator() {
 }
 
 void PrintheadAnimator::initialize() {
-    nozzleObject = Primitives::createUnitCube();
+    nozzleObject = Primitives::createConeMarker(0.3f, 1.0f, 16, glm::vec3(0.8f, 0.8f, 0.8f));
 	isInitialized = true;
     update(currentPosition);
 }

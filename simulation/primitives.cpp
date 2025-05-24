@@ -300,3 +300,63 @@ InstancedObject* Primitives::createDirectedCylinder(int segments, float radius, 
 
     return new InstancedObject(std::move(mesh));
 }
+
+SceneObject* Primitives::createConeMarker(float radius, float height, int segments, glm::vec3 color) {
+    std::vector<GLfloat> vertices;
+    std::vector<GLuint> indices;
+
+	float r = color.r;
+	float g = color.g;
+	float b = color.b;
+
+	// Cone apex
+    vertices.insert(vertices.end(), {
+        0.0f, 0.0f, 0.0f,    
+        r, g, b,
+		0.0f, 0.0f // UV
+        });
+
+	// Base vertices (circle)
+    for (int i = 0; i <= segments; ++i) {
+        float angle = 2.0f * M_PI * i / segments;
+        float x = cos(angle) * radius;
+        float z = sin(angle) * radius;
+
+        vertices.insert(vertices.end(), {
+            x, height, z,
+            r, g, b,
+			0.0f, 0.0f // UV
+            });
+    }
+
+	// Sides indices (fan)
+    for (int i = 1; i <= segments; ++i) {
+		indices.push_back(0);         // Apex of the cone
+		indices.push_back(i);           // Current base vertex
+		indices.push_back(i + 1);     // Next base vertex 
+    }
+
+	// Center vertex for the base
+    int baseCenterIndex = static_cast<int>(vertices.size() / 8);
+    vertices.insert(vertices.end(), {
+        0.0f, height, 0.0f,
+        r, g, b,
+		0.0f, 0.0f // UV
+        });
+
+	// Base indices (fan)
+    for (int i = 1; i <= segments; ++i) {
+        indices.push_back(baseCenterIndex);
+        indices.push_back(i + 1);
+        indices.push_back(i);
+    }
+
+    auto mesh = std::make_unique<Mesh>(
+        vertices.data(),
+        vertices.size() * sizeof(GLfloat),
+        indices.data(),
+        indices.size()
+    );
+
+    return new SceneObject(std::move(mesh));
+}

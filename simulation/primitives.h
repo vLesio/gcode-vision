@@ -10,6 +10,7 @@ public:
 	static InstancedObject* createDirectionalCube();
     static SceneObject* createTexturedPlane(float size);
     static InstancedObject* createDirectedCylinder(int segments, float radius, float length);
+    static SceneObject* createConeMarker(float radius, float height, int segments, glm::vec3 color);
 };
 
 #endif
