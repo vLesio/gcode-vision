@@ -11,6 +11,7 @@ public:
     LightObject(glm::vec3 color = glm::vec3(1.0f));
 
     void uploadToShader(Shader& shader) const;
+    static std::unique_ptr<Mesh> createLightCubeMesh();
 
     glm::vec3 getLightColor() const;
 
@@ -18,7 +19,6 @@ public:
 
 private:
     glm::vec3 lightColor;
-    static std::unique_ptr<Mesh> createLightCubeMesh(glm::vec3 color);
 };
 
 #endif

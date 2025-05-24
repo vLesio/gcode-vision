@@ -181,7 +181,7 @@ void SimulationManager::tickSimulation() {
     while (context.currentStepIndex < context.printSteps.size()) {
         const PrintStep& step = context.printSteps[context.currentStepIndex];
         float moveLength = glm::distance(step.startPosition, step.endPosition);
-        float speed = (step.speed > 0.0f) ? step.speed : 1500.0f;
+		float speed = (step.speed > 0.0f) ? step.speed : context.maxSpeed; // Default speed if not specified in step
         float moveDuration = moveLength / (speed / 60.0f);
 
         float progress = glm::clamp(context.simulationTime / moveDuration, 0.0f, 1.0f);

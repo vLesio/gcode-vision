@@ -120,6 +120,7 @@ void InstancedMesh::resetDynamicBuffer() {
 void InstancedMesh::DrawInstanced() {
     vao.Bind();
     glDrawElementsInstanced(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0, instanceCount);
+	vao.Unbind();
 }
 
 void InstancedMesh::Delete() {

@@ -10,13 +10,19 @@ class Scene {
 public:
     void add(SceneObject* obj);
 	void remove(SceneObject* obj);
+
     void addInstanced(InstancedObject* obj);
     void removeInstanced(InstancedObject* obj);
-    void Draw(Shader& regularShader, Shader& instancedShader);
+
+    void addUnlit(SceneObject* obj);
+	void removeUnlit(SceneObject* obj);
+
+	void Draw(Shader& regularShader, Shader& instancedShader, Shader& unlitShader);
     void Delete();
 
 private:
     std::vector<SceneObject*> objects;
+    std::vector<SceneObject*> unlitObjects;
     std::vector<InstancedObject*> instancedObjects;
 };
 

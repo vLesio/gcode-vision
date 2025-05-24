@@ -8,9 +8,9 @@ public:
     static SceneObject* createUnitCube();
     static InstancedObject* createInstancedCube();
 	static InstancedObject* createDirectionalCube();
-    static SceneObject* createTexturedPlane(float size);
+    static SceneObject* createPlane(float size);
     static InstancedObject* createDirectedCylinder(int segments, float radius, float length);
-    static SceneObject* createConeMarker(float radius, float height, int segments, glm::vec3 color);
+    static SceneObject* createConeMarker(float radius, float height, int segments);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "GCodeTypes.h"
+#include "materialManager.h"
 #include "PrintheadAnimator.h"
 #include "Primitives.h"
 
@@ -10,7 +11,14 @@ PrintheadAnimator::~PrintheadAnimator() {
 }
 
 void PrintheadAnimator::initialize() {
-    nozzleObject = Primitives::createConeMarker(0.3f, 1.0f, 16, glm::vec3(0.8f, 0.8f, 0.8f));
+    nozzleObject = Primitives::createConeMarker(0.3f, 1.0f, 16);
+	if (MaterialManager::get("cone") == nullptr) {
+		MaterialManager::create("cone", glm::vec3(0.1, 0.6, 0.8), 1.0f);
+		auto  mat= MaterialManager::get("cone");
+        mat->specularStrength = 0.05f;
+	}
+	nozzleObject->setMaterial(MaterialManager::get("cone"));
+
 	isInitialized = true;
     update(currentPosition);
 }

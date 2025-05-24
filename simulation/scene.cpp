@@ -1,5 +1,7 @@
 #include "scene.h"
 
+#include "materialManager.h"
+
 void Scene::add(SceneObject* obj) {
     objects.push_back(obj);
 }
@@ -24,12 +26,29 @@ void Scene::removeInstanced(InstancedObject* obj) {
     }
 }
 
-void Scene::Draw(Shader& regularShader, Shader& instancedShader) {
+void Scene::addUnlit(SceneObject* obj) {
+	if (obj->material == nullptr) {
+		obj->setMaterial(MaterialManager::get("unlit"));
+	}
+	unlitObjects.push_back(obj);
+}
+void Scene::removeUnlit(SceneObject* obj) {
+	auto it = std::find(unlitObjects.begin(), unlitObjects.end(), obj);
+	if (it != unlitObjects.end()) {
+		delete* it;
+		unlitObjects.erase(it);
+	}
+}
+
+void Scene::Draw(Shader& regularShader, Shader& instancedShader, Shader& unlitShader) {
     for (auto& obj : objects)
         obj->Draw(regularShader);
 
     for (auto& iobj : instancedObjects)
         iobj->Draw(instancedShader);
+
+	for (auto& uobj : unlitObjects)
+		uobj->Draw(unlitShader);
 }
 
 void Scene::Delete() {

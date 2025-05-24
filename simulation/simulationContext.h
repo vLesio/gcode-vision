@@ -27,6 +27,7 @@ struct SimulationContext {
     float temperatureExtruder = 0.0f;
     float simulationSpeed = 1.0f;
     float simulationScale = 0.1f;
+	float maxSpeed = 1200.0f;
 
     glm::vec3 headStartPosition = glm::vec3(0.0f);
 

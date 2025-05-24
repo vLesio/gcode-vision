@@ -15,14 +15,17 @@ glm::mat4 SceneObject::getGlobalMatrix() const {
 }
 
 void SceneObject::Draw(Shader& shader) const {
-    shader.Activate();
-
+	shader.Activate();
     glm::mat4 model = getGlobalMatrix();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform1f(glGetUniformLocation(shader.ID, "useTexture"), hasTexture ? 1.0f : 0.0f);
 
-    if (hasTexture && texture)
-        texture->Bind();
+    if (material) {
+        material->apply(shader);
+    }
+    else {
+        std::cerr << "[ERROR] material is null in InstancedObject!\n";
+        return;
+    }
 
     if (mesh)
         mesh->Draw();
@@ -31,10 +34,16 @@ void SceneObject::Draw(Shader& shader) const {
         child->Draw(shader);
 }
 
-void SceneObject::setTexture(Texture* tex) {
-    texture = tex;
-    hasTexture = true;
+void SceneObject::setMaterial(Material* mat) {
+    if (mat == nullptr)
+    {
+		std::cerr << "[SceneObject] Attempted to set null material!" << std::endl;
+		return;
+    }
+
+    material = mat;
 }
+
 
 void SceneObject::setParent(SceneObject* newParent, bool keepGlobalTransform) {
     if (keepGlobalTransform && newParent) {

@@ -9,13 +9,14 @@ uniform vec3 lightPos = vec3(1.0, 5.0, 1.0);    // Light position in world space
 uniform vec3 viewPos;                           // Camera position in world space
 uniform vec3 lightColor = vec3(1.0);            // Light color (white by default)
 //uniform vec3 objectColor = vec3(1.0, 0.88, 0.75); // Filament color - cream
-uniform vec3 objectColor = vec3(0.3, 0.9, 1.0); // light blue
+//uniform vec3 objectColor = vec3(0.3, 0.9, 1.0); // light blue
+uniform vec3 objectColor = vec3(1.0f, 0.6f, 0.3f); // light orange
 
 void main()
 {
 
     // Ambient
-    float ambientStrength = 0.2;
+    float ambientStrength = 0.3;
     vec3 ambient = ambientStrength * lightColor;
 
     // Diffuse

@@ -3,63 +3,54 @@
 #include "Mesh.h"
 
 SceneObject* Primitives::createUnitCube() {
-    // 24 unique vertices for right texturing
-    // pos(3) + color(3) + UV(2)
     GLfloat vertices[] = {
-        // Front face
-        -0.5f, -0.5f,  0.5f,  1, 0, 0,  0, 0,
-         0.5f, -0.5f,  0.5f,  0, 1, 0,  1, 0,
-         0.5f,  0.5f,  0.5f,  0, 0, 1,  1, 1,
-        -0.5f,  0.5f,  0.5f,  1, 1, 0,  0, 1,
+        // Front (+Z)
+        -0.5f, -0.5f,  0.5f,   0, 0, 1,   0, 0,
+         0.5f, -0.5f,  0.5f,   0, 0, 1,   1, 0,
+         0.5f,  0.5f,  0.5f,   0, 0, 1,   1, 1,
+        -0.5f,  0.5f,  0.5f,   0, 0, 1,   0, 1,
 
-        // Back face
-        -0.5f, -0.5f, -0.5f,  1, 0, 1,  0, 0,
-         0.5f, -0.5f, -0.5f,  0, 1, 1,  1, 0,
-         0.5f,  0.5f, -0.5f,  1, 1, 1,  1, 1,
-        -0.5f,  0.5f, -0.5f,  0, 0, 0,  0, 1,
+        // Back (-Z)
+         0.5f, -0.5f, -0.5f,   0, 0, -1,   0, 0,
+        -0.5f, -0.5f, -0.5f,   0, 0, -1,   1, 0,
+        -0.5f,  0.5f, -0.5f,   0, 0, -1,   1, 1,
+         0.5f,  0.5f, -0.5f,   0, 0, -1,   0, 1,
 
-        // Left face
-        -0.5f, -0.5f, -0.5f,  1, 0, 0,  0, 0,
-        -0.5f, -0.5f,  0.5f,  0, 1, 0,  1, 0,
-        -0.5f,  0.5f,  0.5f,  0, 0, 1,  1, 1,
-        -0.5f,  0.5f, -0.5f,  1, 1, 0,  0, 1,
+         // Left (-X)
+         -0.5f, -0.5f, -0.5f,  -1, 0, 0,   0, 0,
+         -0.5f, -0.5f,  0.5f,  -1, 0, 0,   1, 0,
+         -0.5f,  0.5f,  0.5f,  -1, 0, 0,   1, 1,
+         -0.5f,  0.5f, -0.5f,  -1, 0, 0,   0, 1,
 
-        // Right face
-         0.5f, -0.5f,  0.5f,  1, 0, 1,  0, 0,
-         0.5f, -0.5f, -0.5f,  0, 1, 1,  1, 0,
-         0.5f,  0.5f, -0.5f,  1, 1, 1,  1, 1,
-         0.5f,  0.5f,  0.5f,  0, 0, 0,  0, 1,
+         // Right (+X)
+          0.5f, -0.5f,  0.5f,   1, 0, 0,   0, 0,
+          0.5f, -0.5f, -0.5f,   1, 0, 0,   1, 0,
+          0.5f,  0.5f, -0.5f,   1, 0, 0,   1, 1,
+          0.5f,  0.5f,  0.5f,   1, 0, 0,   0, 1,
 
-         // Bottom face
-         -0.5f, -0.5f, -0.5f,  1, 0, 0,  0, 0,
-          0.5f, -0.5f, -0.5f,  0, 1, 0,  1, 0,
-          0.5f, -0.5f,  0.5f,  0, 0, 1,  1, 1,
-         -0.5f, -0.5f,  0.5f,  1, 1, 0,  0, 1,
+          // Bottom (-Y)
+          -0.5f, -0.5f, -0.5f,   0, -1, 0,   0, 0,
+           0.5f, -0.5f, -0.5f,   0, -1, 0,   1, 0,
+           0.5f, -0.5f,  0.5f,   0, -1, 0,   1, 1,
+          -0.5f, -0.5f,  0.5f,   0, -1, 0,   0, 1,
 
-         // Top face
-         -0.5f,  0.5f,  0.5f,  1, 0, 1,  0, 0,
-          0.5f,  0.5f,  0.5f,  0, 1, 1,  1, 0,
-          0.5f,  0.5f, -0.5f,  1, 1, 1,  1, 1,
-         -0.5f,  0.5f, -0.5f,  0, 0, 0,  0, 1
+          // Top (+Y)
+          -0.5f,  0.5f,  0.5f,   0, 1, 0,   0, 0,
+           0.5f,  0.5f,  0.5f,   0, 1, 0,   1, 0,
+           0.5f,  0.5f, -0.5f,   0, 1, 0,   1, 1,
+          -0.5f,  0.5f, -0.5f,   0, 1, 0,   0, 1
     };
 
     GLuint indices[] = {
-        // Front
-        0, 1, 2, 2, 3, 0,
-        // Back
-        4, 5, 6, 6, 7, 4,
-        // Left
-        8, 9,10,10,11, 8,
-        // Right
-        12,13,14,14,15,12,
-        // Bottom
-        16,17,18,18,19,16,
-        // Top
-        20,21,22,22,23,20
+        0, 1, 2, 2, 3, 0,        // Front
+        4, 5, 6, 6, 7, 4,        // Back
+        8, 9,10,10,11, 8,        // Left
+        12,13,14,14,15,12,       // Right
+        16,17,18,18,19,16,       // Bottom
+        20,21,22,22,23,20        // Top
     };
 
     auto cubeMesh = std::make_unique<Mesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
-
     return new SceneObject(std::move(cubeMesh));
 }
 
@@ -184,15 +175,15 @@ InstancedObject* Primitives::createDirectionalCube() {
 
 
 
-SceneObject* Primitives::createTexturedPlane(float size) {
+SceneObject* Primitives::createPlane(float size) {
     float half = size / 2.0f;
 
-    // pos(x,y,z), color(r,g,b), UV(u,v)
+    // pos(x,y,z), normal(x,y,z), UV(u,v)
     GLfloat vertices[] = {
-        -half, 0.0f, -half,   0.2f, 0.2f, 0.2f,   0.0f, 0.0f,
-         half, 0.0f, -half,   0.2f, 0.2f, 0.2f,   1.0f, 0.0f,
-         half, 0.0f,  half,   0.2f, 0.2f, 0.2f,   1.0f, 1.0f,
-        -half, 0.0f,  half,   0.2f, 0.2f, 0.2f,   0.0f, 1.0f
+        -half, 0.0f, -half,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+         half, 0.0f, -half,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+         half, 0.0f,  half,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+        -half, 0.0f,  half,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f
     };
 
     GLuint indices[] = {
@@ -301,50 +292,49 @@ InstancedObject* Primitives::createDirectedCylinder(int segments, float radius, 
     return new InstancedObject(std::move(mesh));
 }
 
-SceneObject* Primitives::createConeMarker(float radius, float height, int segments, glm::vec3 color) {
+SceneObject* Primitives::createConeMarker(float radius, float height, int segments) {
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;
 
-	float r = color.r;
-	float g = color.g;
-	float b = color.b;
-
-	// Cone apex
+    // --- Apex of the cone ---
     vertices.insert(vertices.end(), {
-        0.0f, 0.0f, 0.0f,    
-        r, g, b,
-		0.0f, 0.0f // UV
+        0.0f, 0.0f, 0.0f,     // Position
+        0.0f, -1.0f, 0.0f,    // Normal (placeholder; not used)
+        0.0f, 0.0f            // UV (optional)
         });
 
-	// Base vertices (circle)
+    // --- Side ring vertices ---
     for (int i = 0; i <= segments; ++i) {
         float angle = 2.0f * M_PI * i / segments;
         float x = cos(angle) * radius;
         float z = sin(angle) * radius;
 
+        glm::vec3 position(x, height, z);
+        glm::vec3 normal = glm::normalize(glm::vec3(x, radius / height, z)); // Approx. side normal
+
         vertices.insert(vertices.end(), {
-            x, height, z,
-            r, g, b,
-			0.0f, 0.0f // UV
+            position.x, position.y, position.z,
+            normal.x, normal.y, normal.z,
+            0.0f, 0.0f // UV (optional)
             });
     }
 
-	// Sides indices (fan)
+    // --- Side faces indices ---
     for (int i = 1; i <= segments; ++i) {
-		indices.push_back(0);         // Apex of the cone
-		indices.push_back(i);           // Current base vertex
-		indices.push_back(i + 1);     // Next base vertex 
+        indices.push_back(0);       // Apex
+        indices.push_back(i);       // Current base vertex
+        indices.push_back(i + 1);   // Next base vertex
     }
 
-	// Center vertex for the base
+    // --- Center vertex for the base ---
     int baseCenterIndex = static_cast<int>(vertices.size() / 8);
     vertices.insert(vertices.end(), {
-        0.0f, height, 0.0f,
-        r, g, b,
-		0.0f, 0.0f // UV
+        0.0f, height, 0.0f,     // Position
+        0.0f, 1.0f, 0.0f,       // Normal pointing up
+        0.0f, 0.0f              // UV (optional)
         });
 
-	// Base indices (fan)
+    // --- Base fan indices ---
     for (int i = 1; i <= segments; ++i) {
         indices.push_back(baseCenterIndex);
         indices.push_back(i + 1);

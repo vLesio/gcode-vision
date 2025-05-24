@@ -118,6 +118,12 @@
     <Filter Include="Source Files\opengl\engine3d\sceneManagment\light">
       <UniqueIdentifier>{cf513e4f-0419-4f6d-9aa0-95bac4ddf5c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\opengl\engine3d\materials">
+      <UniqueIdentifier>{31b73c63-c706-4412-9acf-482e94618849}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\engine3d\material">
+      <UniqueIdentifier>{3043e8a4-e199-4a3d-bbb7-77bad6735f59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -209,6 +215,12 @@
     </ClCompile>
     <ClCompile Include="lightObject.cpp">
       <Filter>Source Files\opengl\engine3d\sceneManagment\light</Filter>
+    </ClCompile>
+    <ClCompile Include="material.cpp">
+      <Filter>Source Files\opengl\engine3d\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="materialManager.cpp">
+      <Filter>Source Files\opengl\engine3d\materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -311,24 +323,36 @@
     <ClInclude Include="lightObject.h">
       <Filter>Header Files\opengl\engine3d\sceneManagment\light</Filter>
     </ClInclude>
+    <ClInclude Include="material.h">
+      <Filter>Header Files\opengl\engine3d\material</Filter>
+    </ClInclude>
+    <ClInclude Include="materialManager.h">
+      <Filter>Header Files\opengl\engine3d\material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="default.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="filament.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="filament.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="phong.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="phong.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="unlit.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="unlit.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="br.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>
 </Project>

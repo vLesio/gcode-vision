@@ -15,6 +15,7 @@
 #include "SimulationManager.h"
 #include "windowManager.h"
 #include "lightObject.h"
+#include "materialManager.h"
 
 // Window size
 const unsigned int SCR_WIDTH = 1200;
@@ -26,6 +27,10 @@ extern std::atomic<bool> opengl_running;
 // Global pointer to scene
 Scene* scene = nullptr;
 
+//Camera settings
+float FOVdeg = 45.0f;
+float nearPlane = 0.05f;
+float farPlane = 20.0f;
 
 void run_opengl() {
 
@@ -36,15 +41,20 @@ void run_opengl() {
     opengl_running = true;
 
     // Load shaders
-    ShaderLoader::load("default", "default.vert", "default.frag");
+    ShaderLoader::load("default", "phong.vert", "phong.frag");
     ShaderLoader::load("filament", "filament.vert", "filament.frag");
+	ShaderLoader::load("unlit", "unlit.vert", "unlit.frag");
 
     Shader* defaultShader = ShaderLoader::get("default");
     Shader* filamentShader = ShaderLoader::get("filament");
+	Shader* unlitShader = ShaderLoader::get("unlit");
 
     // Load texture
     TextureLoader::load("brick", "br.png");
     TextureLoader::bindToShader("brick", *defaultShader, "tex0", 0);
+
+    // Make materials
+    MaterialManager::init();
 
     glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -62,13 +72,14 @@ void run_opengl() {
     sim.setScene(scene);
 
     // Add ground plane
-    SceneObject* ground = Primitives::createTexturedPlane(10.0f);
+    SceneObject* ground = Primitives::createPlane(10.0f);
+	ground->setMaterial(MaterialManager::get("ground"));
     scene->add(ground);
 
     // Light object setup
-    auto* light = new LightObject(glm::vec3(1.0f, 1.0f, 1.0f)); 
-	light->localTransform.translate(glm::vec3(10.0f, 10.0f, 10.0f)); 
-    scene->add(light);
+    auto* light = new LightObject(glm::vec3(1.0f, 1.0f, 01.0f)); 
+	light->localTransform.translate(glm::vec3(5.0f, 5.0f, 5.0f)); 
+    scene->addUnlit(light);
 
 
 	/*auto testCylinder = Primitives::createDirectedCylinder(16, 0.5f, 1.0f);
@@ -99,14 +110,16 @@ void run_opengl() {
 		// Upload light to shaders
         light->uploadToShader(*defaultShader);
         light->uploadToShader(*filamentShader);
+		light->uploadToShader(*unlitShader);
 
 		// Update camera
         auto [width, height] = windowManager.getWindowSize();
-        camera.applyToShader(*defaultShader, 45.0f, 0.1f, 100.0f, width, height);
-        camera.applyToShader(*filamentShader, 45.0f, 0.1f, 100.0f, width, height);
+        camera.applyToShader(*defaultShader, FOVdeg, nearPlane, farPlane, width, height);
+        camera.applyToShader(*filamentShader, FOVdeg, nearPlane, farPlane, width, height);
+		camera.applyToShader(*unlitShader, FOVdeg, nearPlane, farPlane, width, height);
 
         // Render scene
-        scene->Draw(*defaultShader, *filamentShader);
+		scene->Draw(*defaultShader, *filamentShader, *unlitShader);
 
         windowManager.processInput();
 		windowManager.updateDisplay();
