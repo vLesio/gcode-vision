@@ -67,7 +67,7 @@ void run_opengl() {
 
     // Light object setup
     auto* light = new LightObject(glm::vec3(1.0f, 1.0f, 1.0f)); 
-    light->localTransform.setTop(glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 10.0f, 5.0f)));
+	light->localTransform.translate(glm::vec3(10.0f, 10.0f, 10.0f)); 
     scene->add(light);
 
     // Main render loop
