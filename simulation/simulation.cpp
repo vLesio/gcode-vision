@@ -70,6 +70,17 @@ void run_opengl() {
 	light->localTransform.translate(glm::vec3(10.0f, 10.0f, 10.0f)); 
     scene->add(light);
 
+
+	/*auto testCylinder = Primitives::createDirectedCylinder(16, 0.5f, 1.0f);
+    testCylinder->reserveInstances(1);
+    testCylinder->appendDynamicInstance(glm::vec3(2.0f), glm::vec3(1.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+    scene->addInstanced(testCylinder);
+
+    auto testCube = Primitives::createDirectionalCube();
+	testCube->reserveInstances(1);
+	testCube->appendDynamicInstance(glm::vec3(0.0f), glm::vec3(1.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	scene->addInstanced(testCube);*/
+
     // Main render loop
     while (!windowManager.shouldClose()) {
         if (!opengl_running)

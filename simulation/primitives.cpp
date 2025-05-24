@@ -204,3 +204,99 @@ SceneObject* Primitives::createTexturedPlane(float size) {
     return new SceneObject(std::move(mesh));
 }
 
+float M_PI = 3.14159265358979323846f;
+
+InstancedObject* Primitives::createDirectedCylinder(int segments, float radius, float length) {
+    std::vector<GLfloat> vertices;
+    std::vector<GLuint> indices;
+
+	// Side vertices
+    for (int i = 0; i <= segments; ++i) {
+        float angle = 2.0f * M_PI * i / segments;
+        float y = cos(angle) * radius;
+        float z = sin(angle) * radius;
+
+        // start of the cylinder (x = 0)
+        vertices.push_back(0.0f);
+        vertices.push_back(y);
+        vertices.push_back(z);
+        vertices.push_back(0.0f);
+        vertices.push_back(y / radius);
+        vertices.push_back(z / radius);
+
+        // end of the cylinder (x = length)
+        vertices.push_back(length);
+        vertices.push_back(y);
+        vertices.push_back(z);
+        vertices.push_back(0.0f);
+        vertices.push_back(y / radius);
+        vertices.push_back(z / radius);
+    }
+
+    // Sides indices
+    for (int i = 0; i < segments * 2; i += 2) {
+        indices.push_back(i);
+        indices.push_back(i + 1);
+        indices.push_back(i + 2);
+
+        indices.push_back(i + 1);
+        indices.push_back(i + 3);
+        indices.push_back(i + 2);
+    }
+
+    // Center points for caps
+    GLuint centerStartIndex = vertices.size() / 6;
+    vertices.push_back(0.0f); vertices.push_back(0.0f); vertices.push_back(0.0f); // pos
+    vertices.push_back(-1.0f); vertices.push_back(0.0f); vertices.push_back(0.0f); // normal
+
+    GLuint centerEndIndex = centerStartIndex + 1;
+    vertices.push_back(length); vertices.push_back(0.0f); vertices.push_back(0.0f); // pos
+    vertices.push_back(1.0f); vertices.push_back(0.0f); vertices.push_back(0.0f); // normal
+
+    // Cap vertices
+    for (int i = 0; i <= segments; ++i) {
+        float angle = 2.0f * M_PI * i / segments;
+        float y = cos(angle) * radius;
+        float z = sin(angle) * radius;
+
+        // start cap
+        vertices.push_back(0.0f);
+        vertices.push_back(y);
+        vertices.push_back(z);
+        vertices.push_back(-1.0f);
+        vertices.push_back(0.0f);
+        vertices.push_back(0.0f);
+
+        // end cap
+        vertices.push_back(length);
+        vertices.push_back(y);
+        vertices.push_back(z);
+        vertices.push_back(1.0f);
+        vertices.push_back(0.0f);
+        vertices.push_back(0.0f);
+    }
+
+	// Cap indices
+    GLuint startRing = centerEndIndex + 1;
+    for (int i = 0; i < segments; ++i) {
+        // start cap
+        indices.push_back(centerStartIndex);
+        indices.push_back(startRing + i * 2);
+        indices.push_back(startRing + ((i + 1) % segments) * 2);
+
+        // end cap
+        indices.push_back(centerEndIndex);
+        indices.push_back(startRing + ((i + 1) % segments) * 2 + 1);
+        indices.push_back(startRing + i * 2 + 1);
+    }
+
+    // Create mesh
+    auto mesh = std::make_unique<InstancedMesh>(
+        vertices.data(),
+        vertices.size() * sizeof(GLfloat),
+        indices.data(),
+        indices.size()
+    );
+
+    return new InstancedObject(std::move(mesh));
+}

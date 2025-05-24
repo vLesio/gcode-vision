@@ -57,11 +57,16 @@ void SimulationManager::prepareSimulationScene(Scene* scene) {
     }
 
     // Initialize filament objects
-    context.filamentObject = Primitives::createDirectionalCube();
+    //context.filamentObject = Primitives::createDirectionalCube();
+	context.filamentObject = Primitives::createDirectedCylinder(16, 0.5f, 1.0f);
     context.filamentObject->reserveInstances(context.printSteps.size() + 100);
 
-    context.tempSegmentObject = Primitives::createDirectionalCube();
+    //context.tempSegmentObject = Primitives::createDirectionalCube();
+    context.tempSegmentObject = Primitives::createDirectedCylinder(16, 0.5f, 1.0f);
     context.tempSegmentObject->reserveInstances(1);
+
+	assert(context.filamentObject && "Filament object not created!");
+	assert(context.tempSegmentObject && "Temporary segment object not created!");
 
     scene->addInstanced(context.filamentObject);
     scene->addInstanced(context.tempSegmentObject);

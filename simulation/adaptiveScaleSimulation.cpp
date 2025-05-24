@@ -4,9 +4,25 @@
 
 #include "camera.h"
 
+// We assume that the filament will be modeled as a cuboid
 float calculateFilamentWidth(float extrusionAmount, float length, float nozzleDiameter, float layerHeight) {
     float filamentVolume = glm::pi<float>() * 0.25f * nozzleDiameter * nozzleDiameter * extrusionAmount;
     return filamentVolume / (length * layerHeight);
+}
+
+// Filament as a cylinder
+float calculateFilamentDiameter(float extrusionAmount, float length, float nozzleDiameter) {
+	// Cylinder volume formula: V = pi * r^2 * h -> V = pi * (d/2)^2 * h
+    float filamentVolume = glm::pi<float>() * 0.25f * nozzleDiameter * nozzleDiameter * extrusionAmount;
+
+    if (length <= 0.0001f)
+        return nozzleDiameter;
+
+	// We can derive the radius from the volume and length
+    float radius = std::sqrt(filamentVolume / (glm::pi<float>() * length));
+
+	// Diameter is twice the radius
+    return 2.0f * radius;
 }
 
 void AdaptiveScaleSimulation::simulate(const SimulationContext& context, FilamentSimulator& simulator)
@@ -37,9 +53,11 @@ void AdaptiveScaleSimulation::simulateStep(const SimulationContext& context, Fil
     if (length <= 0.0f)
         return;
 
-    float width = calculateFilamentWidth(step.extrusionAmount, length, context.nozzleDiameter, context.layerHeight);
+    //float width = calculateFilamentWidth(step.extrusionAmount, length, context.nozzleDiameter, context.layerHeight);
 
-    glm::vec3 scale(length, width, width);
+    //glm::vec3 scale(length, width, width);
+	float diameter = calculateFilamentDiameter(step.extrusionAmount, length, context.nozzleDiameter);
+	glm::vec3 scale(length, diameter, diameter);
     glm::quat rotation = glm::rotation(glm::vec3(1, 0, 0), glm::normalize(dir));
     glm::vec3 position = start;
 
@@ -62,9 +80,11 @@ void AdaptiveScaleSimulation::simulatePartialStep(const SimulationContext& conte
     float partialLength = glm::length(partialEnd - start);
     float partialExtrusion = step.extrusionAmount * progress;
 
-    float width = calculateFilamentWidth(partialExtrusion, partialLength, context.nozzleDiameter, context.layerHeight);
+    //float width = calculateFilamentWidth(partialExtrusion, partialLength, context.nozzleDiameter, context.layerHeight);
 
-    glm::vec3 scale(partialLength, width, width);
+    //glm::vec3 scale(partialLength, width, width);
+	float diameter = calculateFilamentDiameter(partialExtrusion, partialLength, context.nozzleDiameter);
+	glm::vec3 scale(partialLength, diameter, diameter);
     glm::quat rotation = glm::rotation(glm::vec3(1, 0, 0), glm::normalize(dir));
     glm::vec3 position = start;
 

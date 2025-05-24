@@ -9,6 +9,7 @@ public:
     static InstancedObject* createInstancedCube();
 	static InstancedObject* createDirectionalCube();
     static SceneObject* createTexturedPlane(float size);
+    static InstancedObject* createDirectedCylinder(int segments, float radius, float length);
 };
 
 #endif
