@@ -51,6 +51,17 @@ public:
     void processMouseMovement(float xpos, float ypos);
     CameraMode getMode() const;
 
+
+	float minY = 0.05f; // Minimum Y position to prevent camera from going below ground level
+	float maxY = 30.0f; // Maximum Y position 
+	float minX = -30.0f; // Minimum X position
+	float maxX = 30.0f; // Maximum X position
+	float minZ = -30.0f; // Minimum Z position
+	float maxZ = 30.0f; // Maximum Z position
+
+    void setAll(glm::vec3 target, float yaw, float pitch, float distance, float zoomSpeed, float rotateSpeed);
+
+
 private:
     Camera(glm::vec3 target);
 

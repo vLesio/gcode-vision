@@ -54,6 +54,48 @@ SceneObject* Primitives::createUnitCube() {
     return new SceneObject(std::move(cubeMesh));
 }
 
+SceneObject* Primitives::createPyramid() {
+    GLfloat vertices[] = {
+        -0.5f, 0.0f, -0.5f,   0, -1, 0,   0, 0,
+         0.5f, 0.0f, -0.5f,   0, -1, 0,   1, 0,
+         0.5f, 0.0f,  0.5f,   0, -1, 0,   1, 1,
+        -0.5f, 0.0f,  0.5f,   0, -1, 0,   0, 1,
+
+        // Front face (0,0.0,0.5) to top (0,1,0)
+        -0.5f, 0.0f, 0.5f,    0, 0.707f, 0.707f,  0, 0,
+         0.5f, 0.0f, 0.5f,    0, 0.707f, 0.707f,  1, 0,
+         0.0f, 1.0f, 0.0f,    0, 0.707f, 0.707f,  0.5f, 1,
+
+         // Right face
+          0.5f, 0.0f, 0.5f,    0.707f, 0.707f, 0,  0, 0,
+          0.5f, 0.0f, -0.5f,   0.707f, 0.707f, 0,  1, 0,
+          0.0f, 1.0f, 0.0f,    0.707f, 0.707f, 0,  0.5f, 1,
+
+          // Back face
+           0.5f, 0.0f, -0.5f,   0, 0.707f, -0.707f,  0, 0,
+          -0.5f, 0.0f, -0.5f,   0, 0.707f, -0.707f,  1, 0,
+           0.0f, 1.0f, 0.0f,    0, 0.707f, -0.707f,  0.5f, 1,
+
+           // Left face
+           -0.5f, 0.0f, -0.5f,   -0.707f, 0.707f, 0,  0, 0,
+           -0.5f, 0.0f,  0.5f,   -0.707f, 0.707f, 0,  1, 0,
+            0.0f, 1.0f, 0.0f,    -0.707f, 0.707f, 0,  0.5f, 1
+    };
+
+    GLuint indices[] = {
+        0, 1, 2,
+        2, 3, 0,
+
+        4, 5, 6,    // Front
+        7, 8, 9,    // Right
+       10,11,12,    // Back
+       13,14,15     // Left
+    };
+
+    auto pyramidMesh = std::make_unique<Mesh>(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(GLuint));
+    return new SceneObject(std::move(pyramidMesh));
+}
+
 InstancedObject* Primitives::createInstancedCube() {
     // pos(x, y, z) + normal(x, y, z)
     GLfloat vertices[] = {

@@ -26,7 +26,7 @@ void Material::apply(Shader& shader) const {
     glUniform1f(glGetUniformLocation(shader.ID, "shininess"), shininess);
     glUniform1f(glGetUniformLocation(shader.ID, "specularStrength"), specularStrength);
     glUniform1f(glGetUniformLocation(shader.ID, "ambientStrength"), ambientStrength);
-    glUniform1f(glGetUniformLocation(shader.ID, "useTexture"), useTexture ? 1.0f : 0.0f);
+    glUniform1f(glGetUniformLocation(shader.ID, "useTexture"), useTexture ? textureMixRatio : 0.0f);
 
     if (useTexture && texture) {
         texture->Bind();

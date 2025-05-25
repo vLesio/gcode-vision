@@ -43,6 +43,22 @@ Camera& Camera::getInstance()
     return *cameraInstance;
 }
 
+void Camera::setAll(glm::vec3 target, float yaw, float pitch, float distance, float zoomSpeed, float rotateSpeed)
+{
+	this->mode = CameraMode::Orbit;
+	this->target = target;
+	this->yaw = yaw;
+	this->pitch = pitch;
+	this->distance = distance;
+	this->zoomSpeed = zoomSpeed;
+	this->rotateSpeed = rotateSpeed;
+	defaultTarget = target;
+	defaultYaw = yaw;
+	defaultPitch = pitch;
+	defaultDistance = distance;
+	updatePositionOrbit();
+}
+
 Camera::Camera(glm::vec3 target)
 {
     this->target = target;
@@ -60,6 +76,11 @@ void Camera::updatePositionOrbit()
     position.x = target.x + distance * cos(pitchRad) * sin(yawRad);
     position.y = target.y + distance * sin(pitchRad);
     position.z = target.z + distance * cos(pitchRad) * cos(yawRad);
+
+    if (position.y < minY) {
+        position.y = minY;
+        pitch = glm::degrees(asin((position.y - target.y) / distance));
+    }
 }
 
 void Camera::ensureOrbitMode() const
@@ -108,6 +129,16 @@ void Camera::zoom(float offset)
 void Camera::computeCameraMatrix(float FOVdeg, float nearPlane, float farPlane, int width, int height)
 {
     glm::mat4 view;
+
+	//Safeguard for camera position and target
+	position.y = std::clamp(position.y, minY, maxY);
+	position.x = std::clamp(position.x, minX, maxX);
+	position.z = std::clamp(position.z, minZ, maxZ);
+	target.y = std::clamp(target.y, minY, maxY);
+	target.x = std::clamp(target.x, minX, maxX);
+	target.z = std::clamp(target.z, minZ, maxZ);
+
+
 
     if (mode == CameraMode::Free) {
         glm::vec3 forward = getForwardVector();
@@ -188,7 +219,16 @@ void Camera::processFreeMovement(GLFWwindow* window, float deltaTime) {
     if (glm::length(movement) > 0.0f) {
         movement = glm::normalize(movement);
         float speed = freeSpeed * deltaTime;
-        position += movement * speed;
+        glm::vec3 newPos = position + movement * speed;
+
+        if (newPos.y >= minY) {
+            position = newPos;
+        }
+		else { 		  // Prevent camera from going below ground level
+            movement.y = 0.0f;
+            position += movement * speed;
+            position.y = std::max(position.y, minY);
+        }
     }
 }
 

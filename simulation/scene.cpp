@@ -58,6 +58,10 @@ void Scene::Delete() {
     for (auto& iobj : instancedObjects)
         delete iobj;
 
+	for (auto& uobj : unlitObjects)
+		delete uobj;
+
     objects.clear();
     instancedObjects.clear();
+	unlitObjects.clear();
 }
