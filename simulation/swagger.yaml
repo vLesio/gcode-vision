@@ -336,12 +336,6 @@ components:
         printer:
           type: string
           example: "Prusa i3 MK3S"
-        mode:
-          type: string
-          enum:
-            - "fixed"
-            - "adaptive"
-          example: "adaptive"
         gcodeFile:
           type: string
           example: "example.gcode"
@@ -363,7 +357,4 @@ components:
               type: number
             extruder:
               type: number
-        extrusionResolution:
-          type: number
-          example: 0.001
           

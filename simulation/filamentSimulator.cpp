@@ -41,21 +41,4 @@ void FilamentSimulator::clear() {
     hasTempSegment = false;
 }
 
-void FilamentSimulator::resetSimulation() {
-    clear();
-    Camera::getInstance().reset();
-    std::cout << "[FilamentSimulator] Simulation reset.\n";
-}
 
-glm::vec3 FilamentSimulator::computeCentroid(const std::vector<PrintStep>& steps) {
-    glm::vec3 minPos(FLT_MAX), maxPos(-FLT_MAX);
-
-    for (const auto& step : steps) {
-        minPos = glm::min(minPos, step.startPosition);
-        minPos = glm::min(minPos, step.endPosition);
-        maxPos = glm::max(maxPos, step.startPosition);
-        maxPos = glm::max(maxPos, step.endPosition);
-    }
-
-    return (minPos + maxPos) * 0.5f;
-}

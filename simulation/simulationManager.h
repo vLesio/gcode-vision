@@ -8,9 +8,8 @@
 
 #include "deltaTimer.h"
 #include "SimulationContext.h"
-#include "FilamentSimulator.h"
-#include "ISimulationMode.h"
 #include "PrintheadAnimator.h"
+#include "PrintSimulationEngine.h"
 #include "scene.h"
 
 
@@ -40,7 +39,6 @@ public:
     bool loadGCode(const std::string& path);
     bool initializeSimulation(
         const std::string& gcodeFile,
-        float extrusionResolution,
         const std::string& printerName,
         float nozzleDiameter,
         float layerHeight,
@@ -53,7 +51,6 @@ public:
     void prepareSimulationScene(Scene* scene);
     void beginSimulation();
 
-    void setSimulationMode(ISimulationMode* mode);
     void simulateFullPrint();
 
     void setScene(Scene* scene);
@@ -85,11 +82,10 @@ private:
     SimulationManager() = default;
 
     SimulationContext context;
-    FilamentSimulator* simulator = nullptr;
-    ISimulationMode* strategy = nullptr;
     DeltaTimer timer;
 
-	PrintheadAnimator* printheadAnimator = nullptr;
+	std::unique_ptr<PrintSimulationEngine> printEngine = nullptr;
+	std::unique_ptr<PrintheadAnimator> printheadAnimator = nullptr;
 
     SimulationState state = SimulationState::Uninitialized;
     std::queue<SimulationEvent> eventQueue;

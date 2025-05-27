@@ -19,7 +19,6 @@ struct SimulationContext {
 
     // Printer config
     std::string printerName;
-    float extrusionResolution = 0.2f;
     float nozzleDiameter = 1.75f;
     float layerHeight = 0.2f;
     bool retractionEnabled = false;
@@ -42,7 +41,6 @@ struct SimulationContext {
         printStepsCount = 0;
         filamentObject = nullptr;
         tempSegmentObject = nullptr;
-        extrusionResolution = 0.2f;
         currentStepIndex = 0;
         simulationTime = 0.0f;
         headStartPosition = glm::vec3(0.0f);

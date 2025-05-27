@@ -76,9 +76,6 @@
     <Filter Include="Header Files\opengl\engine3d\sceneManagment">
       <UniqueIdentifier>{78297566-6d40-4e74-a5c5-3cfb0df6041d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\opengl\engine3d\filamentSimulation">
-      <UniqueIdentifier>{ca3aeb88-29b0-4b09-bb80-380eafd86138}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\opengl\engine3d\filamentSimulator">
       <UniqueIdentifier>{d6d6e474-19cd-4b48-8d1a-b94f6989cceb}</UniqueIdentifier>
     </Filter>
@@ -90,12 +87,6 @@
     </Filter>
     <Filter Include="Header Files\opengl\exceptions">
       <UniqueIdentifier>{5b069f89-c7cb-4fde-8110-3e0ebe000088}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\opengl\engine3d\filamentSimulation\simulationModes">
-      <UniqueIdentifier>{8d2da783-0a78-46ef-a947-3ef3c97b0e79}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\opengl\engine3d\filamentSimulator\simulationModes">
-      <UniqueIdentifier>{e081b554-84dc-43e9-8eb5-4dc40c84a4ad}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\global">
       <UniqueIdentifier>{b510b1a7-9c92-44d1-a217-e4f30eaa3a60}</UniqueIdentifier>
@@ -123,6 +114,9 @@
     </Filter>
     <Filter Include="Header Files\opengl\engine3d\material">
       <UniqueIdentifier>{3043e8a4-e199-4a3d-bbb7-77bad6735f59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\engine3d\printSimulation">
+      <UniqueIdentifier>{ca3aeb88-29b0-4b09-bb80-380eafd86138}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -195,15 +189,6 @@
     <ClCompile Include="simulationManager.cpp">
       <Filter>Source Files\opengl\simulation</Filter>
     </ClCompile>
-    <ClCompile Include="fixedSizeSimulation.cpp">
-      <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
-    </ClCompile>
-    <ClCompile Include="adaptiveScaleSimulation.cpp">
-      <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
-    </ClCompile>
-    <ClCompile Include="simulationModeFactory.cpp">
-      <Filter>Source Files\opengl\engine3d\filamentSimulator\simulationModes</Filter>
-    </ClCompile>
     <ClCompile Include="deltaTimer.cpp">
       <Filter>Source Files\opengl\simulation</Filter>
     </ClCompile>
@@ -221,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="materialManager.cpp">
       <Filter>Source Files\opengl\engine3d\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="printSimulationEngine.cpp">
+      <Filter>Source Files\opengl\engine3d\filamentSimulator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -282,7 +270,7 @@
       <Filter>Header Files\opengl\engine3d\sceneManagment</Filter>
     </ClInclude>
     <ClInclude Include="filamentSimulator.h">
-      <Filter>Header Files\opengl\engine3d\filamentSimulation</Filter>
+      <Filter>Header Files\opengl\engine3d\printSimulation</Filter>
     </ClInclude>
     <ClInclude Include="simulation.h">
       <Filter>Header Files\opengl\simulation</Filter>
@@ -295,18 +283,6 @@
     </ClInclude>
     <ClInclude Include="exceptions.h">
       <Filter>Header Files\opengl\exceptions</Filter>
-    </ClInclude>
-    <ClInclude Include="ISimulationMode.h">
-      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
-    </ClInclude>
-    <ClInclude Include="fixedSizeSimulation.h">
-      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
-    </ClInclude>
-    <ClInclude Include="adaptiveScaleSimulation.h">
-      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
-    </ClInclude>
-    <ClInclude Include="simulationModeFactory.h">
-      <Filter>Header Files\opengl\engine3d\filamentSimulation\simulationModes</Filter>
     </ClInclude>
     <ClInclude Include="deltaTimer.h">
       <Filter>Header Files\opengl\simulation</Filter>
@@ -328,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="materialManager.h">
       <Filter>Header Files\opengl\engine3d\material</Filter>
+    </ClInclude>
+    <ClInclude Include="printSimulationEngine.h">
+      <Filter>Header Files\opengl\engine3d\printSimulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

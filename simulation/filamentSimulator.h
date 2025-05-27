@@ -14,14 +14,10 @@ public:
     void addSegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
 
     void clear();
-    void resetSimulation();
 
     void attachTemporaryObject(InstancedObject* temp);
     void setTemporarySegment(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
     void clearTemporarySegment();
-
-    static glm::vec3 computeCentroid(const std::vector<PrintStep>& steps);
-
 private:
     InstancedObject* target = nullptr;
     InstancedObject* tempSegmentObject = nullptr;

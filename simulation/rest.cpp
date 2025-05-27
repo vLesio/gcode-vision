@@ -12,7 +12,6 @@
 #include "GCodeParser.h"
 #include "simulationContext.h"
 #include "simulationManager.h"
-#include "simulationModeFactory.h"
 #include "simulationState.h"
 
 namespace fs = std::filesystem;
@@ -75,7 +74,6 @@ void run_rest_api(int port) {
                 auto body = crow::json::load(req.body);
                 if (!body) return json_response(400, "Invalid JSON payload");
 
-                std::string mode = body.has("mode") ? std::string(body["mode"].s()) : "fixed";
                 std::string printer = body["printer"].s();
                 std::string gcodeFile = body["gcodeFile"].s();
                 float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
@@ -84,22 +82,14 @@ void run_rest_api(int port) {
                 bool retraction = body["retraction"].b();
                 float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
                 float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
-                float extrusionResolution = static_cast<float>(body["extrusionResolution"].d());
 
 				// Run initialization
-                if (!manager.initializeSimulation(gcodeFile, extrusionResolution, printer, nozzleDiameter,
+                if (!manager.initializeSimulation(gcodeFile, printer, nozzleDiameter,
                     layerHeight, retraction, bedTemp, extruderTemp, simulationSpeed)) {
                     return json_response(400, "Failed to initialize simulation");
                 }
 
-				// Select simulation strategy
-                ISimulationMode* strategy = SimulationModeFactory::createMode(mode);
-                if (!strategy) {
-                    return json_response(400, "Unknown simulation mode: " + mode);
-                }
-                manager.setSimulationMode(strategy);
-
-                return json_response(200, "Simulation initialized with mode: " + mode);
+                return json_response(200, "Simulation initialized");
             }
             catch (const std::exception& e) {
                 return json_response(500, std::string("Error: ") + e.what());
