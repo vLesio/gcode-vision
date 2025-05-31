@@ -80,13 +80,69 @@ void run_opengl() {
     // Add ground plane
     SceneObject* ground = Primitives::createPlane(100.0f);
 	ground->setMaterial(MaterialManager::get("ground"));
-    scene->add(ground);
+    //scene->add(ground);
 
+	// Add 3D printer model
     SceneObject* model = ModelLoader::loadModel("ReadyDrukara.gltf");
-	model->localTransform.scale(glm::vec3(0.01f)); // Scale down the model
+    model->localTransform.translate(glm::vec3(-4.0f, -1.0f, -4.0f)); // Center the model
+	model->localTransform.scale(glm::vec3(sim.getContext().simulationScale)); // Scale down the model
 	model->localTransform.rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to match the ground plane
     model->setMaterialApplyToChildren(MaterialManager::get("3DPrinter"));
     scene->add(model);
+    
+    
+    for (int i = -8; i < 9; ++i)
+    {
+		for (int j = -8; j < 9; ++j)
+		{
+			SceneObject* cube = Primitives::createUnitCube();
+			cube->localTransform.translate(glm::vec3(i, 0.0f, j));
+			cube->localTransform.scale(glm::vec3(0.1f));
+
+            if (i == 0 && j == 0)
+            {
+				MaterialManager::create("zerozero", glm::vec3(0.1f, 0.0f, 0.0f), 100.0f); // red
+				auto zerozeroMaterial = MaterialManager::get("zerozero");
+				cube->setMaterial(zerozeroMaterial);
+            }
+			else if (i == 0 || j == 0)
+			{
+				MaterialManager::create("edge", glm::vec3(0.8f, 0.2f, 0.2f), 32.0f); // edge color - red
+				auto edgeMaterial = MaterialManager::get("edge");
+				cube->setMaterial(edgeMaterial);
+			}
+			else if (i < 0 && j < 0)
+			{
+				MaterialManager::create("negative", glm::vec3(0.2f, 0.2f, 0.8f), 16.0f); // blue
+				auto negativeMaterial = MaterialManager::get("negative");
+				cube->setMaterial(negativeMaterial);
+			}
+			else if (i > 0 && j > 0)
+			{
+				MaterialManager::create("positive", glm::vec3(0.8f, 0.8f, 0.2f), 64.0f); // yellow
+				auto positiveMaterial = MaterialManager::get("positive");
+				cube->setMaterial(positiveMaterial);
+			}
+			else if (i < 0 && j > 0)
+			{
+				MaterialManager::create("negpos", glm::vec3(0.8f, 0.2f, 0.8f), 48.0f); // magenta
+				auto negposMaterial = MaterialManager::get("negpos");
+				cube->setMaterial(negposMaterial);
+			}
+			else if (i > 0 && j < 0)
+			{
+				MaterialManager::create("posneg", glm::vec3(0.2f, 0.8f, 0.8f), 24.0f); // cyan
+				auto posnegMaterial = MaterialManager::get("posneg");
+				cube->setMaterial(posnegMaterial);
+			}
+            else
+            {
+				cube->setMaterial(MaterialManager::get("default")); // Default material
+            }
+
+			scene->add(cube);
+		}
+    }
 
 
     // Light object setup

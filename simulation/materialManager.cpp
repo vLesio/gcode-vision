@@ -7,9 +7,16 @@ void MaterialManager::create(const std::string& name) {
 }
 
 void MaterialManager::create(const std::string& name, const glm::vec3& color, float shininess) {
+	if (MaterialManager::materials.count(name)) {
+		std::cerr << "[MaterialManager] Material with name '" << name << "' already exists." << std::endl;
+		return;
+	}
+	
+
     auto mat = std::make_unique<Material>();
     mat->color = color;
     mat->shininess = shininess;
+	mat->useTexture = false;
     materials[name] = std::move(mat);
 }
 
