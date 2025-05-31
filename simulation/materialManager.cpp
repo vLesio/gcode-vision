@@ -43,7 +43,7 @@ void MaterialManager::init()
 Material* MaterialManager::create3DPrinterMaterial()
 {
 	auto material = std::make_unique<Material>();
-	material->color = glm::vec3(0.4f, 0.4f, 0.4f); // Default color for 3D printer material
+	material->color = glm::vec3(0.3f, 0.3f, 0.3f); // Default color for 3D printer material
 	material->shininess = 32.0f; // Default shininess
 	material->ambientStrength = 0.2f; // Ambient strength for 3D printer material
 	material->specularStrength = 0.5f; // Specular strength for 3D printer material

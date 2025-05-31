@@ -82,12 +82,12 @@ void run_opengl() {
 	ground->setMaterial(MaterialManager::get("ground"));
     scene->add(ground);
 
-    SceneObject* model = ModelLoader::loadModel("scene.gltf");
+    SceneObject* model = ModelLoader::loadModel("ReadyDrukara.gltf");
 	model->localTransform.scale(glm::vec3(0.01f)); // Scale down the model
-	float radian = glm::radians(-90.0f);
-	model->localTransform.rotate(radian, glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to match the ground plane
+	model->localTransform.rotate(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to match the ground plane
     model->setMaterialApplyToChildren(MaterialManager::get("3DPrinter"));
     scene->add(model);
+
 
     // Light object setup
     auto* light = new LightObject(glm::vec3(1.0f, 1.0f, 01.0f)); 
