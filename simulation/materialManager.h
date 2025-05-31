@@ -17,6 +17,7 @@ public:
 
 private:
     static std::unordered_map<std::string, std::unique_ptr<Material>> materials;
+    static Material* create3DPrinterMaterial();
 };
 
 #endif

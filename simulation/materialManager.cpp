@@ -37,4 +37,18 @@ void MaterialManager::init()
 	create("unlit", glm::vec3(1.0f, 1.0f, 1.0f), 0.0f); // Unlit material
 	create("default", glm::vec3(1.0f, 1.0f, 1.0f), 32.0f); // Default material
 	create("ground", glm::vec3(0.4f, 0.4f, 0.4f), 16.0f); // Ground material
+    create3DPrinterMaterial();
 }
+
+Material* MaterialManager::create3DPrinterMaterial()
+{
+	auto material = std::make_unique<Material>();
+	material->color = glm::vec3(0.4f, 0.4f, 0.4f); // Default color for 3D printer material
+	material->shininess = 32.0f; // Default shininess
+	material->ambientStrength = 0.2f; // Ambient strength for 3D printer material
+	material->specularStrength = 0.5f; // Specular strength for 3D printer material
+	materials["3DPrinter"] = std::move(material);
+	return materials["3DPrinter"].get();
+}
+
+

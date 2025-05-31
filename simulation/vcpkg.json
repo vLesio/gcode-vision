@@ -8,6 +8,7 @@
         "glm",
         "glad",
         "freeglut",
-        "stb"
+        "stb",
+        "assimp"
     ]
 }

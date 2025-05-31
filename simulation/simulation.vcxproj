@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="modelLoader.cpp" />
     <ClCompile Include="printSimulationEngine.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="deltaTimer.cpp" />
@@ -51,6 +52,7 @@
     <ClCompile Include="windowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="modelLoader.h" />
     <ClInclude Include="printSimulationEngine.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="deltaTimer.h" />

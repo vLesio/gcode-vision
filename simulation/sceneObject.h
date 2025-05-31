@@ -24,7 +24,8 @@ public:
     void Draw(Shader& shader) const;
 
     void setMaterial(Material* mat);
-	void setParent(SceneObject* newParent, bool keepGlobalTransform = false);
+    void setMaterialApplyToChildren(Material* mat);
+    void setParent(SceneObject* newParent, bool keepGlobalTransform = false);
     void addChild(SceneObject* child);
     void removeChild(SceneObject* child);
 };

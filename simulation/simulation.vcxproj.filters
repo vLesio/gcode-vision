@@ -118,6 +118,12 @@
     <Filter Include="Header Files\opengl\engine3d\printSimulation">
       <UniqueIdentifier>{ca3aeb88-29b0-4b09-bb80-380eafd86138}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\opengl\engine3d\modelLoader">
+      <UniqueIdentifier>{c221b8a2-82f6-4902-a75d-433f92feb497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\opengl\engine3d\modelLoader">
+      <UniqueIdentifier>{d53f5ca2-970a-42c6-bb37-5919a2fa7604}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rest.cpp">
@@ -209,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="printSimulationEngine.cpp">
       <Filter>Source Files\opengl\engine3d\filamentSimulator</Filter>
+    </ClCompile>
+    <ClCompile Include="modelLoader.cpp">
+      <Filter>Source Files\opengl\engine3d\modelLoader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -307,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="printSimulationEngine.h">
       <Filter>Header Files\opengl\engine3d\printSimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="modelLoader.h">
+      <Filter>Header Files\opengl\engine3d\modelLoader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

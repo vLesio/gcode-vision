@@ -22,8 +22,8 @@ void SceneObject::Draw(Shader& shader) const {
     if (material) {
         material->apply(shader);
     }
-    else {
-        std::cerr << "[ERROR] material is null in InstancedObject!\n";
+    else if (mesh && !material){
+        std::cerr << "[ERROR] material is null but mesh is set in InstancedObject!\n";
         return;
     }
 
@@ -42,6 +42,17 @@ void SceneObject::setMaterial(Material* mat) {
     }
 
     material = mat;
+}
+
+void SceneObject::setMaterialApplyToChildren(Material* mat) {
+    if (mat == nullptr) {
+        std::cerr << "[SceneObject] Attempted to set null material!" << std::endl;
+        return;
+    }
+    material = mat;
+	for (auto child : children) {
+        child->setMaterialApplyToChildren(mat);
+	}
 }
 
 
