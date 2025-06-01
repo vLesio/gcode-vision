@@ -8,20 +8,14 @@ bool SimulationManager::initializeSimulation(
     const std::string& gcodeFile,
     const std::string& printerName,
     float nozzleDiameter,
-    float layerHeight,
-    bool retraction,
-    float bedTemp,
-    float extruderTemp,
+	float maxSpeed,
     float speed)
 {
     context.clear();
     context.loadedFilename = gcodeFile;
     context.printerName = printerName;
     context.nozzleDiameter = nozzleDiameter;
-    context.layerHeight = layerHeight;
-    context.retractionEnabled = retraction;
-    context.temperatureBed = bedTemp;
-    context.temperatureExtruder = extruderTemp;
+	context.maxSpeed = maxSpeed;
     context.simulationSpeed = speed;
     context.simulationScale = 0.01f;
 

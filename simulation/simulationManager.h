@@ -42,10 +42,7 @@ public:
         const std::string& gcodeFile,
         const std::string& printerName,
         float nozzleDiameter,
-        float layerHeight,
-        bool retraction,
-        float bedTemp,
-        float extruderTemp,
+        float maxSpeed,
         float speed
     );
 

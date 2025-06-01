@@ -345,16 +345,7 @@ components:
         nozzleDiameter:
           type: number
           example: 1.75
-        layerHeight:
+        maxPrinterSpeed:
           type: number
-          example: 0.2
-        retraction:
-          type: boolean
-        temperatures:
-          type: object
-          properties:
-            bed:
-              type: number
-            extruder:
-              type: number
+          example: 1200
           

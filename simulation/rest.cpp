@@ -77,15 +77,11 @@ void run_rest_api(int port) {
                 std::string printer = body["printer"].s();
                 std::string gcodeFile = body["gcodeFile"].s();
                 float simulationSpeed = static_cast<float>(body["simulationSpeed"].d());
+				float maxPrinterSpeed = static_cast<float>(body["maxPrinterSpeed"].d());
                 float nozzleDiameter = static_cast<float>(body["nozzleDiameter"].d());
-                float layerHeight = static_cast<float>(body["layerHeight"].d());
-                bool retraction = body["retraction"].b();
-                float bedTemp = static_cast<float>(body["temperatures"]["bed"].d());
-                float extruderTemp = static_cast<float>(body["temperatures"]["extruder"].d());
 
 				// Run initialization
-                if (!manager.initializeSimulation(gcodeFile, printer, nozzleDiameter,
-                    layerHeight, retraction, bedTemp, extruderTemp, simulationSpeed)) {
+                if (!manager.initializeSimulation(gcodeFile, printer, nozzleDiameter, maxPrinterSpeed, simulationSpeed)) {
                     return json_response(400, "Failed to initialize simulation");
                 }
 

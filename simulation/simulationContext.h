@@ -20,10 +20,6 @@ struct SimulationContext {
     // Printer config
     std::string printerName;
     float nozzleDiameter = 1.75f;
-    float layerHeight = 0.2f;
-    bool retractionEnabled = false;
-    float temperatureBed = 0.0f;
-    float temperatureExtruder = 0.0f;
     float simulationSpeed = 1.0f;
     float simulationScale = 0.1f;
 	float maxSpeed = 1200.0f;
@@ -46,10 +42,6 @@ struct SimulationContext {
         headStartPosition = glm::vec3(0.0f);
         printerName.clear();
         nozzleDiameter = 1.75f;
-        layerHeight = 0.2f;
-        retractionEnabled = false;
-        temperatureBed = 0.0f;
-        temperatureExtruder = 0.0f;
         simulationSpeed = 1.0f;
     }
 
