@@ -18,6 +18,6 @@ void Body::Move(glm::vec3 vec) {
 	body->localTransform.resetTop();
 	body->localTransform.translate(vec);
 	Camera::getInstance().moveCameraWithBed(((lastPosition - vec).y)/100);
-	std::cout << (lastPosition - vec).y << std::endl;
+	//std::cout << (lastPosition - vec).y << std::endl;
 	lastPosition = vec;
 }
