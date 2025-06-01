@@ -11,6 +11,7 @@
 #include "PrintheadAnimator.h"
 #include "PrintSimulationEngine.h"
 #include "scene.h"
+#include "Printer.h"
 
 
 enum class SimulationEvent {
@@ -73,6 +74,8 @@ public:
     SimulationState getState() const;
     bool wasAlreadySimulated() const;
 
+    void setPrinter(std::shared_ptr<Printer> printer);
+
     // Thread safe termination handling
     std::condition_variable terminateCV;
     std::mutex terminateMutex;
@@ -90,6 +93,8 @@ private:
     SimulationState state = SimulationState::Uninitialized;
     std::queue<SimulationEvent> eventQueue;
     std::mutex eventMutex;
+
+    std::shared_ptr<Printer> printer;
 
     Scene* scenePtr = nullptr;
 

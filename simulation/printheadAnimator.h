@@ -3,6 +3,7 @@
 
 #include "SceneObject.h"
 #include "Scene.h"
+#include "Printer.h"
 
 class PrintheadAnimator {
 public:
@@ -20,6 +21,7 @@ public:
     void reset();
     glm::vec3 getCurrentPosition() const { return currentPosition; }
 	void setSimulationScale(float scale) { simulationScale = scale; }
+    void attachPrinter(std::shared_ptr<Printer> printer);
 private:
     SceneObject* nozzleObject = nullptr;
     Scene* currentScene = nullptr;
@@ -27,6 +29,7 @@ private:
     glm::vec3 currentPosition;
 	glm::vec3 startPosition;
 	bool isInitialized = false;
+    std::shared_ptr<Printer> printer;
 };
 
 #endif

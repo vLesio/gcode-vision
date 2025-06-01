@@ -80,7 +80,7 @@ Material* ModelLoader::loadMaterial(aiMaterial* mat, const aiScene* scene, const
 }
 
 void ModelLoader::processNode(aiNode* node, const aiScene* scene, SceneObject* parent, const std::string& directory) {
-    for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
+    for (int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         std::unique_ptr<Mesh> newMesh = processMesh(mesh);
 
@@ -92,7 +92,7 @@ void ModelLoader::processNode(aiNode* node, const aiScene* scene, SceneObject* p
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-        processNode(node->mChildren[i], scene, parent, directory);
+        processNode(node->mChildren[i], scene, parent->children[i], directory);
     }
 }
 

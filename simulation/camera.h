@@ -27,6 +27,8 @@ public:
     void rotate(float yawOffset, float pitchOffset);
     void zoom(float offset);
     void setTarget(const glm::vec3& newTarget);
+    void setOnlyTarget(const glm::vec3& newTarget);
+    void moveCameraWithBed(float offset);
     void reset();
 
     // Helper control

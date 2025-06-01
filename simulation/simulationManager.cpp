@@ -62,6 +62,7 @@ void SimulationManager::prepareSimulationScene(Scene* scene) {
 	// Initialize print-head animator
     if (!context.printSteps.empty()) {
         printheadAnimator = std::make_unique<PrintheadAnimator>(context.simulationScale, context.printSteps[0].startPosition);
+        printheadAnimator->attachPrinter(printer);
         printheadAnimator->initialize();
         printheadAnimator->attachToScene(scene);
     }
@@ -315,6 +316,11 @@ SimulationState SimulationManager::getState() const {
 
 bool SimulationManager::wasAlreadySimulated() const {
     return state == SimulationState::Completed;
+}
+
+void SimulationManager::setPrinter(std::shared_ptr<Printer> incomingPrinter)
+{
+    printer = incomingPrinter;
 }
 
 void SimulationManager::setScene(Scene* scene) {

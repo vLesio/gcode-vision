@@ -111,6 +111,27 @@ void Camera::setTarget(const glm::vec3& newTarget) {
     updatePositionOrbit();
 }
 
+void Camera::setOnlyTarget(const glm::vec3& newTarget)
+{
+    target = newTarget;
+    if (mode == CameraMode::Orbit) {
+        lastOrbitTarget = newTarget;
+    }
+    updatePositionOrbit();
+}
+
+void Camera::moveCameraWithBed(float offset)
+{
+    if (mode == CameraMode::Orbit) {
+        target = glm::vec3(target.x, target.y, target.z + offset);
+        lastOrbitTarget = glm::vec3(lastOrbitTarget.x, lastOrbitTarget.y, lastOrbitTarget.z + offset);
+        updatePositionOrbit();
+    }
+    else {
+		position = glm::vec3(position.x, position.y, position.z + offset);
+    }
+}
+
 void Camera::rotate(float yawOffset, float pitchOffset)
 {
     yaw += yawOffset;

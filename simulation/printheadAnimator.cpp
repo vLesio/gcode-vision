@@ -42,8 +42,10 @@ void PrintheadAnimator::update(const glm::vec3& position) {
 
     currentPosition = adjustedPosition;
     nozzleObject->localTransform.resetTop();
-    nozzleObject->localTransform.translate(adjustedPosition * simulationScale);
+	glm::vec3 actualGlobalPosition = adjustedPosition * simulationScale;
+    nozzleObject->localTransform.translate(actualGlobalPosition);
     nozzleObject->localTransform.scale(glm::vec3(1.5f) * simulationScale); 
+	printer->setNozzlePosition(adjustedPosition.x, adjustedPosition.y, adjustedPosition.z);
 }
 
 void PrintheadAnimator::updateInterpolated(const glm::vec3& from, const glm::vec3& to, float progress) {
@@ -63,4 +65,9 @@ void PrintheadAnimator::reset()
 	if (nozzleObject) {
         update(startPosition);
 	}
+}
+
+void PrintheadAnimator::attachPrinter(std::shared_ptr<Printer> printer)
+{
+    this->printer = printer;
 }
