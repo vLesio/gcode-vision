@@ -5,6 +5,6 @@ Bed::Bed(SceneObject* bedObject) {
 	body = std::make_unique<Body>(bed->children[0]);
 }
 
-void Bed::SetNozzlePosition(float x, float y, float z) {
-	body->SetNozzlePosition(x, y, z);
+void Bed::setNozzlePosition(float x, float y, float z) {
+	body->setNozzlePosition(x, y, z);
 }

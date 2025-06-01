@@ -12,7 +12,7 @@ private:
 
 public:
 	Bed(SceneObject*);
-	void SetNozzlePosition(float x, float y, float z);
-	SceneObject* GetBed() const { return bed; }
+	void setNozzlePosition(float x, float y, float z);
+	SceneObject* getBed() const { return bed; }
 };
 #endif

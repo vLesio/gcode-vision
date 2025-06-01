@@ -7,12 +7,12 @@ Rail::Rail(SceneObject* railObject)
 	nozzle = std::make_unique<Nozzle>(rail->children[0]);
 }
 
-void Rail::SetNozzlePosition(float x, float y, float z) {
-	Move(glm::vec3(0, 0, y));
-	nozzle->SetNozzlePosition(x, y, z);
+void Rail::setNozzlePosition(float x, float y, float z) {
+	move(glm::vec3(0, 0, y));
+	nozzle->setNozzlePosition(x, y, z);
 }
 
-void Rail::Move(glm::vec3 offset) {
+void Rail::move(glm::vec3 offset) {
 	rail->localTransform.resetTop();
 	rail->localTransform.translate(offset);
 }

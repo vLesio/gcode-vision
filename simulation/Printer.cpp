@@ -13,9 +13,9 @@ Printer* Printer::setNozzlePosition(float x, float y, float z)
 	cutCoordinatesToBox(x, y, z);
 	float xOffset = 92;
 	//float yOffset = 113;
-	float yOffset = 103.5;
+	float yOffset = 106.5;
 	float zOffset = 89.5;
-	bed->SetNozzlePosition(x-xOffset,y-yOffset,z-zOffset);
+	bed->setNozzlePosition(x-xOffset,y-yOffset,z-zOffset);
 	return this;
 }
 

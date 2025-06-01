@@ -9,7 +9,7 @@ private:
 	SceneObject* nozzle;
 public:
 	Nozzle(SceneObject*);
-	void SetNozzlePosition(float x, float y, float z);
-	void Move(glm::vec3);
+	void setNozzlePosition(float x, float y, float z);
+	void move(glm::vec3);
 };
 #endif

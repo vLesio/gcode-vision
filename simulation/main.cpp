@@ -4,6 +4,8 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+
+#include "SimulationManager.h"
 #include "simulationState.h"
 
 // Global flag for controlling the simulation
@@ -12,8 +14,13 @@ std::thread simulation_thread; // Thread for the OpenGL simulation
 // Function to start the simulation in a separate thread
 void start_simulation() {
     if (!opengl_running) {
-        opengl_running = true;
+        if (SimulationManager::get().getState() == SimulationState::Uninitialized)
+        {
+			std::cerr << "Simulation not initialized. Cannot start OpenGL.\n";
+			return;
+        }
         simulation_thread = std::thread(run_opengl);
+        opengl_running = true;
         std::cout << "Simulation started in a separate thread.\n";
     }
 }

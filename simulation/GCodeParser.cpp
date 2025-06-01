@@ -43,15 +43,15 @@ GCodeCommand GCodeCommand::parse(const std::string& line)
 				command.parameters[prefix] = paramValue; // Store the parameter
 			}
 			catch (const std::invalid_argument&) {
-				std::cerr << "Invalid parameter value: " << value << std::endl;
+				//std::cerr << "Invalid parameter value: " << value << std::endl;
 			}
 			catch (const std::out_of_range&) {
-				std::cerr << "Parameter value out of range: " << value << std::endl;
+				//std::cerr << "Parameter value out of range: " << value << std::endl;
 			}
 		}
 		else
 		{
-			std::cerr << "Parsing failed, unknown command or parameter: " << currentToken << std::endl;
+			//std::cerr << "Parsing failed, unknown command or parameter: " << currentToken << std::endl;
 		}
 	}
 
@@ -70,7 +70,7 @@ bool GCodeParser::loadFile(const std::string& filename) {
 			machineState.updateFromCommand(cmd, printSteps);
 		}
 		catch (const std::exception& ex) {
-			std::cerr << "Error while parsing GCode line " << line << "\n" << ex.what() << std::endl;
+			//std::cerr << "Error while parsing GCode line " << line << "\n" << ex.what() << std::endl;
 		}
 	}
 	return true;
@@ -113,7 +113,7 @@ void MachineState::updateFromCommand(const GCodeCommand& command, std::vector<Pr
 	}
 	else
 	{
-		std::cerr << "This command is no currently supported: " << command.command << std::endl;
+		//std::cerr << "This command is no currently supported: " << command.command << std::endl;
 	}
 }
 

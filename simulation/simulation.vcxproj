@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bed.cpp" />
-    <ClCompile Include="Body.cpp" />
+    <ClCompile Include="bed.cpp" />
+    <ClCompile Include="body.cpp" />
     <ClCompile Include="modelLoader.cpp" />
-    <ClCompile Include="Nozzle.cpp" />
-    <ClCompile Include="Printer.cpp" />
+    <ClCompile Include="nozzle.cpp" />
+    <ClCompile Include="printer.cpp" />
     <ClCompile Include="printSimulationEngine.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="deltaTimer.cpp" />
@@ -40,7 +40,7 @@
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="primitives.cpp" />
     <ClCompile Include="printheadAnimator.cpp" />
-    <ClCompile Include="Rail.cpp" />
+    <ClCompile Include="rail.cpp" />
     <ClCompile Include="rest.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="sceneObject.cpp" />
@@ -57,11 +57,11 @@
     <ClCompile Include="windowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bed.h" />
-    <ClInclude Include="Body.h" />
+    <ClInclude Include="bed.h" />
+    <ClInclude Include="body.h" />
     <ClInclude Include="modelLoader.h" />
-    <ClInclude Include="Nozzle.h" />
-    <ClInclude Include="Printer.h" />
+    <ClInclude Include="nozzle.h" />
+    <ClInclude Include="printer.h" />
     <ClInclude Include="printSimulationEngine.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="deltaTimer.h" />
@@ -80,7 +80,7 @@
     <ClInclude Include="mesh.h" />
     <ClInclude Include="primitives.h" />
     <ClInclude Include="printheadAnimator.h" />
-    <ClInclude Include="Rail.h" />
+    <ClInclude Include="rail.h" />
     <ClInclude Include="rest.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="sceneObject.h" />
