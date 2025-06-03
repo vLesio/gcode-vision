@@ -84,7 +84,7 @@ void run_opengl() {
     //scene->add(ground);
 
 	// Add 3D printer model
-    SceneObject* model = ModelLoader::loadModel("ReadyDrukara.gltf");
+    SceneObject* model = ModelLoader::loadModel("printer.gltf");
 	std::shared_ptr<Printer> printer = std::make_unique<Printer>(model);
     printer->setPrinterPosition(glm::vec3(-0.55f, -0.97f, 2.59f))
            ->setPrinterScale(glm::vec3(sim.getContext().simulationScale))
