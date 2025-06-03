@@ -21,7 +21,8 @@ enum class SimulationEvent {
     Resume,
     Reset,
 	Begin,
-    Terminate
+    Terminate,
+	ChangeSpeed
 };
 
 enum class SimulationState {
@@ -73,6 +74,9 @@ public:
 
     void setPrinter(std::shared_ptr<Printer> printer);
 
+    void setSpeed(float speed);
+    void updateSpeed();
+
     // Thread safe termination handling
     std::condition_variable terminateCV;
     std::mutex terminateMutex;
@@ -96,6 +100,7 @@ private:
     Scene* scenePtr = nullptr;
 
     void handleTerminate();
+    static bool isStateOneOf(SimulationState current, std::initializer_list<SimulationState> validStates);
 };
 
 #endif

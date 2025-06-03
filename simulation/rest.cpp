@@ -148,8 +148,10 @@ void run_rest_api(int port) {
         if (!opengl_running) return json_response(400, "Simulation is not running");
 
         auto& sim = SimulationManager::get();
-        if (sim.getState() != SimulationState::Paused)
+        if (!isStateOneOf(sim.getState(), {SimulationState::Paused}))
+        {
             return json_response(400, "Can only step forward when simulation is paused.");
+        }
 
         sim.enqueueEvent(SimulationEvent::StepForward);
         return json_response(200, "Step forward enqueued");
@@ -160,9 +162,10 @@ void run_rest_api(int port) {
         if (!opengl_running) return json_response(400, "Simulation is not running");
 
         auto& sim = SimulationManager::get();
-        if (sim.getState() != SimulationState::Paused)
+        if (!isStateOneOf(sim.getState(), {SimulationState::Paused,}))
+        {
             return json_response(400, "Can only step backward when simulation is paused.");
-
+        }
         sim.enqueueEvent(SimulationEvent::StepBackward);
         return json_response(200, "Step backward enqueued");
         });
@@ -182,6 +185,25 @@ void run_rest_api(int port) {
 
         sim.enqueueEvent(SimulationEvent::Reset);
         return json_response(200, "Reset enqueued");
+        });
+
+	// CHANGE SIMULATION SPEED
+    CROW_ROUTE(app, "/simulation/speed").methods(crow::HTTPMethod::POST)([](const crow::request& req) {
+        if (!opengl_running) return json_response(400, "Simulation is not running");
+        auto& sim = SimulationManager::get();
+        if (!isStateOneOf(sim.getState(), {
+            SimulationState::Running,
+            SimulationState::Paused, })) {
+            return json_response(400, "Simulation must be running or paused to change speed.");
+        }
+		if (!req.url_params.get("speed")) {
+			return json_response(400, "Missing 'speed' parameter");
+		}
+		float speed = std::stof(req.url_params.get("speed"));
+
+        sim.setSpeed(speed);
+		sim.enqueueEvent(SimulationEvent::ChangeSpeed);
+        return json_response(200, "Simulation speed changed to " + std::to_string(speed));
         });
 
     // === CAMERA CONTROL ENDPOINTS ===
@@ -323,28 +345,6 @@ void run_rest_api(int port) {
 
             fs::remove(filename);
             return json_response(200, "File deleted successfully");
-    });
-
-    // === GET AVAILABLE PRINTERS ===
-
-    CROW_ROUTE(app, "/simulation/printers").methods(crow::HTTPMethod::GET)([] {
-        std::vector<std::string> printers = {
-            "Creality Ender 3 V2",
-            "Creality Ender 3 Neo"
-        };
-
-        std::ostringstream json;
-        json << "{ \"printers\": [";
-        for (size_t i = 0; i < printers.size(); ++i) {
-            json << "\"" << printers[i] << "\"";
-            if (i + 1 < printers.size()) json << ", ";
-        }
-        json << "] }";
-
-        crow::response res{json.str()};
-        res.code = 200;
-        res.set_header("Content-Type", "application/json");
-        return res;
     });
 
     // === SWAGGER UI ===

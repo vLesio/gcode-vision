@@ -98,8 +98,8 @@ void SimulationManager::resumeSimulation() {
 }
 
 void SimulationManager::stepForward() {
-    if (state != SimulationState::Paused) {
-        std::cerr << "[SimulationManager] Cannot step forward unless paused.\n";
+	if (!isStateOneOf(state, { SimulationState::Paused})) {
+        std::cerr << "[SimulationManager] Cannot step forward unless paused\n";
         return;
     }
 
@@ -118,8 +118,8 @@ void SimulationManager::stepForward() {
 }
 
 void SimulationManager::stepBackward() {
-    if (state != SimulationState::Paused) {
-        std::cerr << "[SimulationManager] Cannot step backward unless paused.\n";
+    if (!isStateOneOf(state, { SimulationState::Paused})) {
+        std::cerr << "[SimulationManager] Cannot step backwards unless paused\n";
         return;
     }
 
@@ -220,6 +220,7 @@ void SimulationManager::handleTerminate() {
     std::cout << "[SimulationManager] Simulation terminated.\n";
 }
 
+
 bool SimulationManager::tryStartSimulation(Scene* scene) {
     switch (state) {
     case SimulationState::Initialized:
@@ -264,6 +265,7 @@ void SimulationManager::processEvents() {
         case SimulationEvent::Terminate:
             handleTerminate();
             break;
+        case SimulationEvent::ChangeSpeed: updateSpeed(); break;
         }
     }
 }
@@ -317,6 +319,31 @@ void SimulationManager::setPrinter(std::shared_ptr<Printer> incomingPrinter)
     printer = incomingPrinter;
 }
 
+void SimulationManager::setSpeed(float speed)
+{
+    if (speed < 0.0f)
+    {
+        std::cerr << "[SimulationManager] Invalid speed value: " << speed << ". Must be between 0.0 and 1000.0.\n";
+        speed = 1.0f;
+    }
+    else if (speed > 1000.0f)
+    {
+        std::cerr << "[SimulationManager] Invalid speed value: " << speed << ". Must be between 0.0 and 1000.0.\n";
+        speed = 1000.0f;
+    }
+	context.simulationTimeChange = speed;
+}
+
+void SimulationManager::updateSpeed()
+{
+	context.simulationSpeed = context.simulationTimeChange;
+}
+
 void SimulationManager::setScene(Scene* scene) {
     scenePtr = scene;
+}
+
+bool SimulationManager::isStateOneOf(SimulationState current, std::initializer_list<SimulationState> validStates)
+{
+    return std::find(validStates.begin(), validStates.end(), current) != validStates.end();
 }

@@ -30,6 +30,7 @@ struct SimulationContext {
     // Runtime state
     size_t currentStepIndex = 0;
     float simulationTime = 0.0f;
+	float simulationTimeChange = 0.0f; 
 
     void clear() {
         loadedFilename.clear();

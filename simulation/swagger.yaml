@@ -191,6 +191,26 @@ paths:
       responses:
         '200':
           description: Simulation stepped backward by one unit.
+
+  /simulation/speed:
+    post:
+      tags:
+        - Simulation
+      summary: Set simulation speed
+      description: Sets the speed of the simulation.
+      parameters:
+        - name: speed
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+            example: 1.0
+      responses:
+        '200':
+          description: Simulation speed set successfully
+        '400':
+          description: Invalid speed value or simulation state
   
   /simulation/test-parse:
     get:
